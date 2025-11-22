@@ -19,7 +19,7 @@ const AIAssistant = ({ onClose }: AIAssistantProps) => {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
-      content: "Kumusta! I'm your MatchUp AI assistant. Ask me anything about your bookings, payments, schedules, or how to use MatchUp!"
+      content: "Hello! I'm your MatchUp AI assistant. Ask me anything about your bookings, payments, schedules, or how to use MatchUp!"
     }
   ]);
   const [input, setInput] = useState("");
