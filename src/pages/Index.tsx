@@ -61,7 +61,7 @@ const Index = () => {
       <section className="relative overflow-hidden pt-32 pb-20 bg-background">
         <div className="absolute inset-0 opacity-5">
           <div className="absolute top-0 left-0 w-full h-1 bg-secondary"></div>
-          <div className="absolute top-1/4 right-0 w-1 h-64 bg-primary"></div>
+          <div className="absolute top-1/4 right-0 w-1 h-64 bg-secondary"></div>
         </div>
         
         <div className="container relative mx-auto px-4 py-12 md:py-20">
@@ -143,8 +143,8 @@ const Index = () => {
                 <Card key={index} className="group relative overflow-hidden border-2 border-border p-8 transition-all duration-500 hover:border-secondary hover:shadow-2xl hover:shadow-secondary/20 hover:-translate-y-2 bg-background">
                   <div className="absolute top-0 right-0 h-32 w-32 bg-secondary opacity-5 rounded-full blur-3xl transition-all duration-500 group-hover:opacity-15" />
                   <div className="relative">
-                    <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-accent shadow-lg border-2 border-primary/20">
-                      <Icon className="h-8 w-8 text-primary" />
+                    <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-accent shadow-lg border-2 border-secondary/30">
+                      <Icon className="h-8 w-8 text-secondary" />
                     </div>
                     <h3 className="mb-4 text-2xl font-bold text-foreground">{point.title}</h3>
                     <p className="text-muted-foreground mb-6 leading-relaxed">{point.description}</p>
@@ -173,10 +173,10 @@ const Index = () => {
 
           <div className="grid gap-8 lg:grid-cols-2">
             <div className="space-y-6">
-              <div className="group flex gap-6 p-6 rounded-2xl transition-all bg-card border-2 border-border hover:border-success hover:shadow-xl">
+              <div className="group flex gap-6 p-6 rounded-2xl transition-all bg-card border-2 border-border hover:border-secondary hover:shadow-xl hover:shadow-secondary/10">
                 <div className="flex-shrink-0">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-accent shadow-lg group-hover:scale-110 transition-transform border-2 border-success/30">
-                    <CheckCircle2 className="h-7 w-7 text-success" />
+                  <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-accent shadow-lg group-hover:scale-110 transition-transform border-2 border-secondary/30">
+                    <CheckCircle2 className="h-7 w-7 text-secondary" />
                   </div>
                 </div>
                 <div>
@@ -187,10 +187,10 @@ const Index = () => {
                 </div>
               </div>
 
-              <div className="group flex gap-6 p-6 rounded-2xl transition-all bg-card border-2 border-border hover:border-primary hover:shadow-xl">
+              <div className="group flex gap-6 p-6 rounded-2xl transition-all bg-card border-2 border-border hover:border-secondary hover:shadow-xl hover:shadow-secondary/10">
                 <div className="flex-shrink-0">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-accent shadow-lg group-hover:scale-110 transition-transform border-2 border-primary/30">
-                    <Wallet className="h-7 w-7 text-primary" />
+                  <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-accent shadow-lg group-hover:scale-110 transition-transform border-2 border-secondary/30">
+                    <Wallet className="h-7 w-7 text-secondary" />
                   </div>
                 </div>
                 <div>
@@ -218,10 +218,10 @@ const Index = () => {
                 </div>
               </div>
 
-              <div className="group flex gap-6 p-6 rounded-2xl transition-all bg-card border-2 border-border hover:border-accent hover:shadow-xl">
+              <div className="group flex gap-6 p-6 rounded-2xl transition-all bg-card border-2 border-border hover:border-secondary hover:shadow-xl hover:shadow-secondary/10">
                 <div className="flex-shrink-0">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-accent shadow-lg group-hover:scale-110 transition-transform border-2 border-accent/50">
-                    <Trophy className="h-7 w-7 text-foreground" />
+                  <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-accent shadow-lg group-hover:scale-110 transition-transform border-2 border-secondary/30">
+                    <Trophy className="h-7 w-7 text-secondary" />
                   </div>
                 </div>
                 <div>
@@ -253,27 +253,27 @@ const Index = () => {
                   
                   <div className="space-y-4 mb-8">
                     <div className="flex items-center gap-3">
-                      <CheckCircle2 className="h-6 w-6 text-success flex-shrink-0" />
+                      <CheckCircle2 className="h-6 w-6 text-secondary flex-shrink-0" />
                       <span className="font-medium text-foreground">Unlimited bookings</span>
                     </div>
                     <div className="flex items-center gap-3">
-                      <CheckCircle2 className="h-6 w-6 text-success flex-shrink-0" />
+                      <CheckCircle2 className="h-6 w-6 text-secondary flex-shrink-0" />
                       <span className="font-medium text-foreground">GCash & Maya integration</span>
                     </div>
                     <div className="flex items-center gap-3">
-                      <CheckCircle2 className="h-6 w-6 text-success flex-shrink-0" />
+                      <CheckCircle2 className="h-6 w-6 text-secondary flex-shrink-0" />
                       <span className="font-medium text-foreground">24/7 AI Assistant</span>
                     </div>
                     <div className="flex items-center gap-3">
-                      <CheckCircle2 className="h-6 w-6 text-success flex-shrink-0" />
+                      <CheckCircle2 className="h-6 w-6 text-secondary flex-shrink-0" />
                       <span className="font-medium text-foreground">Custom booking policies</span>
                     </div>
                     <div className="flex items-center gap-3">
-                      <CheckCircle2 className="h-6 w-6 text-success flex-shrink-0" />
+                      <CheckCircle2 className="h-6 w-6 text-secondary flex-shrink-0" />
                       <span className="font-medium text-foreground">Automatic payment tracking</span>
                     </div>
                     <div className="flex items-center gap-3">
-                      <CheckCircle2 className="h-6 w-6 text-success flex-shrink-0" />
+                      <CheckCircle2 className="h-6 w-6 text-secondary flex-shrink-0" />
                       <span className="font-medium text-foreground">Priority support (Tagalog)</span>
                     </div>
                   </div>
@@ -339,9 +339,9 @@ const Index = () => {
             <div>
               <h4 className="font-semibold text-foreground mb-3">Quick Links</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><a href="#features" className="hover:text-primary transition-colors">Features</a></li>
-                <li><a href="#pricing" className="hover:text-primary transition-colors">Pricing</a></li>
-                <li><a href="/dashboard" className="hover:text-primary transition-colors">Sign In</a></li>
+                <li><a href="#features" className="hover:text-secondary transition-colors">Features</a></li>
+                <li><a href="#pricing" className="hover:text-secondary transition-colors">Pricing</a></li>
+                <li><a href="/dashboard" className="hover:text-secondary transition-colors">Sign In</a></li>
               </ul>
             </div>
             
