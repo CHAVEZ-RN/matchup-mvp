@@ -164,9 +164,17 @@ const PublicBooking = () => {
             <div className="relative h-32 bg-gradient-to-r from-primary/20 to-secondary/20"></div>
             <div className="p-8 -mt-16">
               <div className="flex flex-col md:flex-row gap-6 items-start">
-                <div className="flex h-28 w-28 items-center justify-center rounded-2xl bg-accent shadow-2xl border-4 border-card">
-                  <Trophy className="h-14 w-14 text-primary" />
-                </div>
+                {coach.profiles?.avatar_url ? (
+                  <img 
+                    src={coach.profiles.avatar_url} 
+                    alt={coach.profiles.full_name}
+                    className="h-28 w-28 rounded-2xl object-cover shadow-2xl border-4 border-card"
+                  />
+                ) : (
+                  <div className="flex h-28 w-28 items-center justify-center rounded-2xl bg-accent shadow-2xl border-4 border-card">
+                    <Trophy className="h-14 w-14 text-primary" />
+                  </div>
+                )}
 
                 <div className="flex-1">
                   <h2 className="text-3xl font-bold text-foreground mb-2">{coach.profiles?.full_name}</h2>

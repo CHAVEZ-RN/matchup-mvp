@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Calendar, Loader2, Plus, X } from "lucide-react";
+import { Calendar, Loader2, Plus, X, Upload, User } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 
@@ -23,8 +23,11 @@ const CoachProfileSetup = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [existingProfile, setExistingProfile] = useState<any>(null);
+  const [profileData, setProfileData] = useState<any>(null);
 
   // Form state
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string>("");
   const [businessName, setBusinessName] = useState("");
   const [bio, setBio] = useState("");
   const [yearsExperience, setYearsExperience] = useState("");
@@ -50,12 +53,24 @@ const CoachProfileSetup = () => {
 
     setUser(session.user);
 
-    // Check if user is a coach
+    // Get profile data
     const { data: profile } = await supabase
       .from("profiles")
       .select("*")
       .eq("id", session.user.id)
       .single();
+
+    if (!profile) {
+      navigate("/auth");
+      return;
+    }
+
+    setProfileData(profile);
+
+    // Set existing photo preview if available
+    if (profile.avatar_url) {
+      setPhotoPreview(profile.avatar_url);
+    }
 
     if (profile?.user_type !== "coach") {
       toast({
@@ -119,8 +134,89 @@ const CoachProfileSetup = () => {
     setCertifications(updated);
   };
 
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: "Invalid File",
+        description: "Please upload an image file (JPG, PNG, etc.)",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        title: "File Too Large",
+        description: "Please upload an image smaller than 5MB",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setPhotoFile(file);
+    
+    // Create preview
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setPhotoPreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const uploadPhoto = async (userId: string): Promise<string | null> => {
+    if (!photoFile) {
+      // If no new photo but existing preview, return existing URL
+      if (photoPreview && photoPreview.startsWith('http')) {
+        return photoPreview;
+      }
+      return null;
+    }
+
+    try {
+      const fileExt = photoFile.name.split('.').pop();
+      const fileName = `${userId}/profile.${fileExt}`;
+
+      // Upload to storage
+      const { error: uploadError } = await supabase.storage
+        .from('coach-photos')
+        .upload(fileName, photoFile, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      // Get public URL
+      const { data } = supabase.storage
+        .from('coach-photos')
+        .getPublicUrl(fileName);
+
+      return data.publicUrl;
+    } catch (error: any) {
+      console.error('Photo upload error:', error);
+      toast({
+        title: "Upload Failed",
+        description: "Failed to upload profile photo",
+        variant: "destructive",
+      });
+      return null;
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validation - Photo is required
+    if (!photoPreview && !photoFile) {
+      toast({
+        title: "Photo Required",
+        description: "Please upload a profile photo",
+        variant: "destructive",
+      });
+      return;
+    }
 
     if (selectedSports.length === 0) {
       toast({
@@ -143,6 +239,21 @@ const CoachProfileSetup = () => {
     setIsLoading(true);
 
     try {
+      // Upload photo first
+      const photoUrl = await uploadPhoto(user.id);
+
+      if (!photoUrl) {
+        setIsLoading(false);
+        return;
+      }
+
+      // Update profile with photo URL
+      const { error: profileError } = await supabase
+        .from("profiles")
+        .update({ avatar_url: photoUrl })
+        .eq("id", user.id);
+
+      if (profileError) throw profileError;
       const profileData = {
         id: user.id,
         business_name: businessName,
@@ -212,6 +323,66 @@ const CoachProfileSetup = () => {
 
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* Basic Info */}
+          <Card className="border-2 border-border bg-card p-6">
+            <h3 className="text-2xl font-bold text-foreground mb-4">Profile Photo *</h3>
+            
+            <div className="space-y-4">
+              <div className="flex flex-col items-center gap-4">
+                {photoPreview ? (
+                  <div className="relative">
+                    <img 
+                      src={photoPreview} 
+                      alt="Profile preview"
+                      className="h-40 w-40 rounded-2xl object-cover border-4 border-secondary shadow-xl"
+                    />
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="destructive"
+                      className="absolute -top-2 -right-2 h-8 w-8 rounded-full p-0"
+                      onClick={() => {
+                        setPhotoFile(null);
+                        setPhotoPreview("");
+                      }}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="h-40 w-40 rounded-2xl border-4 border-dashed border-border bg-accent flex items-center justify-center">
+                    <User className="h-16 w-16 text-muted-foreground" />
+                  </div>
+                )}
+                
+                <div className="text-center">
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    onChange={handlePhotoChange}
+                    className="hidden"
+                    id="photo-upload"
+                  />
+                  <Label htmlFor="photo-upload">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="border-2 border-secondary hover:bg-secondary/10 cursor-pointer"
+                      asChild
+                    >
+                      <span>
+                        <Upload className="h-4 w-4 mr-2" />
+                        {photoPreview ? "Change Photo" : "Upload Photo"}
+                      </span>
+                    </Button>
+                  </Label>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    JPG, PNG or WEBP (max 5MB)
+                  </p>
+                </div>
+              </div>
+            </div>
+          </Card>
+
           <Card className="border-2 border-border bg-card p-6">
             <h3 className="text-2xl font-bold text-foreground mb-4">Basic Information</h3>
             
