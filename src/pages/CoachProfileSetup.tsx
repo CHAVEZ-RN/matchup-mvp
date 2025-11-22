@@ -303,15 +303,22 @@ const CoachProfileSetup = () => {
                   {SPORTS_OPTIONS.map((sport) => (
                     <div
                       key={sport}
-                      onClick={() => toggleSport(sport)}
-                      className={`flex items-center space-x-2 p-3 rounded-lg border-2 cursor-pointer transition-all ${
+                      className={`flex items-center space-x-2 p-3 rounded-lg border-2 transition-all ${
                         selectedSports.includes(sport)
                           ? "border-secondary bg-secondary/10"
                           : "border-border hover:border-secondary/50"
                       }`}
                     >
-                      <Checkbox checked={selectedSports.includes(sport)} />
-                      <span className="text-sm font-medium">{sport}</span>
+                      <Checkbox 
+                        checked={selectedSports.includes(sport)}
+                        onCheckedChange={() => toggleSport(sport)}
+                      />
+                      <label 
+                        className="text-sm font-medium cursor-pointer flex-1"
+                        onClick={() => toggleSport(sport)}
+                      >
+                        {sport}
+                      </label>
                     </div>
                   ))}
                 </div>
@@ -343,15 +350,22 @@ const CoachProfileSetup = () => {
               {METRO_MANILA_LOCATIONS.map((location) => (
                 <div
                   key={location}
-                  onClick={() => toggleLocation(location)}
-                  className={`flex items-center space-x-2 p-3 rounded-lg border-2 cursor-pointer transition-all ${
+                  className={`flex items-center space-x-2 p-3 rounded-lg border-2 transition-all ${
                     selectedLocations.includes(location)
                       ? "border-primary bg-primary/10"
                       : "border-border hover:border-primary/50"
                   }`}
                 >
-                  <Checkbox checked={selectedLocations.includes(location)} />
-                  <span className="text-sm font-medium">{location}</span>
+                  <Checkbox 
+                    checked={selectedLocations.includes(location)}
+                    onCheckedChange={() => toggleLocation(location)}
+                  />
+                  <label 
+                    className="text-sm font-medium cursor-pointer flex-1"
+                    onClick={() => toggleLocation(location)}
+                  >
+                    {location}
+                  </label>
                 </div>
               ))}
             </div>
