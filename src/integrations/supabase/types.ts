@@ -14,7 +14,240 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      athlete_profiles: {
+        Row: {
+          created_at: string | null
+          emergency_contact_name: string | null
+          emergency_contact_phone: string | null
+          id: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
+          id: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
+          id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "athlete_profiles_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      bookings: {
+        Row: {
+          athlete_id: string
+          coach_id: string
+          created_at: string | null
+          duration_hours: number
+          id: string
+          location: string
+          notes: string | null
+          session_date: string
+          session_time: string
+          sport: string
+          status: Database["public"]["Enums"]["booking_status"]
+          total_amount: number
+          updated_at: string | null
+        }
+        Insert: {
+          athlete_id: string
+          coach_id: string
+          created_at?: string | null
+          duration_hours?: number
+          id?: string
+          location: string
+          notes?: string | null
+          session_date: string
+          session_time: string
+          sport: string
+          status?: Database["public"]["Enums"]["booking_status"]
+          total_amount: number
+          updated_at?: string | null
+        }
+        Update: {
+          athlete_id?: string
+          coach_id?: string
+          created_at?: string | null
+          duration_hours?: number
+          id?: string
+          location?: string
+          notes?: string | null
+          session_date?: string
+          session_time?: string
+          sport?: string
+          status?: Database["public"]["Enums"]["booking_status"]
+          total_amount?: number
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bookings_athlete_id_fkey"
+            columns: ["athlete_id"]
+            isOneToOne: false
+            referencedRelation: "athlete_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bookings_coach_id_fkey"
+            columns: ["coach_id"]
+            isOneToOne: false
+            referencedRelation: "coach_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      coach_profiles: {
+        Row: {
+          bio: string | null
+          business_name: string | null
+          cancellation_policy: string | null
+          certifications: string[] | null
+          created_at: string | null
+          deposit_percentage: number | null
+          deposit_required: boolean | null
+          hourly_rate: number
+          id: string
+          is_active: boolean | null
+          locations: string[]
+          sports_offered: string[]
+          updated_at: string | null
+          years_of_experience: number | null
+        }
+        Insert: {
+          bio?: string | null
+          business_name?: string | null
+          cancellation_policy?: string | null
+          certifications?: string[] | null
+          created_at?: string | null
+          deposit_percentage?: number | null
+          deposit_required?: boolean | null
+          hourly_rate: number
+          id: string
+          is_active?: boolean | null
+          locations: string[]
+          sports_offered: string[]
+          updated_at?: string | null
+          years_of_experience?: number | null
+        }
+        Update: {
+          bio?: string | null
+          business_name?: string | null
+          cancellation_policy?: string | null
+          certifications?: string[] | null
+          created_at?: string | null
+          deposit_percentage?: number | null
+          deposit_required?: boolean | null
+          hourly_rate?: number
+          id?: string
+          is_active?: boolean | null
+          locations?: string[]
+          sports_offered?: string[]
+          updated_at?: string | null
+          years_of_experience?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coach_profiles_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payments: {
+        Row: {
+          amount: number
+          booking_id: string
+          created_at: string | null
+          id: string
+          is_deposit: boolean | null
+          notes: string | null
+          payment_date: string | null
+          payment_method: Database["public"]["Enums"]["payment_method"]
+          payment_status: Database["public"]["Enums"]["payment_status"]
+          reference_number: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          amount: number
+          booking_id: string
+          created_at?: string | null
+          id?: string
+          is_deposit?: boolean | null
+          notes?: string | null
+          payment_date?: string | null
+          payment_method: Database["public"]["Enums"]["payment_method"]
+          payment_status?: Database["public"]["Enums"]["payment_status"]
+          reference_number?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          amount?: number
+          booking_id?: string
+          created_at?: string | null
+          id?: string
+          is_deposit?: boolean | null
+          notes?: string | null
+          payment_date?: string | null
+          payment_method?: Database["public"]["Enums"]["payment_method"]
+          payment_status?: Database["public"]["Enums"]["payment_status"]
+          reference_number?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string | null
+          full_name: string
+          id: string
+          phone: string | null
+          updated_at: string | null
+          user_type: Database["public"]["Enums"]["user_type"]
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string | null
+          full_name: string
+          id: string
+          phone?: string | null
+          updated_at?: string | null
+          user_type: Database["public"]["Enums"]["user_type"]
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string | null
+          full_name?: string
+          id?: string
+          phone?: string | null
+          updated_at?: string | null
+          user_type?: Database["public"]["Enums"]["user_type"]
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +256,15 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      booking_status:
+        | "pending"
+        | "approved"
+        | "rejected"
+        | "completed"
+        | "cancelled"
+      payment_method: "gcash" | "maya" | "cash"
+      payment_status: "pending" | "paid" | "refunded" | "failed"
+      user_type: "coach" | "athlete"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +391,17 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      booking_status: [
+        "pending",
+        "approved",
+        "rejected",
+        "completed",
+        "cancelled",
+      ],
+      payment_method: ["gcash", "maya", "cash"],
+      payment_status: ["pending", "paid", "refunded", "failed"],
+      user_type: ["coach", "athlete"],
+    },
   },
 } as const
