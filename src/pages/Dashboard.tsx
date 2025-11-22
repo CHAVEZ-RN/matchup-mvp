@@ -309,46 +309,103 @@ const Dashboard = () => {
 
                 {/* Stats Cards - Only for Coaches */}
                 {isCoach && (
-                  <div className="mb-10 grid gap-6 md:grid-cols-3">
-                    <Card className="group relative overflow-hidden border-2 border-secondary/30 bg-card p-8 transition-all hover:shadow-2xl hover:shadow-secondary/10 hover:-translate-y-1">
-                      <div className="absolute top-0 left-0 w-2 h-full bg-secondary"></div>
-                      <div className="relative flex items-center justify-between">
-                        <div>
-                          <p className="mb-1 text-sm font-medium text-muted-foreground">Pending Approvals</p>
-                          <p className="text-5xl font-extrabold text-foreground">{stats.pending}</p>
+                  <>
+                    {/* Booking Link Card - Always Visible */}
+                    <Card className="mb-6 border-2 border-secondary/30 bg-gradient-to-r from-secondary/10 to-primary/10 p-6">
+                      <div className="flex items-start gap-4">
+                        <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-secondary shadow-lg">
+                          <Plus className="h-7 w-7 text-secondary-foreground" />
                         </div>
-                        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-accent shadow-lg border-2 border-secondary/30">
-                          <Clock className="h-8 w-8 text-secondary" />
+                        <div className="flex-1">
+                          <h3 className="text-xl font-bold text-foreground mb-2">Share Your Booking Link</h3>
+                          <div className="flex gap-2 mb-3">
+                            <Input 
+                              value={`${window.location.origin}/book/${user?.id}`}
+                              readOnly
+                              className="bg-background border-2 border-border font-mono text-sm flex-1"
+                            />
+                            <Button
+                              variant="outline"
+                              className="border-2 border-secondary hover:bg-secondary hover:text-secondary-foreground"
+                              onClick={() => {
+                                navigator.clipboard.writeText(`${window.location.origin}/book/${user?.id}`);
+                                toast({ title: "Copied!", description: "Booking link copied to clipboard" });
+                              }}
+                            >
+                              Copy Link
+                            </Button>
+                          </div>
+                          <div className="flex gap-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="border-primary/30 hover:bg-primary/10"
+                              onClick={() => {
+                                const link = `${window.location.origin}/book/${user?.id}`;
+                                const message = `Book a session with me on MatchUp! ${link}`;
+                                window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
+                              }}
+                            >
+                              Share on WhatsApp
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="border-primary/30 hover:bg-primary/10"
+                              onClick={() => {
+                                const link = `${window.location.origin}/book/${user?.id}`;
+                                const message = `Book a session with me on MatchUp! ${link}`;
+                                window.open(`sms:?body=${encodeURIComponent(message)}`, '_blank');
+                              }}
+                            >
+                              Share via SMS
+                            </Button>
+                          </div>
                         </div>
                       </div>
                     </Card>
 
-                    <Card className="group relative overflow-hidden border-2 border-secondary/30 bg-card p-8 transition-all hover:shadow-2xl hover:shadow-secondary/10 hover:-translate-y-1">
-                      <div className="absolute top-0 left-0 w-2 h-full bg-secondary"></div>
-                      <div className="relative flex items-center justify-between">
-                        <div>
-                          <p className="mb-1 text-sm font-medium text-muted-foreground">Awaiting Payment</p>
-                          <p className="text-5xl font-extrabold text-foreground">{stats.awaitingPayment}</p>
+                    <div className="mb-10 grid gap-6 md:grid-cols-3">
+                      <Card className="group relative overflow-hidden border-2 border-secondary/30 bg-card p-8 transition-all hover:shadow-2xl hover:shadow-secondary/10 hover:-translate-y-1">
+                        <div className="absolute top-0 left-0 w-2 h-full bg-secondary"></div>
+                        <div className="relative flex items-center justify-between">
+                          <div>
+                            <p className="mb-1 text-sm font-medium text-muted-foreground">Pending Approvals</p>
+                            <p className="text-5xl font-extrabold text-foreground">{stats.pending}</p>
+                          </div>
+                          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-accent shadow-lg border-2 border-secondary/30">
+                            <Clock className="h-8 w-8 text-secondary" />
+                          </div>
                         </div>
-                        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-accent shadow-lg border-2 border-secondary/30">
-                          <Receipt className="h-8 w-8 text-secondary" />
-                        </div>
-                      </div>
-                    </Card>
+                      </Card>
 
-                    <Card className="group relative overflow-hidden border-2 border-primary/30 bg-card p-8 transition-all hover:shadow-2xl hover:-translate-y-1">
-                      <div className="absolute top-0 left-0 w-2 h-full bg-primary"></div>
-                      <div className="relative flex items-center justify-between">
-                        <div>
-                          <p className="mb-1 text-sm font-medium text-muted-foreground">Total Bookings</p>
-                          <p className="text-5xl font-extrabold text-foreground">{bookings.length}</p>
+                      <Card className="group relative overflow-hidden border-2 border-secondary/30 bg-card p-8 transition-all hover:shadow-2xl hover:shadow-secondary/10 hover:-translate-y-1">
+                        <div className="absolute top-0 left-0 w-2 h-full bg-secondary"></div>
+                        <div className="relative flex items-center justify-between">
+                          <div>
+                            <p className="mb-1 text-sm font-medium text-muted-foreground">Awaiting Payment</p>
+                            <p className="text-5xl font-extrabold text-foreground">{stats.awaitingPayment}</p>
+                          </div>
+                          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-accent shadow-lg border-2 border-secondary/30">
+                            <Receipt className="h-8 w-8 text-secondary" />
+                          </div>
                         </div>
-                        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-accent shadow-lg border-2 border-primary/30">
-                          <CalendarDays className="h-8 w-8 text-primary" />
+                      </Card>
+
+                      <Card className="group relative overflow-hidden border-2 border-primary/30 bg-card p-8 transition-all hover:shadow-2xl hover:-translate-y-1">
+                        <div className="absolute top-0 left-0 w-2 h-full bg-primary"></div>
+                        <div className="relative flex items-center justify-between">
+                          <div>
+                            <p className="mb-1 text-sm font-medium text-muted-foreground">Total Bookings</p>
+                            <p className="text-5xl font-extrabold text-foreground">{bookings.length}</p>
+                          </div>
+                          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-accent shadow-lg border-2 border-primary/30">
+                            <CalendarDays className="h-8 w-8 text-primary" />
+                          </div>
                         </div>
-                      </div>
-                    </Card>
-                  </div>
+                      </Card>
+                    </div>
+                  </>
                 )}
 
                 {/* Empty State for Coaches with No Bookings */}
