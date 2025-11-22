@@ -299,6 +299,19 @@ const PublicBooking = () => {
                         ))}
                       </SelectContent>
                     </Select>
+                    {selectedLocation && coach.venue_details?.[selectedLocation] && (
+                      <div className="mt-2 p-3 rounded-lg bg-accent border border-border">
+                        <div className="flex items-start gap-2">
+                          <MapPin className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                          <div>
+                            <p className="text-xs font-medium text-muted-foreground mb-1">Venue Details:</p>
+                            <p className="text-sm text-foreground whitespace-pre-line">
+                              {coach.venue_details[selectedLocation]}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   <div>

@@ -34,6 +34,7 @@ const CoachProfileSetup = () => {
   const [hourlyRate, setHourlyRate] = useState("");
   const [selectedSports, setSelectedSports] = useState<string[]>([]);
   const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
+  const [venueDetails, setVenueDetails] = useState<Record<string, string>>({});
   const [certifications, setCertifications] = useState<string[]>([""]);
   const [cancellationPolicy, setCancellationPolicy] = useState("");
   const [depositRequired, setDepositRequired] = useState(true);
@@ -97,6 +98,7 @@ const CoachProfileSetup = () => {
       setHourlyRate(coachProfile.hourly_rate?.toString() || "");
       setSelectedSports(coachProfile.sports_offered || []);
       setSelectedLocations(coachProfile.locations || []);
+      setVenueDetails((coachProfile.venue_details as Record<string, string>) || {});
       setCertifications(coachProfile.certifications || [""]);
       setCancellationPolicy(coachProfile.cancellation_policy || "");
       setDepositRequired(coachProfile.deposit_required);
@@ -113,11 +115,27 @@ const CoachProfileSetup = () => {
   };
 
   const toggleLocation = (location: string) => {
-    setSelectedLocations(prev =>
-      prev.includes(location)
+    setSelectedLocations(prev => {
+      const newLocations = prev.includes(location)
         ? prev.filter(l => l !== location)
-        : [...prev, location]
-    );
+        : [...prev, location];
+      
+      // Remove venue details if location is deselected
+      if (prev.includes(location)) {
+        const newVenueDetails = { ...venueDetails };
+        delete newVenueDetails[location];
+        setVenueDetails(newVenueDetails);
+      }
+      
+      return newLocations;
+    });
+  };
+
+  const updateVenueDetail = (location: string, detail: string) => {
+    setVenueDetails(prev => ({
+      ...prev,
+      [location]: detail
+    }));
   };
 
   const addCertification = () => {
@@ -263,6 +281,7 @@ const CoachProfileSetup = () => {
         sports_offered: selectedSports,
         hourly_rate: parseFloat(hourlyRate),
         locations: selectedLocations,
+        venue_details: venueDetails,
         cancellation_policy: cancellationPolicy,
         deposit_required: depositRequired,
         deposit_percentage: parseInt(depositPercentage),
@@ -540,6 +559,31 @@ const CoachProfileSetup = () => {
                 </div>
               ))}
             </div>
+
+            {/* Venue Details for Selected Locations */}
+            {selectedLocations.length > 0 && (
+              <div className="mt-6 space-y-4">
+                <Label className="text-base font-semibold">Venue Details (Exact Court/Address) *</Label>
+                <p className="text-sm text-muted-foreground mb-3">
+                  Specify the exact venue, court name, or address for each location so athletes know where to go
+                </p>
+                {selectedLocations.map((location) => (
+                  <div key={location} className="space-y-2">
+                    <Label htmlFor={`venue-${location}`} className="text-sm font-medium">
+                      {location}
+                    </Label>
+                    <Textarea
+                      id={`venue-${location}`}
+                      value={venueDetails[location] || ""}
+                      onChange={(e) => updateVenueDetail(location, e.target.value)}
+                      placeholder={`e.g., ABC Sports Complex, 123 Main Street, ${location} or XYZ Basketball Court, near ${location} City Hall`}
+                      rows={2}
+                      className="border-2 border-border bg-background"
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
           </Card>
 
           {/* Booking Policies */}

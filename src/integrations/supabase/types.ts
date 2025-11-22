@@ -97,6 +97,7 @@ export type Database = {
           locations: string[]
           sports_offered: string[]
           updated_at: string | null
+          venue_details: Json | null
           years_of_experience: number | null
         }
         Insert: {
@@ -113,6 +114,7 @@ export type Database = {
           locations: string[]
           sports_offered: string[]
           updated_at?: string | null
+          venue_details?: Json | null
           years_of_experience?: number | null
         }
         Update: {
@@ -129,6 +131,7 @@ export type Database = {
           locations?: string[]
           sports_offered?: string[]
           updated_at?: string | null
+          venue_details?: Json | null
           years_of_experience?: number | null
         }
         Relationships: [
