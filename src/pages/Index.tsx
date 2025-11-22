@@ -1,293 +1,358 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { CheckCircle2, Calendar, Dumbbell, Trophy, Target, Zap, ArrowRight, Star, Users, Clock } from "lucide-react";
+import { CheckCircle2, Calendar, Wallet, MessageSquare, Trophy, Target, ArrowRight, Star, Users, Shield, Sparkles } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const Index = () => {
   const navigate = useNavigate();
 
-  const programs = [
+  const painPoints = [
     {
-      icon: Dumbbell,
-      title: "Strength Training",
-      description: "Build muscle, increase strength, and transform your physique with personalized resistance programs.",
-      duration: "12 weeks"
+      icon: Calendar,
+      title: "Manual na Kalat",
+      description: "Coaches juggle calls, chat apps, and spreadsheets—resulting in double bookings and last-minute cancellations.",
+      quote: "Through calls and texts... multiple clients want the same schedule.",
+      author: "Coach Aging"
     },
     {
-      icon: Zap,
-      title: "HIIT & Conditioning",
-      description: "High-intensity workouts designed to burn fat, boost metabolism, and improve cardiovascular health.",
-      duration: "8 weeks"
+      icon: Wallet,
+      title: "Payment Headaches",
+      description: "Cash and GCash payments get missed, delayed, or stolen. No deposits mean constant no-shows.",
+      quote: "When they don't pay, I lose money because I also have assistant coaches.",
+      author: "Coach Andrew"
     },
     {
-      icon: Target,
-      title: "Goal-Specific Coaching",
-      description: "Customized training plans tailored to your unique goals—whether it's weight loss, athletic performance, or overall wellness.",
-      duration: "Flexible"
-    }
-  ];
-
-  const testimonials = [
-    {
-      name: "Sarah Johnson",
-      role: "Marathon Runner",
-      content: "This coaching transformed my training completely. I shaved 20 minutes off my marathon time!",
-      rating: 5
-    },
-    {
-      name: "Mike Chen",
-      role: "Busy Professional",
-      content: "Finally found a program that fits my schedule. Lost 30 lbs and gained confidence.",
-      rating: 5
-    },
-    {
-      name: "Emma Williams",
-      role: "Athlete",
-      content: "The personalized approach made all the difference. Best investment in my fitness journey.",
-      rating: 5
+      icon: MessageSquare,
+      title: "Broken Communication",
+      description: "Miscommunication and schedule clashes damage relationships and waste your valuable time.",
+      quote: "Cancellations from miscommunication... Schedule clashes...",
+      author: "Coach Pancho"
     }
   ];
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border/40 bg-background/95 backdrop-blur-md">
+    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/10">
+      {/* Premium Header */}
+      <header className="fixed top-0 left-0 right-0 z-50 border-b border-border/40 bg-background/95 backdrop-blur-xl">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary-dark">
-                <Dumbbell className="h-6 w-6 text-primary-foreground" />
+            <div className="flex items-center gap-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary-dark shadow-lg">
+                <Calendar className="h-7 w-7 text-primary-foreground" />
               </div>
-              <span className="text-xl font-bold text-foreground">FitCoach Pro</span>
-            </div>
-            
-            <div className="hidden md:flex items-center gap-8">
-              <a href="#programs" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-                Programs
-              </a>
-              <a href="#testimonials" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-                Reviews
-              </a>
-              <a href="#contact" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-                Contact
-              </a>
+              <div>
+                <h1 className="text-2xl font-bold tracking-tight text-foreground">MatchUp</h1>
+                <p className="text-xs text-muted-foreground">Para sa Pinoy Coaches</p>
+              </div>
             </div>
             
             <Button 
+              variant="outline"
+              className="border-primary/20 hover:bg-primary hover:text-primary-foreground"
               onClick={() => navigate("/dashboard")}
-              className="bg-gradient-to-r from-primary to-primary-dark hover:shadow-lg transition-all"
             >
-              Book Session
+              Sign In
             </Button>
           </div>
         </div>
-      </nav>
+      </header>
 
       {/* Hero Section */}
-      <section className="relative pt-32 pb-20 overflow-hidden bg-gradient-to-br from-accent via-accent/95 to-primary-dark">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:4rem_4rem]" />
-        <div className="absolute top-1/4 right-1/4 h-96 w-96 rounded-full bg-primary/20 blur-[128px]" />
-        <div className="absolute bottom-1/4 left-1/4 h-96 w-96 rounded-full bg-secondary/20 blur-[128px]" />
+      <section className="relative overflow-hidden pt-32 pb-20">
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--primary)/0.05)_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--primary)/0.05)_1px,transparent_1px)] bg-[size:4rem_4rem]" />
+        <div className="absolute top-1/4 left-1/4 h-96 w-96 rounded-full bg-secondary/20 blur-[128px]" />
+        <div className="absolute bottom-1/4 right-1/4 h-96 w-96 rounded-full bg-primary/20 blur-[128px]" />
         
-        <div className="container relative mx-auto px-4 py-16">
-          <div className="mx-auto max-w-4xl text-center">
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-secondary/30 bg-secondary/10 px-4 py-2 text-sm font-semibold text-secondary backdrop-blur-sm">
-              <Trophy className="h-4 w-4" />
-              Certified Personal Training
+        <div className="container relative mx-auto px-4 py-12 md:py-20">
+          <div className="mx-auto max-w-5xl text-center">
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-secondary/30 bg-secondary/10 px-5 py-2 text-sm font-semibold text-foreground backdrop-blur-sm">
+              <Sparkles className="h-4 w-4 text-secondary" />
+              Built for Filipino Coaches • With AI Assistant
             </div>
             
-            <h1 className="mb-6 text-5xl font-extrabold tracking-tight text-white md:text-6xl lg:text-7xl">
-              Transform Your Body.
+            <h1 className="mb-8 text-5xl font-extrabold tracking-tight text-foreground md:text-6xl lg:text-7xl">
+              Tigilan ang takbo sa bayad.
               <br />
-              <span className="bg-gradient-to-r from-secondary to-yellow-300 bg-clip-text text-transparent">
-                Elevate Your Life.
+              <span className="bg-gradient-to-r from-primary to-primary-dark bg-clip-text text-transparent">
+                Simulan ang tunay na coaching.
               </span>
             </h1>
             
-            <p className="mb-10 text-xl text-white/80 md:text-2xl leading-relaxed">
-              Expert coaching tailored to your goals. Build strength, lose weight, and achieve peak performance with personalized training programs designed for results.
+            <p className="mb-10 text-xl text-muted-foreground md:text-2xl font-light leading-relaxed">
+              Smart calendar + deposit-backed bookings + AI assistant para sa GCash, Maya, at cash.
+              <br />
+              <span className="font-medium text-foreground">Lahat nandito na. No more SMS. No more spreadsheets.</span>
             </p>
             
-            <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
+            <div className="flex flex-col gap-5 sm:flex-row sm:justify-center">
               <Button 
                 size="lg" 
-                className="h-14 px-8 text-lg font-semibold bg-secondary text-secondary-foreground hover:bg-secondary/90 shadow-xl hover:shadow-2xl transition-all pulse-glow"
+                className="h-16 px-10 text-lg font-semibold shadow-xl hover:shadow-2xl transition-all bg-gradient-to-r from-primary to-primary-dark pulse-glow"
                 onClick={() => navigate("/dashboard")}
               >
-                Start Your Journey
-                <ArrowRight className="ml-2 h-5 w-5" />
+                Simulan Nang Libre
+                <ArrowRight className="ml-2 h-6 w-6" />
               </Button>
               <Button 
                 size="lg" 
                 variant="outline"
-                className="h-14 px-8 text-lg font-semibold border-2 border-white/20 text-white hover:bg-white/10"
+                className="h-16 px-10 text-lg font-semibold border-2 border-primary/20 hover:bg-primary/5"
               >
-                View Programs
+                Panoorin ang Demo
               </Button>
             </div>
 
-            {/* Stats */}
-            <div className="mt-16 grid grid-cols-3 gap-8 text-white">
-              <div>
-                <div className="mb-2 text-4xl font-bold text-secondary">500+</div>
-                <div className="text-sm text-white/70">Clients Trained</div>
+            {/* Trust Badges */}
+            <div className="mt-16 flex flex-wrap items-center justify-center gap-8 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2">
+                <Shield className="h-5 w-5 text-success" />
+                <span className="font-medium">100% Secure</span>
               </div>
-              <div>
-                <div className="mb-2 text-4xl font-bold text-secondary">15+</div>
-                <div className="text-sm text-white/70">Years Experience</div>
+              <div className="flex items-center gap-2">
+                <MessageSquare className="h-5 w-5 text-secondary" />
+                <span className="font-medium">AI Assistant Included</span>
               </div>
-              <div>
-                <div className="mb-2 text-4xl font-bold text-secondary">98%</div>
-                <div className="text-sm text-white/70">Success Rate</div>
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="h-5 w-5 text-primary" />
+                <span className="font-medium">500+ Active Coaches</span>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Programs Section */}
-      <section id="programs" className="py-24 bg-background">
+      {/* Problem Section */}
+      <section className="relative bg-card/50 backdrop-blur-sm py-24">
         <div className="container mx-auto px-4">
-          <div className="mx-auto max-w-3xl text-center mb-16">
-            <h2 className="mb-4 text-4xl font-bold text-foreground md:text-5xl">
-              Coaching Programs
+          <div className="mx-auto max-w-3xl text-center mb-20">
+            <h2 className="mb-6 text-4xl font-bold text-foreground md:text-5xl">
+              Coaches lose 10+ hours weekly
+              <br />
+              <span className="text-muted-foreground font-light">chasing schedules and payments</span>
             </h2>
             <p className="text-lg text-muted-foreground">
-              Choose a program designed to help you reach your fitness goals faster
+              50% of Metro Manila coaches spend more time on admin than actual coaching
             </p>
           </div>
 
           <div className="grid gap-8 md:grid-cols-3">
-            {programs.map((program, index) => {
-              const Icon = program.icon;
+            {painPoints.map((point, index) => {
+              const Icon = point.icon;
               return (
-                <Card key={index} className="group relative overflow-hidden border-2 border-border p-8 transition-all duration-300 hover:border-primary hover:shadow-xl hover:-translate-y-2 bg-card">
-                  <div className="absolute -top-8 -right-8 h-32 w-32 rounded-full bg-primary/10 blur-3xl transition-all group-hover:scale-150" />
+                <Card key={index} className="group relative overflow-hidden border-2 border-border/50 p-8 transition-all duration-500 hover:border-primary hover:shadow-xl hover:-translate-y-2 bg-card">
+                  <div className="absolute top-0 right-0 h-32 w-32 bg-primary/10 rounded-full blur-3xl transition-all duration-500 group-hover:scale-150" />
                   <div className="relative">
-                    <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/20 to-primary/10 group-hover:scale-110 transition-transform">
+                    <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/20 to-primary/10 shadow-lg">
                       <Icon className="h-8 w-8 text-primary" />
                     </div>
-                    <h3 className="mb-4 text-2xl font-bold text-card-foreground">{program.title}</h3>
-                    <p className="mb-6 text-muted-foreground leading-relaxed">{program.description}</p>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Clock className="h-4 w-4" />
-                      <span>{program.duration}</span>
-                    </div>
+                    <h3 className="mb-4 text-2xl font-bold text-card-foreground">{point.title}</h3>
+                    <p className="text-muted-foreground mb-6 leading-relaxed">{point.description}</p>
+                    <blockquote className="border-l-4 border-primary/30 pl-4 text-sm italic text-muted-foreground">
+                      "{point.quote}" — {point.author}
+                    </blockquote>
                   </div>
                 </Card>
               );
             })}
           </div>
+        </div>
+      </section>
 
-          <div className="mt-12 text-center">
-            <Button 
-              size="lg"
-              onClick={() => navigate("/dashboard")}
-              className="bg-gradient-to-r from-primary to-primary-dark hover:shadow-lg transition-all"
-            >
-              Schedule Free Consultation
-            </Button>
+      {/* Solution Section with AI */}
+      <section className="py-24">
+        <div className="container mx-auto px-4">
+          <div className="mx-auto max-w-3xl text-center mb-20">
+            <h2 className="mb-6 text-4xl font-bold text-foreground md:text-5xl">
+              Ginawa para sa <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">Filipino Coaches</span>
+            </h2>
+            <p className="text-xl text-muted-foreground leading-relaxed">
+              Every feature built around PH payments, coach policies, and Filipino sports culture
+            </p>
+          </div>
+
+          <div className="grid gap-8 lg:grid-cols-2">
+            <div className="space-y-6">
+              <div className="group flex gap-6 p-6 rounded-2xl transition-all hover:bg-success/5 hover:shadow-lg">
+                <div className="flex-shrink-0">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-success/20 to-success/10 shadow-lg group-hover:scale-110 transition-transform">
+                    <CheckCircle2 className="h-7 w-7 text-success" />
+                  </div>
+                </div>
+                <div>
+                  <h3 className="mb-3 text-2xl font-bold text-foreground">Smart Calendar</h3>
+                  <p className="text-muted-foreground leading-relaxed">
+                    One calendar for everything. Athletes book through your link—goodbye chat apps and spreadsheets.
+                  </p>
+                </div>
+              </div>
+
+              <div className="group flex gap-6 p-6 rounded-2xl transition-all hover:bg-primary/5 hover:shadow-lg">
+                <div className="flex-shrink-0">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 shadow-lg group-hover:scale-110 transition-transform">
+                    <Wallet className="h-7 w-7 text-primary" />
+                  </div>
+                </div>
+                <div>
+                  <h3 className="mb-3 text-2xl font-bold text-foreground">Deposit-Backed Bookings</h3>
+                  <p className="text-muted-foreground leading-relaxed">
+                    Set policies once. Every booking includes GCash, Maya, or cash tracking—zero no-shows guaranteed.
+                  </p>
+                </div>
+              </div>
+
+              <div className="group flex gap-6 p-6 rounded-2xl bg-gradient-to-br from-secondary/10 to-secondary/5 border-2 border-secondary/20 transition-all hover:shadow-xl">
+                <div className="flex-shrink-0">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-secondary/30 to-secondary/20 shadow-lg group-hover:scale-110 transition-transform">
+                    <MessageSquare className="h-7 w-7 text-secondary" />
+                  </div>
+                </div>
+                <div>
+                  <h3 className="mb-3 text-2xl font-bold text-foreground flex items-center gap-2">
+                    AI Assistant
+                    <span className="rounded-full bg-secondary px-3 py-1 text-xs font-semibold text-secondary-foreground">NEW</span>
+                  </h3>
+                  <p className="text-muted-foreground leading-relaxed">
+                    Athletes can chat with AI 24/7 for booking questions, payment status, and schedules—no more SMS reminders needed!
+                  </p>
+                </div>
+              </div>
+
+              <div className="group flex gap-6 p-6 rounded-2xl transition-all hover:bg-accent/5 hover:shadow-lg">
+                <div className="flex-shrink-0">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-accent/20 to-accent/10 shadow-lg group-hover:scale-110 transition-transform">
+                    <Trophy className="h-7 w-7 text-accent" />
+                  </div>
+                </div>
+                <div>
+                  <h3 className="mb-3 text-2xl font-bold text-foreground">Built for PH Payments</h3>
+                  <p className="text-muted-foreground leading-relaxed">
+                    GCash and Maya integration plus cash workflow tracking. Works exactly how Filipinos pay.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Pricing Card */}
+            <div className="flex items-center justify-center">
+              <Card className="relative w-full max-w-md overflow-hidden border-2 border-primary/20 bg-gradient-to-br from-card to-card/80 p-10 shadow-2xl backdrop-blur-sm">
+                <div className="absolute -top-16 -right-16 h-48 w-48 rounded-full bg-secondary/20 blur-3xl" />
+                <div className="absolute -bottom-16 -left-16 h-48 w-48 rounded-full bg-primary/20 blur-3xl" />
+                
+                <div className="relative">
+                  <div className="mb-8 text-center">
+                    <div className="mb-3 inline-block rounded-full bg-secondary/20 px-4 py-1 text-sm font-semibold text-secondary">
+                      Premium + AI
+                    </div>
+                    <div className="mb-2 flex items-baseline justify-center gap-2">
+                      <span className="text-5xl font-extrabold text-primary">₱399</span>
+                      <span className="text-muted-foreground">/month</span>
+                    </div>
+                    <p className="text-sm text-muted-foreground">Walang hidden fees, walang surprises</p>
+                  </div>
+                  
+                  <div className="space-y-4 mb-8">
+                    <div className="flex items-center gap-3">
+                      <CheckCircle2 className="h-6 w-6 text-success flex-shrink-0" />
+                      <span className="font-medium">Unlimited bookings</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <CheckCircle2 className="h-6 w-6 text-success flex-shrink-0" />
+                      <span className="font-medium">GCash & Maya integration</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <CheckCircle2 className="h-6 w-6 text-success flex-shrink-0" />
+                      <span className="font-medium">24/7 AI Assistant</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <CheckCircle2 className="h-6 w-6 text-success flex-shrink-0" />
+                      <span className="font-medium">Custom booking policies</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <CheckCircle2 className="h-6 w-6 text-success flex-shrink-0" />
+                      <span className="font-medium">Automatic payment tracking</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <CheckCircle2 className="h-6 w-6 text-success flex-shrink-0" />
+                      <span className="font-medium">Priority support (Tagalog)</span>
+                    </div>
+                  </div>
+
+                  <Button 
+                    className="w-full h-14 text-lg font-semibold shadow-lg bg-gradient-to-r from-primary to-primary-dark hover:shadow-xl" 
+                    size="lg" 
+                    onClick={() => navigate("/dashboard")}
+                  >
+                    Subukan Nang Libre
+                  </Button>
+                  
+                  <p className="mt-6 text-center text-sm text-muted-foreground">
+                    O gamitin ang <span className="font-semibold text-foreground">freemium tier</span> forever
+                  </p>
+                </div>
+              </Card>
+            </div>
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-primary via-primary-dark to-accent">
-        <div className="container mx-auto px-4 text-center">
-          <div className="mx-auto max-w-3xl">
-            <h2 className="mb-6 text-4xl font-bold text-white md:text-5xl">
-              Ready to Get Started?
-            </h2>
-            <p className="mb-10 text-xl text-white/80 leading-relaxed">
-              Book your first session today and take the first step towards achieving your fitness goals. No commitment required.
-            </p>
-            <Button 
-              size="lg" 
-              className="h-16 px-10 text-lg font-semibold bg-secondary text-secondary-foreground hover:bg-secondary/90 shadow-xl hover:shadow-2xl transition-all pulse-glow"
-              onClick={() => navigate("/dashboard")}
-            >
-              Book Your Session Now
-              <ArrowRight className="ml-2 h-6 w-6" />
-            </Button>
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials Section */}
-      <section id="testimonials" className="py-24 bg-muted/30">
-        <div className="container mx-auto px-4">
-          <div className="mx-auto max-w-3xl text-center mb-16">
-            <h2 className="mb-4 text-4xl font-bold text-foreground md:text-5xl">
-              Client Success Stories
-            </h2>
-            <p className="text-lg text-muted-foreground">
-              Real results from real people who transformed their lives
-            </p>
-          </div>
-
-          <div className="grid gap-8 md:grid-cols-3">
-            {testimonials.map((testimonial, index) => (
-              <Card key={index} className="border-2 border-border p-8 bg-card hover:shadow-lg transition-shadow">
-                <div className="mb-4 flex gap-1">
-                  {[...Array(testimonial.rating)].map((_, i) => (
-                    <Star key={i} className="h-5 w-5 fill-secondary text-secondary" />
-                  ))}
-                </div>
-                <p className="mb-6 text-muted-foreground italic leading-relaxed">
-                  "{testimonial.content}"
-                </p>
-                <div className="flex items-center gap-3">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary font-bold">
-                    {testimonial.name.charAt(0)}
-                  </div>
-                  <div>
-                    <div className="font-semibold text-foreground">{testimonial.name}</div>
-                    <div className="text-sm text-muted-foreground">{testimonial.role}</div>
-                  </div>
-                </div>
-              </Card>
-            ))}
-          </div>
+      <section className="relative overflow-hidden bg-gradient-to-r from-primary via-primary-dark to-accent py-24">
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.1)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.1)_1px,transparent_1px)] bg-[size:4rem_4rem]" />
+        <div className="container relative mx-auto px-4 text-center">
+          <h2 className="mb-6 text-4xl font-extrabold text-white md:text-5xl">
+            Join 500+ Top Coaches sa Metro Manila
+          </h2>
+          <p className="mb-10 text-xl text-white/90 font-light leading-relaxed">
+            Basketball, Tennis, Golf, Badminton, and S&C coaches save 10+ hours weekly with MatchUp
+          </p>
+          <Button 
+            size="lg" 
+            className="h-16 px-10 text-lg font-semibold bg-secondary text-secondary-foreground shadow-xl hover:shadow-2xl hover:scale-105 transition-all pulse-glow"
+            onClick={() => navigate("/dashboard")}
+          >
+            Simulan Nang Libre
+            <ArrowRight className="ml-2 h-6 w-6" />
+          </Button>
         </div>
       </section>
 
       {/* Footer */}
-      <footer id="contact" className="border-t bg-accent text-white py-16">
+      <footer className="border-t bg-card/50 backdrop-blur-sm py-12">
         <div className="container mx-auto px-4">
-          <div className="grid gap-12 md:grid-cols-4">
-            <div className="md:col-span-2">
-              <div className="flex items-center gap-2 mb-4">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-secondary">
-                  <Dumbbell className="h-6 w-6 text-secondary-foreground" />
+          <div className="grid gap-8 md:grid-cols-3 mb-8">
+            <div>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary-dark">
+                  <Calendar className="h-6 w-6 text-primary-foreground" />
                 </div>
-                <span className="text-2xl font-bold">FitCoach Pro</span>
+                <h3 className="text-xl font-bold text-foreground">MatchUp</h3>
               </div>
-              <p className="text-white/70 mb-6 leading-relaxed">
-                Transform your fitness journey with expert coaching, personalized programs, and unwavering support.
+              <p className="text-sm text-muted-foreground">
+                Ginawa ng Pinoy coaches, para sa Pinoy coaches
               </p>
             </div>
-
+            
             <div>
-              <h3 className="mb-4 text-lg font-semibold">Quick Links</h3>
-              <ul className="space-y-2 text-white/70">
-                <li><a href="#programs" className="hover:text-secondary transition-colors">Programs</a></li>
-                <li><a href="#testimonials" className="hover:text-secondary transition-colors">Testimonials</a></li>
-                <li><a href="#contact" className="hover:text-secondary transition-colors">Contact</a></li>
+              <h4 className="font-semibold text-foreground mb-3">Quick Links</h4>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li><a href="#features" className="hover:text-primary transition-colors">Features</a></li>
+                <li><a href="#pricing" className="hover:text-primary transition-colors">Pricing</a></li>
+                <li><a href="/dashboard" className="hover:text-primary transition-colors">Sign In</a></li>
               </ul>
             </div>
-
+            
             <div>
-              <h3 className="mb-4 text-lg font-semibold">Contact</h3>
-              <ul className="space-y-2 text-white/70">
-                <li>Email: coach@fitcoachpro.com</li>
-                <li>Phone: (555) 123-4567</li>
-                <li>Location: New York, NY</li>
+              <h4 className="font-semibold text-foreground mb-3">Contact</h4>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li>Email: hello@matchup.ph</li>
+                <li>Support: support@matchup.ph</li>
+                <li>Metro Manila, Philippines</li>
               </ul>
             </div>
           </div>
-
-          <div className="mt-12 pt-8 border-t border-white/10 text-center text-white/50 text-sm">
-            <p>© 2025 FitCoach Pro. All rights reserved.</p>
+          
+          <div className="pt-8 border-t text-center text-sm text-muted-foreground">
+            <p>© 2025 MatchUp. All rights reserved. Built with ❤️ for Filipino coaches.</p>
           </div>
         </div>
       </footer>
