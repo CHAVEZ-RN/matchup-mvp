@@ -214,15 +214,15 @@ const Dashboard = () => {
 
             {/* Stats Cards - From Wireframe */}
             <div className="mb-10 grid gap-6 md:grid-cols-3">
-              <Card className="group relative overflow-hidden border-2 border-warning/30 bg-card p-8 transition-all hover:shadow-2xl hover:-translate-y-1">
-                <div className="absolute top-0 left-0 w-2 h-full bg-warning"></div>
+              <Card className="group relative overflow-hidden border-2 border-secondary/30 bg-card p-8 transition-all hover:shadow-2xl hover:shadow-secondary/10 hover:-translate-y-1">
+                <div className="absolute top-0 left-0 w-2 h-full bg-secondary"></div>
                 <div className="relative flex items-center justify-between">
                   <div>
                     <p className="mb-1 text-sm font-medium text-muted-foreground">Pending Approvals</p>
                     <p className="text-5xl font-extrabold text-foreground">{stats.pending}</p>
                   </div>
-                  <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-accent shadow-lg border-2 border-warning/30">
-                    <Clock className="h-8 w-8 text-warning" />
+                  <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-accent shadow-lg border-2 border-secondary/30">
+                    <Clock className="h-8 w-8 text-secondary" />
                   </div>
                 </div>
               </Card>
@@ -240,15 +240,15 @@ const Dashboard = () => {
                 </div>
               </Card>
 
-              <Card className="group relative overflow-hidden border-2 border-warning/30 bg-card p-8 transition-all hover:shadow-2xl hover:-translate-y-1">
-                <div className="absolute top-0 left-0 w-2 h-full bg-warning"></div>
+              <Card className="group relative overflow-hidden border-2 border-primary/30 bg-card p-8 transition-all hover:shadow-2xl hover:-translate-y-1">
+                <div className="absolute top-0 left-0 w-2 h-full bg-primary"></div>
                 <div className="relative flex items-center justify-between">
                   <div>
                     <p className="mb-1 text-sm font-medium text-muted-foreground">Reschedules</p>
                     <p className="text-5xl font-extrabold text-foreground">{stats.reschedules}</p>
                   </div>
-                  <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-accent shadow-lg border-2 border-warning/30">
-                    <CalendarDays className="h-8 w-8 text-warning" />
+                  <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-accent shadow-lg border-2 border-primary/30">
+                    <CalendarDays className="h-8 w-8 text-primary" />
                   </div>
                 </div>
               </Card>
@@ -269,9 +269,9 @@ const Dashboard = () => {
                   <Card key={session.id} className="group overflow-hidden border-2 border-border bg-card p-6 transition-all hover:border-secondary hover:shadow-xl hover:shadow-secondary/10 hover:-translate-y-1">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-6">
-                        <div className="flex h-20 w-20 flex-col items-center justify-center rounded-2xl bg-accent shadow-lg border-2 border-primary/30">
+                        <div className="flex h-20 w-20 flex-col items-center justify-center rounded-2xl bg-accent shadow-lg border-2 border-secondary/30">
                           <span className="text-xs font-medium text-muted-foreground">Today</span>
-                          <span className="text-xl font-bold text-primary">{session.time}</span>
+                          <span className="text-xl font-bold text-secondary">{session.time}</span>
                         </div>
                         
                         <div>
