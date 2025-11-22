@@ -80,23 +80,23 @@ const AIAssistant = ({ onClose }: AIAssistantProps) => {
 
   return (
     <div className="fixed bottom-4 right-4 z-50 w-full max-w-md md:bottom-8 md:right-8">
-      <Card className="flex flex-col h-[600px] overflow-hidden border-2 border-secondary/30 bg-card shadow-2xl">
+      <Card className="flex flex-col h-[600px] overflow-hidden border-2 border-secondary bg-card shadow-2xl">
         {/* Header */}
-        <div className="flex items-center justify-between border-b bg-gradient-to-r from-primary to-primary-dark p-4">
+        <div className="flex items-center justify-between border-b-2 border-border bg-primary p-4">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-secondary shadow-lg">
               <Sparkles className="h-6 w-6 text-secondary-foreground" />
             </div>
             <div>
-              <h3 className="font-bold text-primary-foreground">MatchUp AI</h3>
-              <p className="text-xs text-primary-foreground/80">Your 24/7 assistant</p>
+              <h3 className="font-bold text-foreground">MatchUp AI</h3>
+              <p className="text-xs text-muted-foreground">Your 24/7 assistant</p>
             </div>
           </div>
           <Button
             variant="ghost"
             size="icon"
             onClick={onClose}
-            className="text-primary-foreground hover:bg-white/20"
+            className="text-foreground hover:bg-accent/20"
           >
             <X className="h-5 w-5" />
           </Button>
@@ -112,8 +112,8 @@ const AIAssistant = ({ onClose }: AIAssistantProps) => {
               <div
                 className={`max-w-[80%] rounded-2xl px-4 py-3 ${
                   message.role === "user"
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-muted text-foreground"
+                    ? "bg-primary text-foreground border border-border"
+                    : "bg-accent text-foreground border border-border"
                 }`}
               >
                 <p className="text-sm whitespace-pre-wrap">{message.content}</p>
@@ -122,7 +122,7 @@ const AIAssistant = ({ onClose }: AIAssistantProps) => {
           ))}
           {isLoading && (
             <div className="flex justify-start">
-              <div className="bg-muted rounded-2xl px-4 py-3">
+              <div className="bg-accent rounded-2xl px-4 py-3 border border-border">
                 <Loader2 className="h-5 w-5 animate-spin text-primary" />
               </div>
             </div>
@@ -131,7 +131,7 @@ const AIAssistant = ({ onClose }: AIAssistantProps) => {
         </div>
 
         {/* Input */}
-        <div className="border-t p-4">
+        <div className="border-t-2 border-border p-4 bg-card">
           <div className="flex gap-2">
             <Input
               value={input}
@@ -139,12 +139,12 @@ const AIAssistant = ({ onClose }: AIAssistantProps) => {
               onKeyPress={handleKeyPress}
               placeholder="Type your question..."
               disabled={isLoading}
-              className="flex-1"
+              className="flex-1 border-2 border-border bg-background"
             />
             <Button
               onClick={handleSend}
               disabled={isLoading || !input.trim()}
-              className="bg-gradient-to-r from-primary to-primary-dark"
+              className="bg-secondary text-secondary-foreground hover:bg-secondary-hover"
             >
               <Send className="h-5 w-5" />
             </Button>

@@ -31,14 +31,14 @@ const Index = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/10">
+    <div className="min-h-screen bg-background">
       {/* Premium Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 border-b border-border/40 bg-background/95 backdrop-blur-xl">
+      <header className="fixed top-0 left-0 right-0 z-50 border-b border-border bg-card backdrop-blur-xl shadow-xl">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary-dark shadow-lg">
-                <Calendar className="h-7 w-7 text-primary-foreground" />
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary shadow-xl">
+                <Calendar className="h-7 w-7 text-foreground" />
               </div>
               <div>
                 <h1 className="text-2xl font-bold tracking-tight text-foreground">MatchUp</h1>
@@ -48,7 +48,7 @@ const Index = () => {
             
             <Button 
               variant="outline"
-              className="border-primary/20 hover:bg-primary hover:text-primary-foreground"
+              className="border-2 border-primary/30 hover:bg-primary hover:text-foreground transition-all"
               onClick={() => navigate("/dashboard")}
             >
               Sign In
@@ -58,14 +58,15 @@ const Index = () => {
       </header>
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden pt-32 pb-20">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--primary)/0.05)_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--primary)/0.05)_1px,transparent_1px)] bg-[size:4rem_4rem]" />
-        <div className="absolute top-1/4 left-1/4 h-96 w-96 rounded-full bg-secondary/20 blur-[128px]" />
-        <div className="absolute bottom-1/4 right-1/4 h-96 w-96 rounded-full bg-primary/20 blur-[128px]" />
+      <section className="relative overflow-hidden pt-32 pb-20 bg-background">
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute top-0 left-0 w-full h-1 bg-secondary"></div>
+          <div className="absolute top-1/4 right-0 w-1 h-64 bg-primary"></div>
+        </div>
         
         <div className="container relative mx-auto px-4 py-12 md:py-20">
           <div className="mx-auto max-w-5xl text-center">
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-secondary/30 bg-secondary/10 px-5 py-2 text-sm font-semibold text-foreground backdrop-blur-sm">
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border-2 border-secondary bg-card px-5 py-2 text-sm font-semibold text-foreground backdrop-blur-sm shadow-lg">
               <Sparkles className="h-4 w-4 text-secondary" />
               Built for Coaches • AI-Powered Assistant
             </div>
@@ -73,7 +74,7 @@ const Index = () => {
             <h1 className="mb-8 text-5xl font-extrabold tracking-tight text-foreground md:text-6xl lg:text-7xl">
               Stop chasing payments.
               <br />
-              <span className="bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent">
+              <span className="text-secondary">
                 Start coaching smarter.
               </span>
             </h1>
@@ -87,7 +88,7 @@ const Index = () => {
             <div className="flex flex-col gap-5 sm:flex-row sm:justify-center">
               <Button 
                 size="lg" 
-                className="h-16 px-10 text-lg font-semibold shadow-xl hover:shadow-2xl transition-all bg-gradient-to-r from-secondary to-primary pulse-glow"
+                className="h-16 px-10 text-lg font-semibold shadow-xl hover:shadow-2xl transition-all bg-secondary text-secondary-foreground hover:bg-secondary-hover luxury-glow"
                 onClick={() => navigate("/dashboard")}
               >
                 Start Free Trial
@@ -96,7 +97,7 @@ const Index = () => {
               <Button 
                 size="lg" 
                 variant="outline"
-                className="h-16 px-10 text-lg font-semibold border-2 border-accent/20 hover:bg-accent/5"
+                className="h-16 px-10 text-lg font-semibold border-2 border-primary hover:bg-primary hover:text-foreground transition-all"
               >
                 Watch Demo
               </Button>
@@ -104,17 +105,17 @@ const Index = () => {
 
             {/* Trust Badges */}
             <div className="mt-16 flex flex-wrap items-center justify-center gap-8 text-sm text-muted-foreground">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 bg-card px-4 py-2 rounded-lg border border-border">
                 <Shield className="h-5 w-5 text-success" />
-                <span className="font-medium">100% Secure</span>
+                <span className="font-medium text-foreground">100% Secure</span>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 bg-card px-4 py-2 rounded-lg border border-border">
                 <MessageSquare className="h-5 w-5 text-secondary" />
-                <span className="font-medium">AI Assistant Included</span>
+                <span className="font-medium text-foreground">AI Assistant Included</span>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 bg-card px-4 py-2 rounded-lg border border-border">
                 <CheckCircle2 className="h-5 w-5 text-primary" />
-                <span className="font-medium">500+ Active Coaches</span>
+                <span className="font-medium text-foreground">500+ Active Coaches</span>
               </div>
             </div>
           </div>
@@ -122,13 +123,13 @@ const Index = () => {
       </section>
 
       {/* Problem Section */}
-      <section className="relative bg-card/50 backdrop-blur-sm py-24">
+      <section className="relative bg-card py-24 border-y border-border">
         <div className="container mx-auto px-4">
           <div className="mx-auto max-w-3xl text-center mb-20">
             <h2 className="mb-6 text-4xl font-bold text-foreground md:text-5xl">
               Coaches lose 10+ hours weekly
               <br />
-              <span className="text-muted-foreground font-light">chasing schedules and payments</span>
+              <span className="text-secondary font-light">chasing schedules and payments</span>
             </h2>
             <p className="text-lg text-muted-foreground">
               50% of Metro Manila coaches spend more time on admin than actual coaching
@@ -139,15 +140,15 @@ const Index = () => {
             {painPoints.map((point, index) => {
               const Icon = point.icon;
               return (
-                <Card key={index} className="group relative overflow-hidden border-2 border-border/50 p-8 transition-all duration-500 hover:border-primary hover:shadow-xl hover:-translate-y-2 bg-card">
-                  <div className="absolute top-0 right-0 h-32 w-32 bg-primary/10 rounded-full blur-3xl transition-all duration-500 group-hover:scale-150" />
+                <Card key={index} className="group relative overflow-hidden border-2 border-border p-8 transition-all duration-500 hover:border-secondary hover:shadow-2xl hover:-translate-y-2 bg-background">
+                  <div className="absolute top-0 right-0 h-32 w-32 bg-primary opacity-5 rounded-full blur-3xl transition-all duration-500 group-hover:opacity-10" />
                   <div className="relative">
-                    <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/20 to-primary/10 shadow-lg">
+                    <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-accent shadow-lg border-2 border-primary/20">
                       <Icon className="h-8 w-8 text-primary" />
                     </div>
-                    <h3 className="mb-4 text-2xl font-bold text-card-foreground">{point.title}</h3>
+                    <h3 className="mb-4 text-2xl font-bold text-foreground">{point.title}</h3>
                     <p className="text-muted-foreground mb-6 leading-relaxed">{point.description}</p>
-                    <blockquote className="border-l-4 border-primary/30 pl-4 text-sm italic text-muted-foreground">
+                    <blockquote className="border-l-4 border-secondary pl-4 text-sm italic text-muted-foreground">
                       "{point.quote}" — {point.author}
                     </blockquote>
                   </div>
@@ -159,11 +160,11 @@ const Index = () => {
       </section>
 
       {/* Solution Section with AI */}
-      <section className="py-24">
+      <section className="py-24 bg-background">
         <div className="container mx-auto px-4">
           <div className="mx-auto max-w-3xl text-center mb-20">
             <h2 className="mb-6 text-4xl font-bold text-foreground md:text-5xl">
-              Built for <span className="bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent">Modern Coaches</span>
+              Built for <span className="text-primary">Modern Coaches</span>
             </h2>
             <p className="text-xl text-muted-foreground leading-relaxed">
               Every feature designed for seamless payments, smart scheduling, and professional coaching
@@ -172,9 +173,9 @@ const Index = () => {
 
           <div className="grid gap-8 lg:grid-cols-2">
             <div className="space-y-6">
-              <div className="group flex gap-6 p-6 rounded-2xl transition-all hover:bg-success/5 hover:shadow-lg">
+              <div className="group flex gap-6 p-6 rounded-2xl transition-all bg-card border-2 border-border hover:border-success hover:shadow-xl">
                 <div className="flex-shrink-0">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-success/20 to-success/10 shadow-lg group-hover:scale-110 transition-transform">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-accent shadow-lg group-hover:scale-110 transition-transform border-2 border-success/30">
                     <CheckCircle2 className="h-7 w-7 text-success" />
                   </div>
                 </div>
@@ -186,9 +187,9 @@ const Index = () => {
                 </div>
               </div>
 
-              <div className="group flex gap-6 p-6 rounded-2xl transition-all hover:bg-primary/5 hover:shadow-lg">
+              <div className="group flex gap-6 p-6 rounded-2xl transition-all bg-card border-2 border-border hover:border-primary hover:shadow-xl">
                 <div className="flex-shrink-0">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 shadow-lg group-hover:scale-110 transition-transform">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-accent shadow-lg group-hover:scale-110 transition-transform border-2 border-primary/30">
                     <Wallet className="h-7 w-7 text-primary" />
                   </div>
                 </div>
@@ -200,10 +201,10 @@ const Index = () => {
                 </div>
               </div>
 
-              <div className="group flex gap-6 p-6 rounded-2xl bg-gradient-to-br from-secondary/10 to-secondary/5 border-2 border-secondary/20 transition-all hover:shadow-xl">
+              <div className="group flex gap-6 p-6 rounded-2xl bg-card border-2 border-secondary transition-all hover:shadow-2xl">
                 <div className="flex-shrink-0">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-secondary/30 to-secondary/20 shadow-lg group-hover:scale-110 transition-transform">
-                    <MessageSquare className="h-7 w-7 text-secondary" />
+                  <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-secondary shadow-lg group-hover:scale-110 transition-transform">
+                    <MessageSquare className="h-7 w-7 text-secondary-foreground" />
                   </div>
                 </div>
                 <div>
@@ -217,10 +218,10 @@ const Index = () => {
                 </div>
               </div>
 
-              <div className="group flex gap-6 p-6 rounded-2xl transition-all hover:bg-accent/5 hover:shadow-lg">
+              <div className="group flex gap-6 p-6 rounded-2xl transition-all bg-card border-2 border-border hover:border-accent hover:shadow-xl">
                 <div className="flex-shrink-0">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-accent/20 to-accent/10 shadow-lg group-hover:scale-110 transition-transform">
-                    <Trophy className="h-7 w-7 text-accent" />
+                  <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-accent shadow-lg group-hover:scale-110 transition-transform border-2 border-accent/50">
+                    <Trophy className="h-7 w-7 text-foreground" />
                   </div>
                 </div>
                 <div>
@@ -234,17 +235,17 @@ const Index = () => {
 
             {/* Pricing Card */}
             <div className="flex items-center justify-center">
-              <Card className="relative w-full max-w-md overflow-hidden border-2 border-primary/20 bg-gradient-to-br from-card to-card/80 p-10 shadow-2xl backdrop-blur-sm">
-                <div className="absolute -top-16 -right-16 h-48 w-48 rounded-full bg-secondary/20 blur-3xl" />
-                <div className="absolute -bottom-16 -left-16 h-48 w-48 rounded-full bg-primary/20 blur-3xl" />
+              <Card className="relative w-full max-w-md overflow-hidden border-2 border-primary bg-card p-10 shadow-2xl">
+                <div className="absolute top-0 right-0 w-2 h-full bg-secondary"></div>
+                <div className="absolute bottom-0 left-0 w-full h-2 bg-primary"></div>
                 
                 <div className="relative">
                   <div className="mb-8 text-center">
-                    <div className="mb-3 inline-block rounded-full bg-secondary/20 px-4 py-1 text-sm font-semibold text-secondary-foreground">
+                    <div className="mb-3 inline-block rounded-full bg-secondary px-4 py-1 text-sm font-semibold text-secondary-foreground shadow-lg">
                       Premium + AI
                     </div>
                     <div className="mb-2 flex items-baseline justify-center gap-2">
-                      <span className="text-5xl font-extrabold bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent">₱399</span>
+                      <span className="text-5xl font-extrabold text-secondary">₱399</span>
                       <span className="text-muted-foreground">/month</span>
                     </div>
                     <p className="text-sm text-muted-foreground">No hidden fees, no surprises</p>
@@ -253,32 +254,32 @@ const Index = () => {
                   <div className="space-y-4 mb-8">
                     <div className="flex items-center gap-3">
                       <CheckCircle2 className="h-6 w-6 text-success flex-shrink-0" />
-                      <span className="font-medium">Unlimited bookings</span>
+                      <span className="font-medium text-foreground">Unlimited bookings</span>
                     </div>
                     <div className="flex items-center gap-3">
                       <CheckCircle2 className="h-6 w-6 text-success flex-shrink-0" />
-                      <span className="font-medium">GCash & Maya integration</span>
+                      <span className="font-medium text-foreground">GCash & Maya integration</span>
                     </div>
                     <div className="flex items-center gap-3">
                       <CheckCircle2 className="h-6 w-6 text-success flex-shrink-0" />
-                      <span className="font-medium">24/7 AI Assistant</span>
+                      <span className="font-medium text-foreground">24/7 AI Assistant</span>
                     </div>
                     <div className="flex items-center gap-3">
                       <CheckCircle2 className="h-6 w-6 text-success flex-shrink-0" />
-                      <span className="font-medium">Custom booking policies</span>
+                      <span className="font-medium text-foreground">Custom booking policies</span>
                     </div>
                     <div className="flex items-center gap-3">
                       <CheckCircle2 className="h-6 w-6 text-success flex-shrink-0" />
-                      <span className="font-medium">Automatic payment tracking</span>
+                      <span className="font-medium text-foreground">Automatic payment tracking</span>
                     </div>
                     <div className="flex items-center gap-3">
                       <CheckCircle2 className="h-6 w-6 text-success flex-shrink-0" />
-                      <span className="font-medium">Priority support (Tagalog)</span>
+                      <span className="font-medium text-foreground">Priority support (Tagalog)</span>
                     </div>
                   </div>
 
                   <Button 
-                    className="w-full h-14 text-lg font-semibold shadow-lg bg-gradient-to-r from-secondary to-primary hover:shadow-xl" 
+                    className="w-full h-14 text-lg font-semibold shadow-lg bg-secondary text-secondary-foreground hover:bg-secondary-hover hover:shadow-xl transition-all" 
                     size="lg" 
                     onClick={() => navigate("/dashboard")}
                   >
@@ -296,18 +297,21 @@ const Index = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="relative overflow-hidden bg-gradient-to-r from-primary via-primary-dark to-accent py-24">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.1)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.1)_1px,transparent_1px)] bg-[size:4rem_4rem]" />
+      <section className="relative overflow-hidden bg-primary py-24 border-y-4 border-secondary">
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-0 left-0 w-64 h-64 bg-secondary rounded-full blur-3xl"></div>
+          <div className="absolute bottom-0 right-0 w-64 h-64 bg-card rounded-full blur-3xl"></div>
+        </div>
         <div className="container relative mx-auto px-4 text-center">
-          <h2 className="mb-6 text-4xl font-extrabold text-white md:text-5xl">
+          <h2 className="mb-6 text-4xl font-extrabold text-foreground md:text-5xl">
             Join 500+ Top Coaches Worldwide
           </h2>
-          <p className="mb-10 text-xl text-white/90 font-light leading-relaxed">
+          <p className="mb-10 text-xl text-muted-foreground font-light leading-relaxed">
             Basketball, Tennis, Golf, Badminton, and S&C coaches save 10+ hours weekly with MatchUp
           </p>
           <Button 
             size="lg" 
-            className="h-16 px-10 text-lg font-semibold bg-secondary text-secondary-foreground shadow-xl hover:shadow-2xl hover:scale-105 transition-all pulse-glow"
+            className="h-16 px-10 text-lg font-semibold bg-secondary text-secondary-foreground shadow-xl hover:bg-secondary-hover hover:shadow-2xl hover:scale-105 transition-all luxury-glow"
             onClick={() => navigate("/dashboard")}
           >
             Start Free Trial
@@ -317,13 +321,13 @@ const Index = () => {
       </section>
 
       {/* Footer */}
-      <footer className="border-t bg-card/50 backdrop-blur-sm py-12">
+      <footer className="border-t-2 border-border bg-card py-12">
         <div className="container mx-auto px-4">
           <div className="grid gap-8 md:grid-cols-3 mb-8">
             <div>
               <div className="flex items-center gap-3 mb-4">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary-dark">
-                  <Calendar className="h-6 w-6 text-primary-foreground" />
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary shadow-lg">
+                  <Calendar className="h-6 w-6 text-foreground" />
                 </div>
                 <h3 className="text-xl font-bold text-foreground">MatchUp</h3>
               </div>
@@ -344,15 +348,14 @@ const Index = () => {
             <div>
               <h4 className="font-semibold text-foreground mb-3">Contact</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li>Email: hello@matchup.ph</li>
-                <li>Support: support@matchup.ph</li>
+                <li>support@matchup.ph</li>
                 <li>Metro Manila, Philippines</li>
               </ul>
             </div>
           </div>
           
-          <div className="pt-8 border-t text-center text-sm text-muted-foreground">
-            <p>© 2025 MatchUp. All rights reserved. Built with ❤️ for Filipino coaches.</p>
+          <div className="border-t border-border pt-8 text-center text-sm text-muted-foreground">
+            <p>&copy; 2024 MatchUp. All rights reserved.</p>
           </div>
         </div>
       </footer>
