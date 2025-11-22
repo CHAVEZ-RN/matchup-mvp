@@ -426,7 +426,10 @@ const Dashboard = () => {
                           </div>
                         </div>
                         
-                        <Button className="bg-primary text-foreground shadow-lg hover:bg-primary-hover hover:shadow-xl transition-all">
+                        <Button 
+                          className="bg-primary text-foreground shadow-lg hover:bg-primary-hover hover:shadow-xl transition-all"
+                          onClick={() => navigate(`/booking/${booking.id}`)}
+                        >
                           View Details
                         </Button>
                       </div>
@@ -475,7 +478,11 @@ const Dashboard = () => {
                           </div>
                         </div>
                         
-                        <Button variant="outline" className="border-2 border-primary/30 hover:bg-primary hover:text-foreground transition-all">
+                        <Button 
+                          variant="outline" 
+                          className="border-2 border-primary/30 hover:bg-primary hover:text-foreground transition-all"
+                          onClick={() => navigate(`/booking/${booking.id}`)}
+                        >
                           {isCoach && booking.status === "pending" ? "Review" : "View"}
                         </Button>
                       </div>
