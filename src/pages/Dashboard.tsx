@@ -317,62 +317,64 @@ const Dashboard = () => {
         {/* Main Content */}
         <main className="flex-1 p-8">
           <div className="mx-auto max-w-7xl">
-            {/* Welcome Section */}
-            <div className="mb-10">
-              <h2 className="mb-2 text-4xl font-extrabold text-foreground">
-                Welcome, {profile?.full_name?.split(' ')[0]}! 👋
-              </h2>
-              <p className="text-lg text-muted-foreground">
-                {isCoach 
-                  ? "Here's what's happening with your sessions today"
-                  : "Find coaches and manage your bookings"
-                }
-              </p>
-            </div>
+            {activeTab === "home" ? (
+              <>
+                {/* Welcome Section */}
+                <div className="mb-10">
+                  <h2 className="mb-2 text-4xl font-extrabold text-foreground">
+                    Welcome, {profile?.full_name?.split(' ')[0]}! 👋
+                  </h2>
+                  <p className="text-lg text-muted-foreground">
+                    {isCoach 
+                      ? "Here's what's happening with your sessions today"
+                      : "Find coaches and manage your bookings"
+                    }
+                  </p>
+                </div>
 
-            {/* Stats Cards - Only for Coaches */}
-            {isCoach && (
-              <div className="mb-10 grid gap-6 md:grid-cols-3">
-                <Card className="group relative overflow-hidden border-2 border-secondary/30 bg-card p-8 transition-all hover:shadow-2xl hover:shadow-secondary/10 hover:-translate-y-1">
-                  <div className="absolute top-0 left-0 w-2 h-full bg-secondary"></div>
-                  <div className="relative flex items-center justify-between">
-                    <div>
-                      <p className="mb-1 text-sm font-medium text-muted-foreground">Pending Approvals</p>
-                      <p className="text-5xl font-extrabold text-foreground">{stats.pending}</p>
-                    </div>
-                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-accent shadow-lg border-2 border-secondary/30">
-                      <Clock className="h-8 w-8 text-secondary" />
-                    </div>
-                  </div>
-                </Card>
+                {/* Stats Cards - Only for Coaches */}
+                {isCoach && (
+                  <div className="mb-10 grid gap-6 md:grid-cols-3">
+                    <Card className="group relative overflow-hidden border-2 border-secondary/30 bg-card p-8 transition-all hover:shadow-2xl hover:shadow-secondary/10 hover:-translate-y-1">
+                      <div className="absolute top-0 left-0 w-2 h-full bg-secondary"></div>
+                      <div className="relative flex items-center justify-between">
+                        <div>
+                          <p className="mb-1 text-sm font-medium text-muted-foreground">Pending Approvals</p>
+                          <p className="text-5xl font-extrabold text-foreground">{stats.pending}</p>
+                        </div>
+                        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-accent shadow-lg border-2 border-secondary/30">
+                          <Clock className="h-8 w-8 text-secondary" />
+                        </div>
+                      </div>
+                    </Card>
 
-                <Card className="group relative overflow-hidden border-2 border-secondary/30 bg-card p-8 transition-all hover:shadow-2xl hover:shadow-secondary/10 hover:-translate-y-1">
-                  <div className="absolute top-0 left-0 w-2 h-full bg-secondary"></div>
-                  <div className="relative flex items-center justify-between">
-                    <div>
-                      <p className="mb-1 text-sm font-medium text-muted-foreground">Awaiting Payment</p>
-                      <p className="text-5xl font-extrabold text-foreground">{stats.awaitingPayment}</p>
-                    </div>
-                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-accent shadow-lg border-2 border-secondary/30">
-                      <Receipt className="h-8 w-8 text-secondary" />
-                    </div>
-                  </div>
-                </Card>
+                    <Card className="group relative overflow-hidden border-2 border-secondary/30 bg-card p-8 transition-all hover:shadow-2xl hover:shadow-secondary/10 hover:-translate-y-1">
+                      <div className="absolute top-0 left-0 w-2 h-full bg-secondary"></div>
+                      <div className="relative flex items-center justify-between">
+                        <div>
+                          <p className="mb-1 text-sm font-medium text-muted-foreground">Awaiting Payment</p>
+                          <p className="text-5xl font-extrabold text-foreground">{stats.awaitingPayment}</p>
+                        </div>
+                        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-accent shadow-lg border-2 border-secondary/30">
+                          <Receipt className="h-8 w-8 text-secondary" />
+                        </div>
+                      </div>
+                    </Card>
 
-                <Card className="group relative overflow-hidden border-2 border-primary/30 bg-card p-8 transition-all hover:shadow-2xl hover:-translate-y-1">
-                  <div className="absolute top-0 left-0 w-2 h-full bg-primary"></div>
-                  <div className="relative flex items-center justify-between">
-                    <div>
-                      <p className="mb-1 text-sm font-medium text-muted-foreground">Total Bookings</p>
-                      <p className="text-5xl font-extrabold text-foreground">{bookings.length}</p>
-                    </div>
-                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-accent shadow-lg border-2 border-primary/30">
-                      <CalendarDays className="h-8 w-8 text-primary" />
-                    </div>
+                    <Card className="group relative overflow-hidden border-2 border-primary/30 bg-card p-8 transition-all hover:shadow-2xl hover:-translate-y-1">
+                      <div className="absolute top-0 left-0 w-2 h-full bg-primary"></div>
+                      <div className="relative flex items-center justify-between">
+                        <div>
+                          <p className="mb-1 text-sm font-medium text-muted-foreground">Total Bookings</p>
+                          <p className="text-5xl font-extrabold text-foreground">{bookings.length}</p>
+                        </div>
+                        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-accent shadow-lg border-2 border-primary/30">
+                          <CalendarDays className="h-8 w-8 text-primary" />
+                        </div>
+                      </div>
+                    </Card>
                   </div>
-                </Card>
-              </div>
-            )}
+                )}
 
             {/* Browse Coaches CTA for Athletes */}
             {!isCoach && bookings.length === 0 && (
@@ -500,56 +502,135 @@ const Dashboard = () => {
               </div>
             )}
 
-            {/* Upcoming Bookings */}
-            {upcomingBookings.length > 0 && (
+                {/* Upcoming Bookings */}
+                {upcomingBookings.length > 0 && (
+                  <div>
+                    <div className="mb-6 flex items-center justify-between">
+                      <h3 className="text-3xl font-bold text-foreground">Upcoming Bookings</h3>
+                      <Button 
+                        variant="ghost" 
+                        className="gap-2 hover:bg-primary/10"
+                        onClick={() => setActiveTab("bookings")}
+                      >
+                        View All
+                        <ChevronRight className="h-5 w-5" />
+                      </Button>
+                    </div>
+
+                    <div className="space-y-4">
+                      {upcomingBookings.map((booking) => (
+                        <Card key={booking.id} className="group overflow-hidden border-2 border-border bg-card p-6 transition-all hover:border-secondary hover:shadow-xl hover:shadow-secondary/10 hover:-translate-y-1">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-6">
+                              <div className="flex h-20 w-20 flex-col items-center justify-center rounded-2xl bg-accent shadow-lg border-2 border-muted/50">
+                                <span className="text-xs font-medium text-muted-foreground">{new Date(booking.session_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                                <span className="text-lg font-bold text-foreground">{booking.session_time.slice(0, 5)}</span>
+                              </div>
+                              
+                              <div>
+                                <div className="mb-2 flex items-center gap-3">
+                                  <p className="text-xl font-bold text-foreground">
+                                    {isCoach 
+                                      ? booking.athlete_profiles?.profiles?.full_name
+                                      : booking.coach_profiles?.profiles?.full_name
+                                    }
+                                  </p>
+                                  {getStatusBadge(booking.status)}
+                                </div>
+                                <p className="mb-2 text-sm font-medium text-muted-foreground">{booking.sport}</p>
+                                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                  <MapPin className="h-4 w-4" />
+                                  <span>{booking.location}</span>
+                                </div>
+                              </div>
+                            </div>
+                            
+                            <Button 
+                              variant="outline" 
+                              className="border-2 border-primary/30 hover:bg-primary hover:text-foreground transition-all"
+                              onClick={() => navigate(`/booking/${booking.id}`)}
+                            >
+                              {isCoach && booking.status === "pending" ? "Review" : "View"}
+                            </Button>
+                          </div>
+                        </Card>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </>
+            ) : (
+              /* Bookings Tab View */
               <div>
-                <div className="mb-6 flex items-center justify-between">
-                  <h3 className="text-3xl font-bold text-foreground">Upcoming Bookings</h3>
-                  <Button variant="ghost" className="gap-2 hover:bg-primary/10">
-                    View All
-                    <ChevronRight className="h-5 w-5" />
-                  </Button>
+                <div className="mb-10">
+                  <h2 className="mb-2 text-4xl font-extrabold text-foreground">All Bookings</h2>
+                  <p className="text-lg text-muted-foreground">
+                    {isCoach ? "Manage all your athlete bookings" : "View all your session bookings"}
+                  </p>
                 </div>
 
-                <div className="space-y-4">
-                  {upcomingBookings.map((booking) => (
-                    <Card key={booking.id} className="group overflow-hidden border-2 border-border bg-card p-6 transition-all hover:border-secondary hover:shadow-xl hover:shadow-secondary/10 hover:-translate-y-1">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-6">
-                          <div className="flex h-20 w-20 flex-col items-center justify-center rounded-2xl bg-accent shadow-lg border-2 border-muted/50">
-                            <span className="text-xs font-medium text-muted-foreground">{new Date(booking.session_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
-                            <span className="text-lg font-bold text-foreground">{booking.session_time.slice(0, 5)}</span>
+                {bookings.length === 0 ? (
+                  <Card className="border-2 border-primary/30 bg-card p-12 text-center">
+                    <CalendarDays className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
+                    <h3 className="text-2xl font-bold text-foreground mb-2">No bookings yet</h3>
+                    <p className="text-muted-foreground mb-6">
+                      {isCoach 
+                        ? "Your bookings will appear here once athletes start booking sessions with you"
+                        : "Start by browsing available coaches and booking your first session"
+                      }
+                    </p>
+                    {!isCoach && (
+                      <Button
+                        size="lg"
+                        className="bg-secondary text-secondary-foreground hover:bg-secondary-hover"
+                        onClick={() => navigate("/browse-coaches")}
+                      >
+                        <Plus className="mr-2 h-5 w-5" />
+                        Find a Coach
+                      </Button>
+                    )}
+                  </Card>
+                ) : (
+                  <div className="space-y-4">
+                    {bookings.map((booking) => (
+                      <Card key={booking.id} className="group overflow-hidden border-2 border-border bg-card p-6 transition-all hover:border-secondary hover:shadow-xl hover:shadow-secondary/10 hover:-translate-y-1">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-6">
+                            <div className="flex h-20 w-20 flex-col items-center justify-center rounded-2xl bg-accent shadow-lg border-2 border-muted/50">
+                              <span className="text-xs font-medium text-muted-foreground">{new Date(booking.session_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                              <span className="text-lg font-bold text-foreground">{booking.session_time.slice(0, 5)}</span>
+                            </div>
+                            
+                            <div>
+                              <div className="mb-2 flex items-center gap-3">
+                                <p className="text-xl font-bold text-foreground">
+                                  {isCoach 
+                                    ? booking.athlete_profiles?.profiles?.full_name
+                                    : booking.coach_profiles?.profiles?.full_name
+                                  }
+                                </p>
+                                {getStatusBadge(booking.status)}
+                              </div>
+                              <p className="mb-2 text-sm font-medium text-muted-foreground">{booking.sport}</p>
+                              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                <MapPin className="h-4 w-4" />
+                                <span>{booking.location}</span>
+                              </div>
+                            </div>
                           </div>
                           
-                          <div>
-                            <div className="mb-2 flex items-center gap-3">
-                              <p className="text-xl font-bold text-foreground">
-                                {isCoach 
-                                  ? booking.athlete_profiles?.profiles?.full_name
-                                  : booking.coach_profiles?.profiles?.full_name
-                                }
-                              </p>
-                              {getStatusBadge(booking.status)}
-                            </div>
-                            <p className="mb-2 text-sm font-medium text-muted-foreground">{booking.sport}</p>
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                              <MapPin className="h-4 w-4" />
-                              <span>{booking.location}</span>
-                            </div>
-                          </div>
+                          <Button 
+                            variant="outline" 
+                            className="border-2 border-primary/30 hover:bg-primary hover:text-foreground transition-all"
+                            onClick={() => navigate(`/booking/${booking.id}`)}
+                          >
+                            {isCoach && booking.status === "pending" ? "Review" : "View"}
+                          </Button>
                         </div>
-                        
-                        <Button 
-                          variant="outline" 
-                          className="border-2 border-primary/30 hover:bg-primary hover:text-foreground transition-all"
-                          onClick={() => navigate(`/booking/${booking.id}`)}
-                        >
-                          {isCoach && booking.status === "pending" ? "Review" : "View"}
-                        </Button>
-                      </div>
-                    </Card>
-                  ))}
-                </div>
+                      </Card>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
           </div>
