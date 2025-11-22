@@ -17,7 +17,7 @@ const Auth = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
-  const [userType, setUserType] = useState<"coach" | "athlete">("coach");
+  const [userType] = useState<"coach">("coach"); // Always coach now
 
   useEffect(() => {
     // Check if user is already logged in
@@ -162,7 +162,7 @@ const Auth = () => {
           </div>
           <h1 className="text-4xl font-extrabold text-foreground mb-2">MatchUp</h1>
           <p className="text-muted-foreground">
-            {isSignUp ? "Create your account" : "Welcome back!"}
+            {isSignUp ? "Join as a coach" : "Welcome back, coach!"}
           </p>
         </div>
 
@@ -185,23 +185,13 @@ const Auth = () => {
                 </div>
 
                 <div className="space-y-3">
-                  <Label className="text-foreground">I am a...</Label>
-                  <RadioGroup value={userType} onValueChange={(value) => setUserType(value as "coach" | "athlete")}>
-                    <div className="flex items-center space-x-2 border-2 border-border rounded-lg p-4 hover:border-secondary transition-all cursor-pointer">
-                      <RadioGroupItem value="coach" id="coach" />
-                      <Label htmlFor="coach" className="flex items-center gap-2 cursor-pointer flex-1">
-                        <Trophy className="h-5 w-5 text-secondary" />
-                        <span className="font-medium">Coach</span>
-                      </Label>
-                    </div>
-                    <div className="flex items-center space-x-2 border-2 border-border rounded-lg p-4 hover:border-primary transition-all cursor-pointer">
-                      <RadioGroupItem value="athlete" id="athlete" />
-                      <Label htmlFor="athlete" className="flex items-center gap-2 cursor-pointer flex-1">
-                        <UserCircle className="h-5 w-5 text-primary" />
-                        <span className="font-medium">Athlete</span>
-                      </Label>
-                    </div>
-                  </RadioGroup>
+                  <div className="flex items-center space-x-2 border-2 border-secondary rounded-lg p-4 bg-secondary/10">
+                    <Trophy className="h-5 w-5 text-secondary" />
+                    <span className="font-medium text-foreground">Signing up as Coach</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Athletes can book sessions via your booking link (no account needed)
+                  </p>
                 </div>
               </>
             )}

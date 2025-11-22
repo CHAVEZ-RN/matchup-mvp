@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { 
   Calendar, 
   Bell, 
@@ -31,13 +33,12 @@ interface Booking {
   session_time: string;
   status: string;
   total_amount: number;
-  athlete_id: string;
   coach_id: string;
-  athlete_profiles?: {
-    profiles: {
-      full_name: string;
-    };
-  };
+  athlete_name: string;
+  athlete_email?: string;
+  athlete_phone: string;
+  athlete_notes?: string;
+  booking_reference: string;
   coach_profiles?: {
     profiles: {
       full_name: string;
@@ -113,12 +114,7 @@ const Dashboard = () => {
   const fetchCoachBookings = async (coachId: string) => {
     const { data, error } = await supabase
       .from("bookings")
-      .select(`
-        *,
-        athlete_profiles:athlete_profiles!athlete_id(
-          profiles:profiles(full_name)
-        )
-      `)
+      .select("*")
       .eq("coach_id", coachId)
       .order("session_date", { ascending: true });
 
@@ -129,20 +125,9 @@ const Dashboard = () => {
   };
 
   const fetchAthleteBookings = async (athleteId: string) => {
-    const { data, error } = await supabase
-      .from("bookings")
-      .select(`
-        *,
-        coach_profiles:coach_profiles!coach_id(
-          profiles:profiles(full_name)
-        )
-      `)
-      .eq("athlete_id", athleteId)
-      .order("session_date", { ascending: true });
-
-    if (!error && data) {
-      setBookings(data);
-    }
+    // Athletes no longer have accounts, this function is deprecated
+    // Redirecting to browse coaches instead
+    navigate("/browse-coaches");
   };
 
   const calculateStats = (bookingsData: Booking[]) => {
@@ -280,16 +265,6 @@ const Dashboard = () => {
               <CalendarDays className="mr-3 h-5 w-5" />
               Bookings
             </Button>
-            {!isCoach && (
-              <Button
-                variant="outline"
-                className="w-full justify-start h-12 text-base font-medium transition-all border-2 border-secondary hover:bg-secondary/10"
-                onClick={() => navigate("/browse-coaches")}
-              >
-                <Plus className="mr-3 h-5 w-5" />
-                Book a Coach
-              </Button>
-            )}
           </nav>
 
           {/* AI Assistant Card */}
@@ -376,22 +351,90 @@ const Dashboard = () => {
                   </div>
                 )}
 
-            {/* Browse Coaches CTA for Athletes */}
-            {!isCoach && bookings.length === 0 && (
-              <Card className="border-2 border-secondary bg-card p-12 text-center mb-10">
-                <Calendar className="h-16 w-16 mx-auto mb-4 text-secondary" />
-                <h3 className="text-3xl font-bold text-foreground mb-2">Ready to get started?</h3>
-                <p className="text-muted-foreground mb-6">Browse available coaches and book your first session!</p>
-                <Button
-                  size="lg"
-                  className="bg-secondary text-secondary-foreground hover:bg-secondary-hover h-14 px-8 text-lg"
-                  onClick={() => navigate("/browse-coaches")}
-                >
-                  <Plus className="mr-2 h-5 w-5" />
-                  Find a Coach
-                </Button>
-              </Card>
-            )}
+                {/* Empty State for Coaches with No Bookings */}
+                {isCoach && bookings.length === 0 && (
+                  <Card className="border-2 border-primary/30 bg-card p-12 mb-10">
+                    <div className="max-w-2xl mx-auto text-center">
+                      <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-accent shadow-xl border-2 border-primary/30 mx-auto mb-6">
+                        <CalendarDays className="h-10 w-10 text-primary" />
+                      </div>
+                      <h3 className="text-3xl font-bold text-foreground mb-3">Welcome to MatchUp!</h3>
+                      <p className="text-lg text-muted-foreground mb-8">
+                        Your dashboard will come to life when athletes start booking with you. Share your booking link:
+                      </p>
+                      
+                      <Card className="border-2 border-secondary/30 bg-accent p-6 mb-8">
+                        <Label className="text-sm text-muted-foreground mb-2 block">Your Booking Link</Label>
+                        <div className="flex gap-2">
+                          <Input 
+                            value={`${window.location.origin}/book/${user?.id}`}
+                            readOnly
+                            className="bg-background border-2 border-border font-mono text-sm"
+                          />
+                          <Button
+                            variant="outline"
+                            className="border-2 border-secondary hover:bg-secondary/20"
+                            onClick={() => {
+                              navigator.clipboard.writeText(`${window.location.origin}/book/${user?.id}`);
+                              toast({ title: "Copied!", description: "Booking link copied to clipboard" });
+                            }}
+                          >
+                            Copy
+                          </Button>
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-3">
+                          Share this link on social media, WhatsApp, or with your athletes directly
+                        </p>
+                      </Card>
+
+                      <div className="grid gap-4 md:grid-cols-3 mb-8 text-left">
+                        <Card className="border-2 border-secondary/30 bg-accent p-6">
+                          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-secondary/20 mb-4">
+                            <User className="h-6 w-6 text-secondary" />
+                          </div>
+                          <h4 className="font-bold text-foreground mb-2">1. Share Your Link</h4>
+                          <p className="text-sm text-muted-foreground">Athletes click your link to book (no sign-up needed)</p>
+                        </Card>
+                        
+                        <Card className="border-2 border-secondary/30 bg-accent p-6">
+                          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-secondary/20 mb-4">
+                            <Bell className="h-6 w-6 text-secondary" />
+                          </div>
+                          <h4 className="font-bold text-foreground mb-2">2. Get Notifications</h4>
+                          <p className="text-sm text-muted-foreground">We'll notify you when athletes book sessions</p>
+                        </Card>
+                        
+                        <Card className="border-2 border-secondary/30 bg-accent p-6">
+                          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-secondary/20 mb-4">
+                            <Receipt className="h-6 w-6 text-secondary" />
+                          </div>
+                          <h4 className="font-bold text-foreground mb-2">3. Manage Everything</h4>
+                          <p className="text-sm text-muted-foreground">Approve sessions, track payments, grow your business</p>
+                        </Card>
+                      </div>
+
+                      <div className="flex gap-4 justify-center">
+                        <Button
+                          size="lg"
+                          variant="outline"
+                          className="border-2 border-secondary hover:bg-secondary/10 h-14 px-8"
+                          onClick={() => setShowAI(true)}
+                        >
+                          <MessageSquare className="mr-2 h-5 w-5" />
+                          Chat with AI
+                        </Button>
+                        <Button
+                          size="lg"
+                          className="bg-primary text-foreground hover:bg-primary-hover h-14 px-8"
+                          onClick={() => navigate("/coach/profile-setup")}
+                        >
+                          <Settings className="mr-2 h-5 w-5" />
+                          Edit Profile
+                        </Button>
+                      </div>
+                    </div>
+                  </Card>
+                )}
 
             {/* Empty State for Coaches with No Bookings */}
             {isCoach && bookings.length === 0 && (
@@ -474,10 +517,7 @@ const Dashboard = () => {
                           <div>
                             <div className="mb-2 flex items-center gap-3">
                               <p className="text-xl font-bold text-foreground">
-                                {isCoach 
-                                  ? booking.athlete_profiles?.profiles?.full_name
-                                  : booking.coach_profiles?.profiles?.full_name
-                                }
+                                {booking.athlete_name}
                               </p>
                               {getStatusBadge(booking.status)}
                             </div>
@@ -528,15 +568,12 @@ const Dashboard = () => {
                               </div>
                               
                               <div>
-                                <div className="mb-2 flex items-center gap-3">
-                                  <p className="text-xl font-bold text-foreground">
-                                    {isCoach 
-                                      ? booking.athlete_profiles?.profiles?.full_name
-                                      : booking.coach_profiles?.profiles?.full_name
-                                    }
-                                  </p>
-                                  {getStatusBadge(booking.status)}
-                                </div>
+                              <div className="mb-2 flex items-center gap-3">
+                                <p className="text-xl font-bold text-foreground">
+                                  {booking.athlete_name}
+                                </p>
+                                {getStatusBadge(booking.status)}
+                              </div>
                                 <p className="mb-2 text-sm font-medium text-muted-foreground">{booking.sport}</p>
                                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                   <MapPin className="h-4 w-4" />
@@ -602,15 +639,12 @@ const Dashboard = () => {
                             </div>
                             
                             <div>
-                              <div className="mb-2 flex items-center gap-3">
-                                <p className="text-xl font-bold text-foreground">
-                                  {isCoach 
-                                    ? booking.athlete_profiles?.profiles?.full_name
-                                    : booking.coach_profiles?.profiles?.full_name
-                                  }
-                                </p>
-                                {getStatusBadge(booking.status)}
-                              </div>
+                            <div className="mb-2 flex items-center gap-3">
+                              <p className="text-xl font-bold text-foreground">
+                                {booking.athlete_name}
+                              </p>
+                              {getStatusBadge(booking.status)}
+                            </div>
                               <p className="mb-2 text-sm font-medium text-muted-foreground">{booking.sport}</p>
                               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                 <MapPin className="h-4 w-4" />

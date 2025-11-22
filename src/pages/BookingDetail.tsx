@@ -58,9 +58,6 @@ const BookingDetail = () => {
         .from("bookings")
         .select(`
           *,
-          athlete_profiles:athlete_profiles!athlete_id(
-            profiles:profiles(full_name, phone)
-          ),
           coach_profiles:coach_profiles!coach_id(
             profiles:profiles(full_name, phone),
             business_name,
@@ -74,11 +71,12 @@ const BookingDetail = () => {
 
       if (error) throw error;
 
-      // Check if user has access to this booking
+      // Check if user has access to this booking (coaches only now)
       if (userIsCoach && data.coach_id !== userId) {
         throw new Error("Access denied");
       }
-      if (!userIsCoach && data.athlete_id !== userId) {
+      if (!userIsCoach) {
+        // Non-coaches shouldn't access this page
         throw new Error("Access denied");
       }
 
