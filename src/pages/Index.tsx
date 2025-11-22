@@ -49,7 +49,7 @@ const Index = () => {
             <Button 
               variant="outline"
               className="border-2 border-primary/30 hover:bg-primary hover:text-foreground transition-all"
-              onClick={() => navigate("/dashboard")}
+              onClick={() => navigate("/auth")}
             >
               Sign In
             </Button>
@@ -89,7 +89,7 @@ const Index = () => {
               <Button 
                 size="lg" 
                 className="h-16 px-10 text-lg font-semibold shadow-xl hover:shadow-2xl transition-all bg-secondary text-secondary-foreground hover:bg-secondary-hover luxury-glow"
-                onClick={() => navigate("/dashboard")}
+                onClick={() => navigate("/auth")}
               >
                 Start Free Trial
                 <ArrowRight className="ml-2 h-6 w-6" />
@@ -281,7 +281,7 @@ const Index = () => {
                   <Button 
                     className="w-full h-14 text-lg font-semibold shadow-lg bg-secondary text-secondary-foreground hover:bg-secondary-hover hover:shadow-xl transition-all" 
                     size="lg" 
-                    onClick={() => navigate("/dashboard")}
+                    onClick={() => navigate("/auth")}
                   >
                     Start Free Trial
                   </Button>
@@ -312,7 +312,7 @@ const Index = () => {
           <Button 
             size="lg" 
             className="h-16 px-10 text-lg font-semibold bg-secondary text-secondary-foreground shadow-xl hover:bg-secondary-hover hover:shadow-2xl hover:scale-105 transition-all luxury-glow"
-            onClick={() => navigate("/dashboard")}
+            onClick={() => navigate("/auth")}
           >
             Start Free Trial
             <ArrowRight className="ml-2 h-6 w-6" />
@@ -341,7 +341,7 @@ const Index = () => {
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li><a href="#features" className="hover:text-secondary transition-colors">Features</a></li>
                 <li><a href="#pricing" className="hover:text-secondary transition-colors">Pricing</a></li>
-                <li><a href="/dashboard" className="hover:text-secondary transition-colors">Sign In</a></li>
+                <li><a href="/auth" className="hover:text-secondary transition-colors">Sign In</a></li>
               </ul>
             </div>
             
