@@ -67,14 +67,14 @@ const Index = () => {
         <div className="container relative mx-auto px-4 py-12 md:py-20">
           <div className="mx-auto max-w-5xl text-center">
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border-2 border-secondary bg-card px-5 py-2 text-sm font-semibold text-foreground backdrop-blur-sm shadow-lg">
-              <Sparkles className="h-4 w-4 text-secondary" />
+              <Sparkles className="h-4 w-4 text-primary" />
               Built for Coaches • AI-Powered Assistant
             </div>
             
             <h1 className="mb-8 text-5xl font-extrabold tracking-tight text-foreground md:text-6xl lg:text-7xl">
               Stop chasing payments.
               <br />
-              <span className="text-secondary">
+              <span className="text-primary">
                 Start coaching smarter.
               </span>
             </h1>
@@ -110,7 +110,7 @@ const Index = () => {
                 <span className="font-medium text-foreground">100% Secure</span>
               </div>
               <div className="flex items-center gap-2 bg-card px-4 py-2 rounded-lg border border-border">
-                <MessageSquare className="h-5 w-5 text-secondary" />
+                <MessageSquare className="h-5 w-5 text-primary" />
                 <span className="font-medium text-foreground">AI Assistant Included</span>
               </div>
               <div className="flex items-center gap-2 bg-card px-4 py-2 rounded-lg border border-border">
@@ -129,7 +129,7 @@ const Index = () => {
             <h2 className="mb-6 text-4xl font-bold text-foreground md:text-5xl">
               Coaches lose 10+ hours weekly
               <br />
-              <span className="text-secondary font-light">chasing schedules and payments</span>
+              <span className="text-primary font-light">chasing schedules and payments</span>
             </h2>
             <p className="text-lg text-muted-foreground">
               50% of Metro Manila coaches spend more time on admin than actual coaching
@@ -148,7 +148,7 @@ const Index = () => {
                     </div>
                     <h3 className="mb-4 text-2xl font-bold text-foreground">{point.title}</h3>
                     <p className="text-muted-foreground mb-6 leading-relaxed">{point.description}</p>
-                    <blockquote className="border-l-4 border-secondary pl-4 text-sm italic text-muted-foreground">
+                    <blockquote className="border-l-4 border-primary pl-4 text-sm italic text-muted-foreground">
                       "{point.quote}" — {point.author}
                     </blockquote>
                   </div>
@@ -201,16 +201,16 @@ const Index = () => {
                 </div>
               </div>
 
-              <div className="group flex gap-6 p-6 rounded-2xl bg-card border-2 border-secondary transition-all hover:shadow-2xl">
+              <div className="group flex gap-6 p-6 rounded-2xl bg-card border-2 border-primary transition-all hover:shadow-2xl">
                 <div className="flex-shrink-0">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-secondary shadow-lg group-hover:scale-110 transition-transform">
-                    <MessageSquare className="h-7 w-7 text-secondary-foreground" />
+                  <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-primary shadow-lg group-hover:scale-110 transition-transform">
+                    <MessageSquare className="h-7 w-7 text-foreground" />
                   </div>
                 </div>
                 <div>
                   <h3 className="mb-3 text-2xl font-bold text-foreground flex items-center gap-2">
                     AI Assistant
-                    <span className="rounded-full bg-secondary px-3 py-1 text-xs font-semibold text-secondary-foreground">NEW</span>
+                    <span className="rounded-full bg-primary px-3 py-1 text-xs font-semibold text-foreground">NEW</span>
                   </h3>
                   <p className="text-muted-foreground leading-relaxed">
                     Athletes can chat with AI 24/7 for booking questions, payment status, and schedules—no more SMS reminders needed!
@@ -241,11 +241,11 @@ const Index = () => {
                 
                 <div className="relative">
                   <div className="mb-8 text-center">
-                    <div className="mb-3 inline-block rounded-full bg-secondary px-4 py-1 text-sm font-semibold text-secondary-foreground shadow-lg">
+                    <div className="mb-3 inline-block rounded-full bg-primary px-4 py-1 text-sm font-semibold text-foreground shadow-lg">
                       Premium + AI
                     </div>
                     <div className="mb-2 flex items-baseline justify-center gap-2">
-                      <span className="text-5xl font-extrabold text-secondary">₱399</span>
+                      <span className="text-5xl font-extrabold text-primary">₱399</span>
                       <span className="text-muted-foreground">/month</span>
                     </div>
                     <p className="text-sm text-muted-foreground">No hidden fees, no surprises</p>

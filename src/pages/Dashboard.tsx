@@ -106,7 +106,7 @@ const Dashboard = () => {
                 className="relative hover:bg-secondary/20 border border-border"
                 onClick={() => setShowAI(!showAI)}
               >
-                <MessageSquare className="h-5 w-5 text-secondary" />
+                <MessageSquare className="h-5 w-5 text-primary" />
                 <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-secondary animate-pulse" />
               </Button>
               <Button variant="ghost" size="icon" className="relative hover:bg-primary/20 border border-border">
@@ -179,10 +179,10 @@ const Dashboard = () => {
 
           {/* AI Assistant Card */}
           <div className="mx-6 mt-8">
-            <Card className="relative overflow-hidden border-2 border-secondary bg-card p-6 shadow-xl">
-              <div className="absolute top-0 right-0 w-2 h-full bg-secondary opacity-30"></div>
+            <Card className="relative overflow-hidden border-2 border-primary bg-card p-6 shadow-xl">
+              <div className="absolute top-0 right-0 w-2 h-full bg-primary opacity-30"></div>
               <div className="relative">
-                <MessageSquare className="mb-3 h-8 w-8 text-secondary" />
+                <MessageSquare className="mb-3 h-8 w-8 text-primary" />
                 <h3 className="mb-2 font-bold text-foreground">AI Assistant</h3>
                 <p className="mb-4 text-sm text-muted-foreground">
                   24/7 assistant for booking questions
@@ -227,28 +227,28 @@ const Dashboard = () => {
                 </div>
               </Card>
 
-              <Card className="group relative overflow-hidden border-2 border-secondary/30 bg-card p-8 transition-all hover:shadow-2xl hover:-translate-y-1">
-                <div className="absolute top-0 left-0 w-2 h-full bg-secondary"></div>
+              <Card className="group relative overflow-hidden border-2 border-primary/30 bg-card p-8 transition-all hover:shadow-2xl hover:-translate-y-1">
+                <div className="absolute top-0 left-0 w-2 h-full bg-primary"></div>
                 <div className="relative flex items-center justify-between">
                   <div>
                     <p className="mb-1 text-sm font-medium text-muted-foreground">Awaiting Payment</p>
                     <p className="text-5xl font-extrabold text-foreground">{stats.awaitingPayment}</p>
                   </div>
-                  <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-accent shadow-lg border-2 border-secondary/30">
-                    <Receipt className="h-8 w-8 text-secondary" />
+                  <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-accent shadow-lg border-2 border-primary/30">
+                    <Receipt className="h-8 w-8 text-primary" />
                   </div>
                 </div>
               </Card>
 
-              <Card className="group relative overflow-hidden border-2 border-primary/30 bg-card p-8 transition-all hover:shadow-2xl hover:-translate-y-1">
-                <div className="absolute top-0 left-0 w-2 h-full bg-primary"></div>
+              <Card className="group relative overflow-hidden border-2 border-warning/30 bg-card p-8 transition-all hover:shadow-2xl hover:-translate-y-1">
+                <div className="absolute top-0 left-0 w-2 h-full bg-warning"></div>
                 <div className="relative flex items-center justify-between">
                   <div>
                     <p className="mb-1 text-sm font-medium text-muted-foreground">Reschedules</p>
                     <p className="text-5xl font-extrabold text-foreground">{stats.reschedules}</p>
                   </div>
-                  <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-accent shadow-lg border-2 border-primary/30">
-                    <CalendarDays className="h-8 w-8 text-primary" />
+                  <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-accent shadow-lg border-2 border-warning/30">
+                    <CalendarDays className="h-8 w-8 text-warning" />
                   </div>
                 </div>
               </Card>
@@ -266,7 +266,7 @@ const Dashboard = () => {
 
               <div className="space-y-4">
                 {todaySessions.map((session) => (
-                  <Card key={session.id} className="group overflow-hidden border-2 border-border bg-card p-6 transition-all hover:border-secondary hover:shadow-xl hover:-translate-y-1">
+                  <Card key={session.id} className="group overflow-hidden border-2 border-border bg-card p-6 transition-all hover:border-primary hover:shadow-xl hover:-translate-y-1">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-6">
                         <div className="flex h-20 w-20 flex-col items-center justify-center rounded-2xl bg-accent shadow-lg border-2 border-primary/30">
@@ -308,7 +308,7 @@ const Dashboard = () => {
 
               <div className="space-y-4">
                 {upcomingBookings.map((booking) => (
-                  <Card key={booking.id} className="group overflow-hidden border-2 border-border bg-card p-6 transition-all hover:border-secondary hover:shadow-xl hover:-translate-y-1">
+                  <Card key={booking.id} className="group overflow-hidden border-2 border-border bg-card p-6 transition-all hover:border-primary hover:shadow-xl hover:-translate-y-1">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-6">
                         <div className="flex h-20 w-20 flex-col items-center justify-center rounded-2xl bg-accent shadow-lg border-2 border-muted/50">
@@ -369,8 +369,8 @@ const Dashboard = () => {
             onClick={() => setShowAI(!showAI)}
             className="relative"
           >
-            <MessageSquare className="h-5 w-5 text-secondary" />
-            <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-secondary animate-pulse" />
+            <MessageSquare className="h-5 w-5 text-primary" />
+            <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-primary animate-pulse" />
           </Button>
           <Button
             variant={activeTab === "transactions" ? "default" : "ghost"}
