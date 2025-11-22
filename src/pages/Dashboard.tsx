@@ -53,7 +53,7 @@ const Dashboard = () => {
     {
       id: 3,
       time: "4:00 PM",
-      date: "Bukas",
+      date: "Tomorrow",
       athlete: "Jose M.",
       sport: "Volleyball",
       location: "UP Gym",
@@ -73,9 +73,9 @@ const Dashboard = () => {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "paid":
-        return <Badge className="bg-success text-success-foreground shadow-sm">Bayad Na</Badge>;
+        return <Badge className="bg-success text-success-foreground shadow-sm">Paid</Badge>;
       case "awaiting-payment":
-        return <Badge className="bg-warning text-warning-foreground shadow-sm">Hinihintay</Badge>;
+        return <Badge className="bg-warning text-warning-foreground shadow-sm">Awaiting</Badge>;
       case "pending":
         return <Badge className="bg-muted text-muted-foreground shadow-sm">Pending</Badge>;
       default:
@@ -185,7 +185,7 @@ const Dashboard = () => {
                 <MessageSquare className="mb-3 h-8 w-8 text-secondary" />
                 <h3 className="mb-2 font-bold text-foreground">AI Assistant</h3>
                 <p className="mb-4 text-sm text-muted-foreground">
-                  24/7 assistant para sa booking questions
+                  24/7 assistant for booking questions
                 </p>
                 <Button 
                   className="w-full bg-secondary text-secondary-foreground hover:bg-secondary/90 shadow-lg" 
@@ -205,7 +205,7 @@ const Dashboard = () => {
             {/* Welcome Section */}
             <div className="mb-10">
               <h2 className="mb-2 text-4xl font-extrabold text-foreground">
-                Mabuhay, Coach! 👋
+                Welcome, Coach! 👋
               </h2>
               <p className="text-lg text-muted-foreground">
                 Here's what's happening with your sessions today

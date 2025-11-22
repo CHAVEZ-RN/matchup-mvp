@@ -9,7 +9,7 @@ const Index = () => {
   const painPoints = [
     {
       icon: Calendar,
-      title: "Manual na Kalat",
+      title: "Scheduling Chaos",
       description: "Coaches juggle calls, chat apps, and spreadsheets—resulting in double bookings and last-minute cancellations.",
       quote: "Through calls and texts... multiple clients want the same schedule.",
       author: "Coach Aging"
@@ -42,7 +42,7 @@ const Index = () => {
               </div>
               <div>
                 <h1 className="text-2xl font-bold tracking-tight text-foreground">MatchUp</h1>
-                <p className="text-xs text-muted-foreground">Para sa Pinoy Coaches</p>
+                <p className="text-xs text-muted-foreground">For Sports Coaches</p>
               </div>
             </div>
             
@@ -67,38 +67,38 @@ const Index = () => {
           <div className="mx-auto max-w-5xl text-center">
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-secondary/30 bg-secondary/10 px-5 py-2 text-sm font-semibold text-foreground backdrop-blur-sm">
               <Sparkles className="h-4 w-4 text-secondary" />
-              Built for Filipino Coaches • With AI Assistant
+              Built for Coaches • AI-Powered Assistant
             </div>
             
             <h1 className="mb-8 text-5xl font-extrabold tracking-tight text-foreground md:text-6xl lg:text-7xl">
-              Tigilan ang takbo sa bayad.
+              Stop chasing payments.
               <br />
-              <span className="bg-gradient-to-r from-primary to-primary-dark bg-clip-text text-transparent">
-                Simulan ang tunay na coaching.
+              <span className="bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent">
+                Start coaching smarter.
               </span>
             </h1>
             
             <p className="mb-10 text-xl text-muted-foreground md:text-2xl font-light leading-relaxed">
-              Smart calendar + deposit-backed bookings + AI assistant para sa GCash, Maya, at cash.
+              Smart calendar + deposit-backed bookings + AI assistant for GCash, Maya, and cash.
               <br />
-              <span className="font-medium text-foreground">Lahat nandito na. No more SMS. No more spreadsheets.</span>
+              <span className="font-medium text-foreground">Everything in one place. No more SMS. No more spreadsheets.</span>
             </p>
             
             <div className="flex flex-col gap-5 sm:flex-row sm:justify-center">
               <Button 
                 size="lg" 
-                className="h-16 px-10 text-lg font-semibold shadow-xl hover:shadow-2xl transition-all bg-gradient-to-r from-primary to-primary-dark pulse-glow"
+                className="h-16 px-10 text-lg font-semibold shadow-xl hover:shadow-2xl transition-all bg-gradient-to-r from-secondary to-primary pulse-glow"
                 onClick={() => navigate("/dashboard")}
               >
-                Simulan Nang Libre
+                Start Free Trial
                 <ArrowRight className="ml-2 h-6 w-6" />
               </Button>
               <Button 
                 size="lg" 
                 variant="outline"
-                className="h-16 px-10 text-lg font-semibold border-2 border-primary/20 hover:bg-primary/5"
+                className="h-16 px-10 text-lg font-semibold border-2 border-accent/20 hover:bg-accent/5"
               >
-                Panoorin ang Demo
+                Watch Demo
               </Button>
             </div>
 
@@ -163,10 +163,10 @@ const Index = () => {
         <div className="container mx-auto px-4">
           <div className="mx-auto max-w-3xl text-center mb-20">
             <h2 className="mb-6 text-4xl font-bold text-foreground md:text-5xl">
-              Ginawa para sa <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">Filipino Coaches</span>
+              Built for <span className="bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent">Modern Coaches</span>
             </h2>
             <p className="text-xl text-muted-foreground leading-relaxed">
-              Every feature built around PH payments, coach policies, and Filipino sports culture
+              Every feature designed for seamless payments, smart scheduling, and professional coaching
             </p>
           </div>
 
@@ -240,14 +240,14 @@ const Index = () => {
                 
                 <div className="relative">
                   <div className="mb-8 text-center">
-                    <div className="mb-3 inline-block rounded-full bg-secondary/20 px-4 py-1 text-sm font-semibold text-secondary">
+                    <div className="mb-3 inline-block rounded-full bg-secondary/20 px-4 py-1 text-sm font-semibold text-secondary-foreground">
                       Premium + AI
                     </div>
                     <div className="mb-2 flex items-baseline justify-center gap-2">
-                      <span className="text-5xl font-extrabold text-primary">₱399</span>
+                      <span className="text-5xl font-extrabold bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent">₱399</span>
                       <span className="text-muted-foreground">/month</span>
                     </div>
-                    <p className="text-sm text-muted-foreground">Walang hidden fees, walang surprises</p>
+                    <p className="text-sm text-muted-foreground">No hidden fees, no surprises</p>
                   </div>
                   
                   <div className="space-y-4 mb-8">
@@ -278,15 +278,15 @@ const Index = () => {
                   </div>
 
                   <Button 
-                    className="w-full h-14 text-lg font-semibold shadow-lg bg-gradient-to-r from-primary to-primary-dark hover:shadow-xl" 
+                    className="w-full h-14 text-lg font-semibold shadow-lg bg-gradient-to-r from-secondary to-primary hover:shadow-xl" 
                     size="lg" 
                     onClick={() => navigate("/dashboard")}
                   >
-                    Subukan Nang Libre
+                    Start Free Trial
                   </Button>
                   
                   <p className="mt-6 text-center text-sm text-muted-foreground">
-                    O gamitin ang <span className="font-semibold text-foreground">freemium tier</span> forever
+                    Or use the <span className="font-semibold text-foreground">freemium tier</span> forever
                   </p>
                 </div>
               </Card>
@@ -300,7 +300,7 @@ const Index = () => {
         <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.1)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.1)_1px,transparent_1px)] bg-[size:4rem_4rem]" />
         <div className="container relative mx-auto px-4 text-center">
           <h2 className="mb-6 text-4xl font-extrabold text-white md:text-5xl">
-            Join 500+ Top Coaches sa Metro Manila
+            Join 500+ Top Coaches Worldwide
           </h2>
           <p className="mb-10 text-xl text-white/90 font-light leading-relaxed">
             Basketball, Tennis, Golf, Badminton, and S&C coaches save 10+ hours weekly with MatchUp
@@ -310,7 +310,7 @@ const Index = () => {
             className="h-16 px-10 text-lg font-semibold bg-secondary text-secondary-foreground shadow-xl hover:shadow-2xl hover:scale-105 transition-all pulse-glow"
             onClick={() => navigate("/dashboard")}
           >
-            Simulan Nang Libre
+            Start Free Trial
             <ArrowRight className="ml-2 h-6 w-6" />
           </Button>
         </div>
@@ -328,7 +328,7 @@ const Index = () => {
                 <h3 className="text-xl font-bold text-foreground">MatchUp</h3>
               </div>
               <p className="text-sm text-muted-foreground">
-                Ginawa ng Pinoy coaches, para sa Pinoy coaches
+                Built by coaches, for coaches
               </p>
             </div>
             
