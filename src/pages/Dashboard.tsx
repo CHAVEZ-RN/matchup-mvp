@@ -391,6 +391,67 @@ const Dashboard = () => {
               </Card>
             )}
 
+            {/* Empty State for Coaches with No Bookings */}
+            {isCoach && bookings.length === 0 && (
+              <Card className="border-2 border-primary/30 bg-card p-12 mb-10">
+                <div className="max-w-2xl mx-auto text-center">
+                  <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-accent shadow-xl border-2 border-primary/30 mx-auto mb-6">
+                    <CalendarDays className="h-10 w-10 text-primary" />
+                  </div>
+                  <h3 className="text-3xl font-bold text-foreground mb-3">Welcome to MatchUp!</h3>
+                  <p className="text-lg text-muted-foreground mb-8">
+                    Your dashboard will come to life when athletes start booking with you. Here's how to get started:
+                  </p>
+                  
+                  <div className="grid gap-4 md:grid-cols-3 mb-8 text-left">
+                    <Card className="border-2 border-secondary/30 bg-accent p-6">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-secondary/20 mb-4">
+                        <User className="h-6 w-6 text-secondary" />
+                      </div>
+                      <h4 className="font-bold text-foreground mb-2">1. Share Your Profile</h4>
+                      <p className="text-sm text-muted-foreground">Share your MatchUp profile link with athletes on social media</p>
+                    </Card>
+                    
+                    <Card className="border-2 border-secondary/30 bg-accent p-6">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-secondary/20 mb-4">
+                        <Bell className="h-6 w-6 text-secondary" />
+                      </div>
+                      <h4 className="font-bold text-foreground mb-2">2. Get Notifications</h4>
+                      <p className="text-sm text-muted-foreground">We'll notify you when athletes book sessions with you</p>
+                    </Card>
+                    
+                    <Card className="border-2 border-secondary/30 bg-accent p-6">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-secondary/20 mb-4">
+                        <Receipt className="h-6 w-6 text-secondary" />
+                      </div>
+                      <h4 className="font-bold text-foreground mb-2">3. Manage Bookings</h4>
+                      <p className="text-sm text-muted-foreground">Approve sessions, track payments, and grow your business</p>
+                    </Card>
+                  </div>
+
+                  <div className="flex gap-4 justify-center">
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      className="border-2 border-secondary hover:bg-secondary/10 h-14 px-8"
+                      onClick={() => setShowAI(true)}
+                    >
+                      <MessageSquare className="mr-2 h-5 w-5" />
+                      Chat with AI
+                    </Button>
+                    <Button
+                      size="lg"
+                      className="bg-primary text-foreground hover:bg-primary-hover h-14 px-8"
+                      onClick={() => navigate("/coach/profile-setup")}
+                    >
+                      <Settings className="mr-2 h-5 w-5" />
+                      Edit Profile
+                    </Button>
+                  </div>
+                </div>
+              </Card>
+            )}
+
             {/* Today's Sessions */}
             {todayBookings.length > 0 && (
               <div className="mb-10">
