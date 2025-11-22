@@ -67,14 +67,14 @@ const Index = () => {
         <div className="container relative mx-auto px-4 py-12 md:py-20">
           <div className="mx-auto max-w-5xl text-center">
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border-2 border-secondary bg-card px-5 py-2 text-sm font-semibold text-foreground backdrop-blur-sm shadow-lg">
-              <Sparkles className="h-4 w-4 text-primary" />
+              <Sparkles className="h-4 w-4 text-secondary" />
               Built for Coaches • AI-Powered Assistant
             </div>
             
             <h1 className="mb-8 text-5xl font-extrabold tracking-tight text-foreground md:text-6xl lg:text-7xl">
               Stop chasing payments.
               <br />
-              <span className="text-primary">
+              <span className="text-secondary">
                 Start coaching smarter.
               </span>
             </h1>
@@ -110,7 +110,7 @@ const Index = () => {
                 <span className="font-medium text-foreground">100% Secure</span>
               </div>
               <div className="flex items-center gap-2 bg-card px-4 py-2 rounded-lg border border-border">
-                <MessageSquare className="h-5 w-5 text-primary" />
+                <MessageSquare className="h-5 w-5 text-secondary" />
                 <span className="font-medium text-foreground">AI Assistant Included</span>
               </div>
               <div className="flex items-center gap-2 bg-card px-4 py-2 rounded-lg border border-border">
@@ -140,8 +140,8 @@ const Index = () => {
             {painPoints.map((point, index) => {
               const Icon = point.icon;
               return (
-                <Card key={index} className="group relative overflow-hidden border-2 border-border p-8 transition-all duration-500 hover:border-secondary hover:shadow-2xl hover:-translate-y-2 bg-background">
-                  <div className="absolute top-0 right-0 h-32 w-32 bg-primary opacity-5 rounded-full blur-3xl transition-all duration-500 group-hover:opacity-10" />
+                <Card key={index} className="group relative overflow-hidden border-2 border-border p-8 transition-all duration-500 hover:border-secondary hover:shadow-2xl hover:shadow-secondary/20 hover:-translate-y-2 bg-background">
+                  <div className="absolute top-0 right-0 h-32 w-32 bg-secondary opacity-5 rounded-full blur-3xl transition-all duration-500 group-hover:opacity-15" />
                   <div className="relative">
                     <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-accent shadow-lg border-2 border-primary/20">
                       <Icon className="h-8 w-8 text-primary" />
@@ -210,7 +210,7 @@ const Index = () => {
                 <div>
                   <h3 className="mb-3 text-2xl font-bold text-foreground flex items-center gap-2">
                     AI Assistant
-                    <span className="rounded-full bg-primary px-3 py-1 text-xs font-semibold text-foreground">NEW</span>
+                    <span className="rounded-full bg-secondary px-3 py-1 text-xs font-semibold text-secondary-foreground">NEW</span>
                   </h3>
                   <p className="text-muted-foreground leading-relaxed">
                     Athletes can chat with AI 24/7 for booking questions, payment status, and schedules—no more SMS reminders needed!
@@ -235,17 +235,17 @@ const Index = () => {
 
             {/* Pricing Card */}
             <div className="flex items-center justify-center">
-              <Card className="relative w-full max-w-md overflow-hidden border-2 border-primary bg-card p-10 shadow-2xl">
+              <Card className="relative w-full max-w-md overflow-hidden border-2 border-secondary bg-card p-10 shadow-2xl shadow-secondary/10">
                 <div className="absolute top-0 right-0 w-2 h-full bg-secondary"></div>
-                <div className="absolute bottom-0 left-0 w-full h-2 bg-primary"></div>
+                <div className="absolute bottom-0 left-0 w-full h-2 bg-secondary"></div>
                 
                 <div className="relative">
                   <div className="mb-8 text-center">
-                    <div className="mb-3 inline-block rounded-full bg-primary px-4 py-1 text-sm font-semibold text-foreground shadow-lg">
+                    <div className="mb-3 inline-block rounded-full bg-secondary px-4 py-1 text-sm font-semibold text-secondary-foreground shadow-lg">
                       Premium + AI
                     </div>
                     <div className="mb-2 flex items-baseline justify-center gap-2">
-                      <span className="text-5xl font-extrabold text-primary">₱399</span>
+                      <span className="text-5xl font-extrabold text-secondary">₱399</span>
                       <span className="text-muted-foreground">/month</span>
                     </div>
                     <p className="text-sm text-muted-foreground">No hidden fees, no surprises</p>
