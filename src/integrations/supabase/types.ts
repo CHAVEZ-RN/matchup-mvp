@@ -14,41 +14,13 @@ export type Database = {
   }
   public: {
     Tables: {
-      athlete_profiles: {
-        Row: {
-          created_at: string | null
-          emergency_contact_name: string | null
-          emergency_contact_phone: string | null
-          id: string
-          updated_at: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          emergency_contact_name?: string | null
-          emergency_contact_phone?: string | null
-          id: string
-          updated_at?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          emergency_contact_name?: string | null
-          emergency_contact_phone?: string | null
-          id?: string
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "athlete_profiles_id_fkey"
-            columns: ["id"]
-            isOneToOne: true
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       bookings: {
         Row: {
-          athlete_id: string
+          athlete_email: string | null
+          athlete_name: string
+          athlete_notes: string | null
+          athlete_phone: string
+          booking_reference: string | null
           coach_id: string
           created_at: string | null
           duration_hours: number
@@ -63,7 +35,11 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
-          athlete_id: string
+          athlete_email?: string | null
+          athlete_name?: string
+          athlete_notes?: string | null
+          athlete_phone?: string
+          booking_reference?: string | null
           coach_id: string
           created_at?: string | null
           duration_hours?: number
@@ -78,7 +54,11 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
-          athlete_id?: string
+          athlete_email?: string | null
+          athlete_name?: string
+          athlete_notes?: string | null
+          athlete_phone?: string
+          booking_reference?: string | null
           coach_id?: string
           created_at?: string | null
           duration_hours?: number
@@ -93,13 +73,6 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
-          {
-            foreignKeyName: "bookings_athlete_id_fkey"
-            columns: ["athlete_id"]
-            isOneToOne: false
-            referencedRelation: "athlete_profiles"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "bookings_coach_id_fkey"
             columns: ["coach_id"]
@@ -253,7 +226,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_booking_reference: { Args: never; Returns: string }
     }
     Enums: {
       booking_status:
