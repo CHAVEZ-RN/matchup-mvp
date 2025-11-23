@@ -51,10 +51,10 @@ const PublicBooking = () => {
 
       setCoach(data);
       
-      // Set initial greeting message
+      // Set initial greeting message - simple and focused
       setMessages([{
         role: "assistant",
-        content: `Hello! Welcome to the booking portal for Coach ${data.profiles.full_name}${data.business_name ? ` (${data.business_name})` : ''}.\n\nI specialize in: ${data.sports_offered.join(', ')}\nAvailable locations: ${data.locations.join(', ')}\nRate: ₱${data.hourly_rate}/hour\n\nI'm here to help you book a training session! To get started, please tell me:\n1. Your full name\n2. Your phone number\n3. Which sport you'd like to train\n4. Your preferred location\n5. When you'd like to book (date and time)\n\nFeel free to share all this information at once, or we can go step by step!`
+        content: `Hello! 👋 I'm the booking assistant for Coach ${data.profiles.full_name}.\n\nWould you like to book a training session?`
       }]);
     } catch (error) {
       console.error('Error fetching coach:', error);
