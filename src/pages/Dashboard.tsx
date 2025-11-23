@@ -112,13 +112,23 @@ const Dashboard = () => {
   };
 
   const fetchCoachBookings = async (coachId: string) => {
+    console.log("Fetching bookings for coach:", coachId);
     const { data, error } = await supabase
       .from("bookings")
       .select("*")
       .eq("coach_id", coachId)
       .order("session_date", { ascending: true });
 
-    if (!error && data) {
+    console.log("Bookings data:", data);
+    console.log("Bookings error:", error);
+
+    if (error) {
+      toast({
+        title: "Error fetching bookings",
+        description: error.message,
+        variant: "destructive"
+      });
+    } else if (data) {
       setBookings(data);
       calculateStats(data);
     }
