@@ -46,13 +46,22 @@ const Index = () => {
               </div>
             </div>
             
-            <Button 
-              variant="outline"
-              className="border-2 border-primary/30 hover:bg-primary hover:text-foreground transition-all"
-              onClick={() => navigate("/auth")}
-            >
-              Sign In
-            </Button>
+            <div className="flex gap-2">
+              <Button 
+                variant="ghost"
+                onClick={() => navigate("/browse-coaches")}
+                className="hover:bg-accent"
+              >
+                Browse Coaches
+              </Button>
+              <Button 
+                variant="outline"
+                className="border-2 border-primary/30 hover:bg-primary hover:text-foreground transition-all"
+                onClick={() => navigate("/auth")}
+              >
+                Sign In
+              </Button>
+            </div>
           </div>
         </div>
       </header>
