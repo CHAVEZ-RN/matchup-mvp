@@ -57,7 +57,39 @@ serve(async (req) => {
     tomorrow.setDate(tomorrow.getDate() + 1);
     const nextSlot = { date: tomorrow.toISOString().split('T')[0], time: '09:00' };
 
-    const systemPrompt = `You are a friendly and professional booking assistant for Coach ${coachProfile.profiles.full_name}.
+    // Check if user has an approved booking awaiting payment
+    const { data: approvedBooking } = await supabase
+      .from('bookings')
+      .select(`
+        *,
+        payments (*)
+      `)
+      .eq('athlete_phone', messages[messages.length - 1]?.content || '')
+      .eq('status', 'approved')
+      .is('payments.payment_status', 'pending')
+      .single();
+
+    let systemPrompt = '';
+    
+    if (approvedBooking && (approvedBooking.payment_method === 'gcash' || approvedBooking.payment_method === 'maya')) {
+      // Payment receipt upload flow
+      systemPrompt = `You are a payment collection assistant for Coach ${coachProfile.profiles.full_name}.
+
+BOOKING DETAILS:
+- Booking Reference: ${approvedBooking.booking_reference}
+- Date: ${approvedBooking.session_date} at ${approvedBooking.session_time}
+- Payment Method: ${approvedBooking.payment_method?.toUpperCase()}
+- Amount: ₱${approvedBooking.total_amount}
+
+TASK:
+Your booking has been APPROVED by the coach! Now you need to send payment via ${approvedBooking.payment_method?.toUpperCase()}.
+
+Ask the user to upload a screenshot of their payment receipt. Once they mention they've sent it or describe the transaction, respond with "RECEIPT_READY" to indicate they should upload the file.
+
+Be friendly and guide them through the payment process.`;
+    } else {
+      // Regular booking flow
+      systemPrompt = `You are a friendly and professional booking assistant for Coach ${coachProfile.profiles.full_name}.
 
 COACH DETAILS:
 - Business Name: ${coachProfile.business_name || 'Not specified'}
@@ -77,20 +109,20 @@ CONVERSATION FLOW - ASK ONE QUESTION AT A TIME:
 6. Ask for their preferred location (show available options: ${coachProfile.locations.join(', ')})
 7. Ask for their preferred date and time
 8. Ask for duration in hours (suggest common options like 1, 1.5, 2 hours)
-9. Ask if they have any special requests or notes (optional)
-10. Summarize all details and calculate total cost, then respond with "READY_TO_BOOK" followed by the JSON
+9. Ask for payment method (GCash, Maya, or Cash)
+10. Ask if they have any special requests or notes (optional)
+11. Summarize all details and calculate total cost, then respond with "READY_TO_BOOK" followed by the JSON
 
 IMPORTANT RULES:
 - Ask ONLY ONE question per message
 - Wait for the user's answer before moving to the next question
 - Be warm and conversational
 - Validate answers (e.g., sport and location must match available options)
-- If they provide multiple pieces of information at once, acknowledge them and move to the next missing piece
-- Keep responses short and focused
-- When you have ALL required information (name, phone, sport, location, date, time, duration), summarize everything and respond with "READY_TO_BOOK" followed by JSON: {athlete_name, athlete_phone, athlete_email, sport, location, session_date, session_time, duration_hours, notes}
+- When you have ALL required information (name, phone, sport, location, date, time, duration, payment_method), summarize everything and respond with "READY_TO_BOOK" followed by JSON: {athlete_name, athlete_phone, athlete_email, sport, location, session_date, session_time, duration_hours, payment_method, notes}
 
 EXISTING BOOKINGS TO AVOID CONFLICTS:
 ${existingBookings.length > 0 ? existingBookings.map(b => `- ${b.session_date} at ${b.session_time} for ${b.duration_hours} hours (${b.status})`).join('\n') : 'No existing bookings'}`;
+    }
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -142,8 +174,18 @@ ${existingBookings.length > 0 ? existingBookings.map(b => `- ${b.session_date} a
           // Validate required fields
           if (!bookingData.athlete_name || !bookingData.athlete_phone || !bookingData.sport || 
               !bookingData.location || !bookingData.session_date || !bookingData.session_time || 
-              !bookingData.duration_hours) {
+              !bookingData.duration_hours || !bookingData.payment_method) {
             throw new Error('Missing required booking information');
+          }
+
+          // Validate payment method
+          if (!['gcash', 'maya', 'cash'].includes(bookingData.payment_method.toLowerCase())) {
+            return new Response(
+              JSON.stringify({ 
+                reply: `Invalid payment method. Please choose GCash, Maya, or Cash.`
+              }),
+              { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            );
           }
 
           // Check for conflicts
@@ -183,6 +225,7 @@ ${existingBookings.length > 0 ? existingBookings.map(b => `- ${b.session_date} a
               session_time: bookingData.session_time,
               duration_hours: bookingData.duration_hours,
               total_amount: total_amount,
+              payment_method: bookingData.payment_method.toLowerCase(),
               notes: bookingData.notes || null,
               status: 'pending'
             })
@@ -192,6 +235,20 @@ ${existingBookings.length > 0 ? existingBookings.map(b => `- ${b.session_date} a
           if (bookingError) {
             console.error('Booking creation error:', bookingError);
             throw new Error('Failed to create booking');
+          }
+
+          // Create payment record
+          const { error: paymentError } = await supabase
+            .from('payments')
+            .insert({
+              booking_id: booking.id,
+              amount: total_amount,
+              payment_method: bookingData.payment_method.toLowerCase(),
+              payment_status: 'pending'
+            });
+
+          if (paymentError) {
+            console.error('Payment creation error:', paymentError);
           }
 
           // Store chat with booking
@@ -204,9 +261,13 @@ ${existingBookings.length > 0 ? existingBookings.map(b => `- ${b.session_date} a
               booking_id: booking.id
             });
 
+          const paymentInfo = bookingData.payment_method.toLowerCase() === 'cash' 
+            ? '\n\n💵 Payment Method: Cash (pay upon session)'
+            : `\n\n💳 Payment Method: ${bookingData.payment_method.toUpperCase()}\n📱 You will receive payment instructions once the coach approves your booking.`;
+
           return new Response(
             JSON.stringify({ 
-              reply: `Perfect! Your booking has been submitted successfully.\n\n📋 Booking Reference: ${booking.booking_reference}\n💰 Total Amount: ₱${total_amount}\n\nCoach ${coachProfile.profiles.full_name} will review and confirm your booking soon!`,
+              reply: `Perfect! Your booking has been submitted successfully.\n\n📋 Booking Reference: ${booking.booking_reference}\n💰 Total Amount: ₱${total_amount}${paymentInfo}\n\nCoach ${coachProfile.profiles.full_name} will review and confirm your booking soon!`,
               bookingCreated: true,
               bookingReference: booking.booking_reference
             }),

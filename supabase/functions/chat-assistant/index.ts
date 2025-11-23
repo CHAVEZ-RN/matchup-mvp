@@ -14,36 +14,76 @@ serve(async (req) => {
   try {
     const { messages } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+    const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
+    const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 
-    if (!LOVABLE_API_KEY) {
-      throw new Error('LOVABLE_API_KEY is not configured');
+    if (!LOVABLE_API_KEY || !SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+      throw new Error('Missing required environment variables');
     }
 
-    const systemPrompt = `You are the MatchUp AI Assistant, a helpful and friendly assistant for sports coaches using the MatchUp booking platform. You help coaches and athletes with:
+    // Get authorization header to identify coach
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      throw new Error('Missing authorization header');
+    }
 
-1. Booking questions (how to book, approve, reschedule sessions)
-2. Payment queries (GCash, Maya, cash tracking, payment status)
-3. Schedule management (viewing calendar, managing conflicts)
-4. Platform features (how to use the dashboard, set policies)
-5. Common issues (no-shows, cancellations, refunds)
+    // Import Supabase client
+    const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2.39.3');
+    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-Key information about MatchUp:
-- Coach-first booking platform for sports coaches
-- Supports GCash, Maya, and cash payments
-- Deposit-backed bookings to prevent no-shows
-- Features: Smart calendar, AI reminders, automatic payment tracking
-- Popular sports: Basketball, Tennis, Golf, Badminton, S&C
-- Pricing: ₱399/month premium or freemium tier
+    // Get user from JWT token
+    const token = authHeader.replace('Bearer ', '');
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+    
+    if (authError || !user) {
+      throw new Error('Unauthorized');
+    }
 
-Guidelines:
-- Be helpful, friendly, and professional
-- Use clear, simple English
-- Provide clear, actionable answers
-- If you don't know something, admit it and suggest contacting support
-- Keep responses concise but informative
-- Show empathy for coach pain points (time-consuming admin, payment hassles)
+    // Fetch pending payments for this coach
+    const { data: pendingPayments } = await supabase
+      .from('payments')
+      .select(`
+        *,
+        bookings!inner(
+          *,
+          coach_id
+        )
+      `)
+      .eq('bookings.coach_id', user.id)
+      .eq('payment_status', 'pending')
+      .not('payment_receipt_url', 'is', null);
 
-Answer the user's question helpfully and concisely.`;
+    let systemPrompt = `You are the MatchUp AI Assistant for Coach. You help coaches with:
+
+1. Booking management (approvals, schedules)
+2. Payment verification (GCash, Maya receipts)
+3. Schedule conflicts
+4. Platform features
+
+PENDING PAYMENT VERIFICATIONS:
+${pendingPayments && pendingPayments.length > 0 ? pendingPayments.map(p => `
+- Booking Ref: ${p.bookings.booking_reference}
+- Athlete: ${p.bookings.athlete_name}
+- Amount: ₱${p.amount}
+- Payment Method: ${p.payment_method.toUpperCase()}
+- Receipt URL: ${p.payment_receipt_url}
+`).join('\n') : 'No pending payments'}
+
+PAYMENT VERIFICATION WORKFLOW:
+When a coach wants to verify a payment:
+1. Show them the receipt information
+2. Ask them to check their ${pendingPayments?.[0]?.payment_method.toUpperCase()} account
+3. Ask for the LAST 4 DIGITS of the transaction reference number to confirm
+4. When they provide correct digits, respond with "CONFIRM_PAYMENT:{payment_id}"
+5. If they want to dispute, respond with "DISPUTE_PAYMENT:{payment_id}:{reason}"
+
+IMPORTANT:
+- Always be helpful and guide coaches through verification
+- Security: Only confirm with last 4 digits
+- Disputes are allowed within 12 hours for bank processing issues
+- Keep responses concise and actionable
+
+Answer the user's question helpfully.`;
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -80,6 +120,79 @@ Answer the user's question helpfully and concisely.`;
 
     const data = await response.json();
     const reply = data.choices[0].message.content;
+
+    // Check for payment confirmation or dispute commands
+    if (reply.includes('CONFIRM_PAYMENT:')) {
+      const paymentId = reply.split('CONFIRM_PAYMENT:')[1].split('\n')[0].trim();
+      
+      const { error: confirmError } = await supabase
+        .from('payments')
+        .update({ 
+          payment_status: 'paid',
+          payment_date: new Date().toISOString()
+        })
+        .eq('id', paymentId);
+
+      if (confirmError) {
+        console.error('Payment confirmation error:', confirmError);
+      }
+
+      // Update booking status to completed
+      const { data: payment } = await supabase
+        .from('payments')
+        .select('booking_id')
+        .eq('id', paymentId)
+        .single();
+
+      if (payment) {
+        await supabase
+          .from('bookings')
+          .update({ status: 'completed' })
+          .eq('id', payment.booking_id);
+      }
+
+      return new Response(
+        JSON.stringify({ reply: 'Payment confirmed successfully! The booking is now marked as completed.' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (reply.includes('DISPUTE_PAYMENT:')) {
+      const parts = reply.split('DISPUTE_PAYMENT:')[1].split(':');
+      const paymentId = parts[0].trim();
+      const reason = parts.slice(1).join(':').trim();
+      
+      const { error: disputeError } = await supabase
+        .from('payments')
+        .update({ 
+          dispute_initiated_at: new Date().toISOString(),
+          dispute_reason: reason
+        })
+        .eq('id', paymentId);
+
+      if (disputeError) {
+        console.error('Dispute error:', disputeError);
+      }
+
+      // Update booking status back to pending
+      const { data: payment } = await supabase
+        .from('payments')
+        .select('booking_id')
+        .eq('id', paymentId)
+        .single();
+
+      if (payment) {
+        await supabase
+          .from('bookings')
+          .update({ status: 'pending' })
+          .eq('id', payment.booking_id);
+      }
+
+      return new Response(
+        JSON.stringify({ reply: 'Payment disputed. The booking status has been updated to pending for resolution.' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     return new Response(
       JSON.stringify({ reply }),

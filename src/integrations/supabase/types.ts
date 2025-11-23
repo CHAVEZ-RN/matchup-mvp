@@ -57,6 +57,7 @@ export type Database = {
           id: string
           location: string
           notes: string | null
+          payment_method: string | null
           session_date: string
           session_time: string
           sport: string
@@ -76,6 +77,7 @@ export type Database = {
           id?: string
           location: string
           notes?: string | null
+          payment_method?: string | null
           session_date: string
           session_time: string
           sport: string
@@ -95,6 +97,7 @@ export type Database = {
           id?: string
           location?: string
           notes?: string | null
+          payment_method?: string | null
           session_date?: string
           session_time?: string
           sport?: string
@@ -173,11 +176,14 @@ export type Database = {
           amount: number
           booking_id: string
           created_at: string | null
+          dispute_initiated_at: string | null
+          dispute_reason: string | null
           id: string
           is_deposit: boolean | null
           notes: string | null
           payment_date: string | null
           payment_method: Database["public"]["Enums"]["payment_method"]
+          payment_receipt_url: string | null
           payment_status: Database["public"]["Enums"]["payment_status"]
           reference_number: string | null
           updated_at: string | null
@@ -186,11 +192,14 @@ export type Database = {
           amount: number
           booking_id: string
           created_at?: string | null
+          dispute_initiated_at?: string | null
+          dispute_reason?: string | null
           id?: string
           is_deposit?: boolean | null
           notes?: string | null
           payment_date?: string | null
           payment_method: Database["public"]["Enums"]["payment_method"]
+          payment_receipt_url?: string | null
           payment_status?: Database["public"]["Enums"]["payment_status"]
           reference_number?: string | null
           updated_at?: string | null
@@ -199,11 +208,14 @@ export type Database = {
           amount?: number
           booking_id?: string
           created_at?: string | null
+          dispute_initiated_at?: string | null
+          dispute_reason?: string | null
           id?: string
           is_deposit?: boolean | null
           notes?: string | null
           payment_date?: string | null
           payment_method?: Database["public"]["Enums"]["payment_method"]
+          payment_receipt_url?: string | null
           payment_status?: Database["public"]["Enums"]["payment_status"]
           reference_number?: string | null
           updated_at?: string | null

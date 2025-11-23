@@ -44,8 +44,13 @@ const AIAssistant = ({ onClose }: AIAssistantProps) => {
     setIsLoading(true);
 
     try {
+      const { data: { session } } = await supabase.auth.getSession();
+      
       const { data, error } = await supabase.functions.invoke('chat-assistant', {
-        body: { messages: [...messages, userMessage] }
+        body: { messages: [...messages, userMessage] },
+        headers: session?.access_token ? {
+          Authorization: `Bearer ${session.access_token}`
+        } : {}
       });
 
       if (error) {

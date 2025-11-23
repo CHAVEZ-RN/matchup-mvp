@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Trophy, Award, Briefcase, Send, Sparkles } from "lucide-react";
+import { Loader2, Trophy, Award, Briefcase, Send, Sparkles, Image as ImageIcon } from "lucide-react";
 
 interface Message {
   role: "user" | "assistant";
@@ -22,7 +22,9 @@ const PublicBooking = () => {
   const [isSending, setIsSending] = useState(false);
   const [sessionId] = useState(() => crypto.randomUUID());
   const [bookingCompleted, setBookingCompleted] = useState(false);
+  const [uploadingFile, setUploadingFile] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -90,6 +92,13 @@ const PublicBooking = () => {
       if (data?.reply) {
         setMessages(prev => [...prev, { role: "assistant", content: data.reply }]);
         
+        // Check if bot is asking for receipt upload
+        if (data.reply.includes('RECEIPT_READY') || 
+            data.reply.toLowerCase().includes('upload') ||
+            data.reply.toLowerCase().includes('screenshot')) {
+          setTimeout(() => fileInputRef.current?.click(), 500);
+        }
+        
         if (data.bookingCreated) {
           setBookingCompleted(true);
           toast({
@@ -107,6 +116,53 @@ const PublicBooking = () => {
       });
     } finally {
       setIsSending(false);
+    }
+  };
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file || !coach) return;
+
+    setUploadingFile(true);
+    try {
+      // Upload to Supabase Storage
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${sessionId}-${Date.now()}.${fileExt}`;
+      const filePath = `payment-receipts/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('coach-photos')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('coach-photos')
+        .getPublicUrl(filePath);
+
+      // Send confirmation message
+      setMessages(prev => [...prev, {
+        role: "assistant",
+        content: `✅ Receipt uploaded successfully!\n\nYour payment receipt has been forwarded to the coach for verification. You'll be notified once confirmed!`
+      }]);
+
+      toast({
+        title: "Receipt Uploaded",
+        description: "Your payment receipt has been submitted for verification.",
+      });
+    } catch (error: any) {
+      console.error('File upload error:', error);
+      toast({
+        title: "Upload Failed",
+        description: "Failed to upload receipt. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setUploadingFile(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     }
   };
 
@@ -203,18 +259,39 @@ const PublicBooking = () => {
         {/* Input Area */}
         <div className="border-t-2 border-border bg-card p-4">
           <div className="flex gap-2">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleFileUpload}
+              className="hidden"
+            />
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isSending || uploadingFile}
+              className="shrink-0"
+              title="Upload payment receipt"
+            >
+              {uploadingFile ? (
+                <Loader2 className="h-5 w-5 animate-spin" />
+              ) : (
+                <ImageIcon className="h-5 w-5" />
+              )}
+            </Button>
             <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder={bookingCompleted ? "Booking completed!" : "Type your message..."}
-              disabled={isSending || bookingCompleted}
+              placeholder={uploadingFile ? "Uploading receipt..." : bookingCompleted ? "Booking completed!" : "Type your message..."}
+              disabled={isSending || bookingCompleted || uploadingFile}
               className="flex-1 border-2 border-border"
             />
             <Button
               onClick={handleSend}
-              disabled={isSending || !input.trim() || bookingCompleted}
-              className="bg-secondary text-secondary-foreground hover:bg-secondary/90"
+              disabled={isSending || !input.trim() || bookingCompleted || uploadingFile}
+              className="bg-secondary text-secondary-foreground hover:bg-secondary/90 shrink-0"
             >
               <Send className="h-5 w-5" />
             </Button>
