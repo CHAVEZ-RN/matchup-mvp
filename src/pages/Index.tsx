@@ -103,13 +103,6 @@ const Index = () => {
                 Start Free Trial
                 <ArrowRight className="ml-2 h-6 w-6" />
               </Button>
-              <Button 
-                size="lg" 
-                variant="outline"
-                className="h-16 px-10 text-lg font-semibold border-2 border-primary hover:bg-primary hover:text-foreground transition-all"
-              >
-                Watch Demo
-              </Button>
             </div>
 
             {/* Trust Badges */}
