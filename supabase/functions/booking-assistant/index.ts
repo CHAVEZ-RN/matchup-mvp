@@ -35,6 +35,7 @@ serve(async (req) => {
       .single();
 
     if (coachError || !coachProfile) {
+      console.error('Coach fetch error:', coachError);
       throw new Error('Coach not found');
     }
 
@@ -47,15 +48,14 @@ serve(async (req) => {
       .gte('session_date', new Date().toISOString().split('T')[0]);
 
     if (bookingsError) {
+      console.error('Bookings fetch error:', bookingsError);
       throw new Error('Failed to fetch bookings');
     }
 
-    // Find next available slot (basic implementation - next day at 9 AM if no bookings)
+    // Find next available slot
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
-    const nextSlot = existingBookings.length === 0 
-      ? { date: tomorrow.toISOString().split('T')[0], time: '09:00' }
-      : { date: tomorrow.toISOString().split('T')[0], time: '09:00' };
+    const nextSlot = { date: tomorrow.toISOString().split('T')[0], time: '09:00' };
 
     const systemPrompt = `You are a friendly and professional booking assistant for Coach ${coachProfile.profiles.full_name}.
 
@@ -65,33 +65,29 @@ COACH DETAILS:
 - Locations Available: ${coachProfile.locations.join(', ')}
 - Hourly Rate: ₱${coachProfile.hourly_rate}/hour
 - Years of Experience: ${coachProfile.years_of_experience || 'Not specified'}
-- Certifications: ${coachProfile.certifications?.join(', ') || 'None listed'}
 - Next Available Slot: ${nextSlot.date} at ${nextSlot.time}
 
 YOUR ROLE:
-Help athletes book training sessions by collecting the following information:
+Help athletes book training sessions by collecting information step-by-step:
 1. Full Name
 2. Phone Number
-3. Email Address
+3. Email (optional)
 4. Sport (must be one of: ${coachProfile.sports_offered.join(', ')})
 5. Location (must be one of: ${coachProfile.locations.join(', ')})
 6. Preferred Date and Time
 7. Duration (in hours)
-8. Optional Notes
+8. Any special notes
 
-IMPORTANT GUIDELINES:
-- Start with a friendly introduction mentioning the coach's name and sports offered
-- Mention the next available slot upfront
-- Validate that the sport and location match what the coach offers
-- When discussing pricing, calculate: Hourly Rate × Duration = Total Amount
-- Always check availability using the check_availability tool before confirming
-- If a slot is unavailable, inform the athlete and suggest alternative times
-- Be conversational and guide the athlete step-by-step
-- Once all information is collected and validated, use the create_booking tool
-- After creating the booking, inform the athlete that their request is pending coach approval
+GUIDELINES:
+- Be conversational and friendly
+- Guide users step-by-step
+- Validate that sport and location match coach's offerings
+- When you have ALL required information, respond with exactly: "READY_TO_BOOK" followed by a JSON object with: athlete_name, athlete_phone, athlete_email, sport, location, session_date, session_time, duration_hours, notes
+- Calculate total: ₱${coachProfile.hourly_rate} × duration = total amount
+- Before confirming, check if the requested time conflicts with existing bookings
 
-CURRENT BOOKINGS (to avoid conflicts):
-${existingBookings.map(b => `- ${b.session_date} at ${b.session_time} for ${b.duration_hours} hours (${b.status})`).join('\n') || 'No existing bookings'}`;
+EXISTING BOOKINGS:
+${existingBookings.length > 0 ? existingBookings.map(b => `- ${b.session_date} at ${b.session_time} for ${b.duration_hours} hours (${b.status})`).join('\n') : 'No existing bookings'}`;
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -105,139 +101,124 @@ ${existingBookings.map(b => `- ${b.session_date} at ${b.session_time} for ${b.du
           { role: 'system', content: systemPrompt },
           ...messages
         ],
-        tools: [
-          {
-            type: 'function',
-            name: 'check_availability',
-            description: 'Check if a specific date and time slot is available for booking',
-            parameters: {
-              type: 'object',
-              properties: {
-                date: { type: 'string', description: 'Date in YYYY-MM-DD format' },
-                time: { type: 'string', description: 'Time in HH:MM format' },
-                duration: { type: 'number', description: 'Duration in hours' }
-              },
-              required: ['date', 'time', 'duration']
-            }
-          },
-          {
-            type: 'function',
-            name: 'create_booking',
-            description: 'Create a new booking request once all information is collected and validated',
-            parameters: {
-              type: 'object',
-              properties: {
-                athlete_name: { type: 'string' },
-                athlete_phone: { type: 'string' },
-                athlete_email: { type: 'string' },
-                sport: { type: 'string' },
-                location: { type: 'string' },
-                session_date: { type: 'string', description: 'YYYY-MM-DD format' },
-                session_time: { type: 'string', description: 'HH:MM format' },
-                duration_hours: { type: 'number' },
-                notes: { type: 'string' }
-              },
-              required: ['athlete_name', 'athlete_phone', 'sport', 'location', 'session_date', 'session_time', 'duration_hours']
-            }
-          }
-        ]
       }),
     });
 
     if (!response.ok) {
       const errorText = await response.text();
       console.error('AI gateway error:', response.status, errorText);
+      
+      if (response.status === 429) {
+        return new Response(
+          JSON.stringify({ error: "Rate limit exceeded. Please try again in a moment." }),
+          { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      if (response.status === 402) {
+        return new Response(
+          JSON.stringify({ error: "Payment required. Please add credits to your workspace." }),
+          { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      
       throw new Error(`AI gateway error: ${response.status}`);
     }
 
     const data = await response.json();
-    const aiMessage = data.choices[0].message;
+    const aiReply = data.choices[0].message.content;
 
-    // Handle tool calls if present
-    if (aiMessage.tool_calls && aiMessage.tool_calls.length > 0) {
-      const toolCall = aiMessage.tool_calls[0];
-      const functionName = toolCall.function.name;
-      const functionArgs = JSON.parse(toolCall.function.arguments);
+    console.log('AI Reply:', aiReply);
 
-      if (functionName === 'check_availability') {
-        const { date, time, duration } = functionArgs;
-        const endTime = new Date(`${date}T${time}`);
-        endTime.setHours(endTime.getHours() + duration);
+    // Check if the AI has collected all information and is ready to book
+    if (aiReply.includes('READY_TO_BOOK')) {
+      const jsonMatch = aiReply.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        try {
+          const bookingData = JSON.parse(jsonMatch[0]);
+          
+          // Validate required fields
+          if (!bookingData.athlete_name || !bookingData.athlete_phone || !bookingData.sport || 
+              !bookingData.location || !bookingData.session_date || !bookingData.session_time || 
+              !bookingData.duration_hours) {
+            throw new Error('Missing required booking information');
+          }
 
-        const conflicts = existingBookings.filter(booking => {
-          const bookingStart = new Date(`${booking.session_date}T${booking.session_time}`);
-          const bookingEnd = new Date(bookingStart);
-          bookingEnd.setHours(bookingEnd.getHours() + Number(booking.duration_hours));
+          // Check for conflicts
+          const requestStart = new Date(`${bookingData.session_date}T${bookingData.session_time}`);
+          const requestEnd = new Date(requestStart);
+          requestEnd.setHours(requestEnd.getHours() + Number(bookingData.duration_hours));
 
-          const requestStart = new Date(`${date}T${time}`);
-          const requestEnd = endTime;
-
-          return bookingStart < requestEnd && bookingEnd > requestStart;
-        });
-
-        const isAvailable = conflicts.length === 0;
-        const toolResult = {
-          available: isAvailable,
-          conflicts: conflicts.map(c => `${c.session_date} at ${c.session_time}`),
-          message: isAvailable 
-            ? `The slot is available!` 
-            : `This time slot conflicts with existing bookings. Please choose a different time.`
-        };
-
-        return new Response(
-          JSON.stringify({ 
-            reply: toolResult.message,
-            toolResult,
-            requiresFollowup: !isAvailable
-          }),
-          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
-
-      if (functionName === 'create_booking') {
-        const total_amount = functionArgs.duration_hours * Number(coachProfile.hourly_rate);
-
-        const { data: booking, error: bookingError } = await supabase
-          .from('bookings')
-          .insert({
-            coach_id: coachId,
-            athlete_name: functionArgs.athlete_name,
-            athlete_phone: functionArgs.athlete_phone,
-            athlete_email: functionArgs.athlete_email || null,
-            sport: functionArgs.sport,
-            location: functionArgs.location,
-            session_date: functionArgs.session_date,
-            session_time: functionArgs.session_time,
-            duration_hours: functionArgs.duration_hours,
-            total_amount: total_amount,
-            notes: functionArgs.notes || null,
-            status: 'pending'
-          })
-          .select()
-          .single();
-
-        if (bookingError) {
-          throw new Error('Failed to create booking');
-        }
-
-        // Store chat conversation with booking
-        await supabase
-          .from('booking_chats')
-          .insert({
-            coach_id: coachId,
-            session_id: sessionId,
-            messages: messages,
-            booking_id: booking.id
+          const conflicts = existingBookings.filter(booking => {
+            const bookingStart = new Date(`${booking.session_date}T${booking.session_time}`);
+            const bookingEnd = new Date(bookingStart);
+            bookingEnd.setHours(bookingEnd.getHours() + Number(booking.duration_hours));
+            return bookingStart < requestEnd && bookingEnd > requestStart;
           });
 
-        return new Response(
-          JSON.stringify({ 
-            reply: `Perfect! Your booking request has been submitted successfully. Booking Reference: ${booking.booking_reference}\n\nYou'll receive a confirmation once Coach ${coachProfile.profiles.full_name} approves your request. Total amount: ₱${total_amount}`,
-            bookingCreated: true,
-            bookingReference: booking.booking_reference
-          }),
-          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
+          if (conflicts.length > 0) {
+            return new Response(
+              JSON.stringify({ 
+                reply: `Sorry, this time slot conflicts with an existing booking on ${conflicts[0].session_date} at ${conflicts[0].session_time}. Please choose a different time.`
+              }),
+              { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            );
+          }
+
+          // Create booking
+          const total_amount = bookingData.duration_hours * Number(coachProfile.hourly_rate);
+
+          const { data: booking, error: bookingError } = await supabase
+            .from('bookings')
+            .insert({
+              coach_id: coachId,
+              athlete_name: bookingData.athlete_name,
+              athlete_phone: bookingData.athlete_phone,
+              athlete_email: bookingData.athlete_email || null,
+              sport: bookingData.sport,
+              location: bookingData.location,
+              session_date: bookingData.session_date,
+              session_time: bookingData.session_time,
+              duration_hours: bookingData.duration_hours,
+              total_amount: total_amount,
+              notes: bookingData.notes || null,
+              status: 'pending'
+            })
+            .select()
+            .single();
+
+          if (bookingError) {
+            console.error('Booking creation error:', bookingError);
+            throw new Error('Failed to create booking');
+          }
+
+          // Store chat with booking
+          await supabase
+            .from('booking_chats')
+            .insert({
+              coach_id: coachId,
+              session_id: sessionId,
+              messages: [...messages, { role: 'assistant', content: aiReply }],
+              booking_id: booking.id
+            });
+
+          return new Response(
+            JSON.stringify({ 
+              reply: `Perfect! Your booking has been submitted successfully.\n\n📋 Booking Reference: ${booking.booking_reference}\n💰 Total Amount: ₱${total_amount}\n\nCoach ${coachProfile.profiles.full_name} will review and confirm your booking soon!`,
+              bookingCreated: true,
+              bookingReference: booking.booking_reference
+            }),
+            { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+
+        } catch (parseError) {
+          console.error('Parse error:', parseError);
+          return new Response(
+            JSON.stringify({ 
+              reply: aiReply.replace('READY_TO_BOOK', '').trim()
+            }),
+            { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
       }
     }
 
@@ -247,13 +228,13 @@ ${existingBookings.map(b => `- ${b.session_date} at ${b.session_time} for ${b.du
       .upsert({
         coach_id: coachId,
         session_id: sessionId,
-        messages: [...messages, { role: 'assistant', content: aiMessage.content }]
+        messages: [...messages, { role: 'assistant', content: aiReply }]
       }, {
         onConflict: 'session_id'
       });
 
     return new Response(
-      JSON.stringify({ reply: aiMessage.content }),
+      JSON.stringify({ reply: aiReply }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
