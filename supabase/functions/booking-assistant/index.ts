@@ -209,6 +209,26 @@ ${existingBookings.length > 0 ? existingBookings.map(b => `- ${b.session_date} a
             );
           }
 
+          // Validate and format Philippine phone number
+          const phoneFormatted = bookingData.athlete_phone.replace(/[\s\-\(\)]/g, '');
+          let formattedPhone = phoneFormatted;
+          
+          if (phoneFormatted.startsWith('0')) {
+            formattedPhone = '+63' + phoneFormatted.substring(1);
+          } else if (!phoneFormatted.startsWith('+63')) {
+            formattedPhone = '+63' + phoneFormatted;
+          }
+          
+          // Validate phone format
+          if (!/^\+63[0-9]{10}$/.test(formattedPhone)) {
+            return new Response(
+              JSON.stringify({ 
+                reply: `Invalid phone number format. Please provide a valid Philippine phone number (e.g., +639171234567 or 09171234567).`
+              }),
+              { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            );
+          }
+
           // Create booking
           const total_amount = bookingData.duration_hours * Number(coachProfile.hourly_rate);
 
@@ -217,7 +237,7 @@ ${existingBookings.length > 0 ? existingBookings.map(b => `- ${b.session_date} a
             .insert({
               coach_id: coachId,
               athlete_name: bookingData.athlete_name,
-              athlete_phone: bookingData.athlete_phone,
+              athlete_phone: formattedPhone,
               athlete_email: bookingData.athlete_email || null,
               sport: bookingData.sport,
               location: bookingData.location,
@@ -235,6 +255,34 @@ ${existingBookings.length > 0 ? existingBookings.map(b => `- ${b.session_date} a
           if (bookingError) {
             console.error('Booking creation error:', bookingError);
             throw new Error('Failed to create booking');
+          }
+
+          // Send email notification to coach
+          try {
+            await fetch(`${SUPABASE_URL}/functions/v1/send-booking-email`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`
+              },
+              body: JSON.stringify({
+                to: coachProfile.profiles.email || '',
+                type: 'booking_created',
+                bookingDetails: {
+                  athleteName: bookingData.athlete_name,
+                  coachName: coachProfile.profiles.full_name,
+                  sport: bookingData.sport,
+                  location: bookingData.location,
+                  sessionDate: bookingData.session_date,
+                  sessionTime: bookingData.session_time,
+                  duration: bookingData.duration_hours,
+                  totalAmount: total_amount,
+                  bookingReference: booking.booking_reference
+                }
+              })
+            });
+          } catch (emailError) {
+            console.error('Failed to send booking email:', emailError);
           }
 
           // Create payment record

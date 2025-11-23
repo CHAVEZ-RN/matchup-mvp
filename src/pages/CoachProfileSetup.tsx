@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Calendar, Loader2, Plus, X, Upload, User } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { validateAndFormatPhone } from "@/lib/phoneValidation";
 
 const SPORTS_OPTIONS = ["Basketball", "Tennis", "Volleyball", "Badminton", "Football", "Swimming", "Golf"];
 const METRO_MANILA_LOCATIONS = [
@@ -28,6 +29,8 @@ const CoachProfileSetup = () => {
   // Form state
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string>("");
+  const [phone, setPhone] = useState("");
+  const [phoneError, setPhoneError] = useState("");
   const [businessName, setBusinessName] = useState("");
   const [bio, setBio] = useState("");
   const [yearsExperience, setYearsExperience] = useState("");
@@ -232,6 +235,21 @@ const CoachProfileSetup = () => {
       return;
     }
 
+    // Validate phone number if provided
+    if (phone && phone.trim()) {
+      const phoneValidation = validateAndFormatPhone(phone);
+      if (!phoneValidation.valid) {
+        setPhoneError(phoneValidation.error || "Invalid phone number");
+        toast({
+          title: "Invalid Phone Number",
+          description: phoneValidation.error || "Please use Philippine format: +639XXXXXXXXX",
+          variant: "destructive",
+        });
+        return;
+      }
+      setPhoneError("");
+    }
+
     if (selectedSports.length === 0) {
       toast({
         title: "Error",
@@ -261,10 +279,17 @@ const CoachProfileSetup = () => {
         return;
       }
 
-      // Update profile with photo URL
+      // Update profile with photo URL and phone (if provided)
+      const phoneValidation = phone && phone.trim() ? validateAndFormatPhone(phone) : null;
+      const updateData: any = { avatar_url: photoUrl };
+      
+      if (phoneValidation?.valid) {
+        updateData.phone = phoneValidation.formatted;
+      }
+
       const { error: profileError } = await supabase
         .from("profiles")
-        .update({ avatar_url: photoUrl })
+        .update(updateData)
         .eq("id", user.id);
 
       if (profileError) throw profileError;

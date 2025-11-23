@@ -51,6 +51,9 @@ export type Database = {
           athlete_notes: string | null
           athlete_phone: string
           booking_reference: string | null
+          cancellation_reason: string | null
+          cancelled_at: string | null
+          cancelled_by: string | null
           coach_id: string
           created_at: string | null
           duration_hours: number
@@ -58,6 +61,8 @@ export type Database = {
           location: string
           notes: string | null
           payment_method: string | null
+          refund_amount: number | null
+          refund_status: string | null
           session_date: string
           session_time: string
           sport: string
@@ -71,6 +76,9 @@ export type Database = {
           athlete_notes?: string | null
           athlete_phone?: string
           booking_reference?: string | null
+          cancellation_reason?: string | null
+          cancelled_at?: string | null
+          cancelled_by?: string | null
           coach_id: string
           created_at?: string | null
           duration_hours?: number
@@ -78,6 +86,8 @@ export type Database = {
           location: string
           notes?: string | null
           payment_method?: string | null
+          refund_amount?: number | null
+          refund_status?: string | null
           session_date: string
           session_time: string
           sport: string
@@ -91,6 +101,9 @@ export type Database = {
           athlete_notes?: string | null
           athlete_phone?: string
           booking_reference?: string | null
+          cancellation_reason?: string | null
+          cancelled_at?: string | null
+          cancelled_by?: string | null
           coach_id?: string
           created_at?: string | null
           duration_hours?: number
@@ -98,6 +111,8 @@ export type Database = {
           location?: string
           notes?: string | null
           payment_method?: string | null
+          refund_amount?: number | null
+          refund_status?: string | null
           session_date?: string
           session_time?: string
           sport?: string
@@ -186,6 +201,9 @@ export type Database = {
           payment_receipt_url: string | null
           payment_status: Database["public"]["Enums"]["payment_status"]
           reference_number: string | null
+          refund_amount: number | null
+          refund_date: string | null
+          refund_notes: string | null
           updated_at: string | null
         }
         Insert: {
@@ -202,6 +220,9 @@ export type Database = {
           payment_receipt_url?: string | null
           payment_status?: Database["public"]["Enums"]["payment_status"]
           reference_number?: string | null
+          refund_amount?: number | null
+          refund_date?: string | null
+          refund_notes?: string | null
           updated_at?: string | null
         }
         Update: {
@@ -218,6 +239,9 @@ export type Database = {
           payment_receipt_url?: string | null
           payment_status?: Database["public"]["Enums"]["payment_status"]
           reference_number?: string | null
+          refund_amount?: number | null
+          refund_date?: string | null
+          refund_notes?: string | null
           updated_at?: string | null
         }
         Relationships: [
@@ -266,7 +290,9 @@ export type Database = {
     }
     Functions: {
       cleanup_expired_booking_chats: { Args: never; Returns: undefined }
+      format_philippine_phone: { Args: { phone: string }; Returns: string }
       generate_booking_reference: { Args: never; Returns: string }
+      validate_philippine_phone: { Args: { phone: string }; Returns: boolean }
     }
     Enums: {
       booking_status:

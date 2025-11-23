@@ -7,10 +7,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { Calendar, ArrowLeft, Loader2, MapPin, User, CheckCircle, XCircle, DollarSign } from "lucide-react";
+import { Calendar, ArrowLeft, Loader2, MapPin, User, CheckCircle, XCircle, DollarSign, Ban } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { sendBookingEmail } from "@/lib/emailService";
+import { CancelBookingDialog } from "@/components/CancelBookingDialog";
 
 const BookingDetail = () => {
   const { bookingId } = useParams();
@@ -21,6 +23,7 @@ const BookingDetail = () => {
   const [booking, setBooking] = useState<any>(null);
   const [user, setUser] = useState<any>(null);
   const [isCoach, setIsCoach] = useState(false);
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
 
   // Payment tracking state
   const [paymentMethod, setPaymentMethod] = useState<"gcash" | "maya" | "cash">("gcash");
@@ -132,9 +135,30 @@ const BookingDetail = () => {
 
       if (error) throw error;
 
+      // Send rejection email
+      try {
+        await sendBookingEmail(
+          booking.athlete_email || "",
+          "booking_rejected",
+          {
+            athleteName: booking.athlete_name,
+            coachName: booking.coach_profiles?.profiles?.full_name || "Coach",
+            sport: booking.sport,
+            location: booking.location,
+            sessionDate: new Date(booking.session_date).toLocaleDateString(),
+            sessionTime: booking.session_time,
+            duration: booking.duration_hours,
+            totalAmount: booking.total_amount,
+            bookingReference: booking.booking_reference,
+          }
+        );
+      } catch (emailError) {
+        console.error("Failed to send rejection email:", emailError);
+      }
+
       toast({
         title: "Booking Rejected",
-        description: "The athlete has been notified.",
+        description: "The athlete has been notified via email.",
       });
 
       await fetchBookingDetails(user.id, isCoach);
@@ -357,6 +381,25 @@ const BookingDetail = () => {
             </Card>
           )}
 
+          {/* Cancel Booking - Show for approved/pending bookings */}
+          {isCoach && (booking?.status === "approved" || booking?.status === "pending") && (
+            <Card className="border-2 border-destructive/20 bg-card p-6">
+              <h3 className="text-xl font-bold text-destructive mb-4">Cancel Booking</h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                Cancel this booking and notify the athlete. This action cannot be undone.
+              </p>
+              <Button
+                onClick={() => setShowCancelDialog(true)}
+                disabled={isUpdating}
+                variant="destructive"
+                className="w-full h-12"
+              >
+                <Ban className="mr-2 h-5 w-5" />
+                Cancel Booking
+              </Button>
+            </Card>
+          )}
+
           {/* Payment Tracking */}
           <Card className="border-2 border-border bg-card p-6">
             <h3 className="text-xl font-bold text-foreground mb-4">Payment Tracking</h3>
@@ -476,6 +519,14 @@ const BookingDetail = () => {
           </Card>
         </div>
       </main>
+
+      {/* Cancel Booking Dialog */}
+      <CancelBookingDialog
+        open={showCancelDialog}
+        onOpenChange={setShowCancelDialog}
+        booking={booking}
+        onSuccess={() => fetchBookingDetails(user.id, isCoach)}
+      />
     </div>
   );
 };
