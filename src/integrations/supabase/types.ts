@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      booking_chats: {
+        Row: {
+          booking_id: string | null
+          coach_id: string
+          created_at: string
+          expires_at: string
+          id: string
+          messages: Json
+          session_id: string
+        }
+        Insert: {
+          booking_id?: string | null
+          coach_id: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          messages?: Json
+          session_id?: string
+        }
+        Update: {
+          booking_id?: string | null
+          coach_id?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          messages?: Json
+          session_id?: string
+        }
+        Relationships: []
+      }
       bookings: {
         Row: {
           athlete_email: string | null
@@ -223,6 +253,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      cleanup_expired_booking_chats: { Args: never; Returns: undefined }
       generate_booking_reference: { Args: never; Returns: string }
     }
     Enums: {
