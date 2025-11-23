@@ -265,6 +265,18 @@ const Dashboard = () => {
               <CalendarDays className="mr-3 h-5 w-5" />
               Bookings
             </Button>
+            <Button
+              variant={activeTab === "transactions" ? "default" : "ghost"}
+              className={`w-full justify-start h-12 text-base font-medium transition-all ${
+                activeTab === "transactions" 
+                  ? "bg-primary text-foreground shadow-lg" 
+                  : "hover:bg-primary/20"
+              }`}
+              onClick={() => navigate("/transactions")}
+            >
+              <Receipt className="mr-3 h-5 w-5" />
+              Past Transactions
+            </Button>
           </nav>
 
           {/* AI Assistant Card */}
