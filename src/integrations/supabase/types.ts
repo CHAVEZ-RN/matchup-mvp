@@ -89,8 +89,6 @@ export type Database = {
           cancellation_policy: string | null
           certifications: string[] | null
           created_at: string | null
-          deposit_percentage: number | null
-          deposit_required: boolean | null
           hourly_rate: number
           id: string
           is_active: boolean | null
@@ -106,8 +104,6 @@ export type Database = {
           cancellation_policy?: string | null
           certifications?: string[] | null
           created_at?: string | null
-          deposit_percentage?: number | null
-          deposit_required?: boolean | null
           hourly_rate: number
           id: string
           is_active?: boolean | null
@@ -123,8 +119,6 @@ export type Database = {
           cancellation_policy?: string | null
           certifications?: string[] | null
           created_at?: string | null
-          deposit_percentage?: number | null
-          deposit_required?: boolean | null
           hourly_rate?: number
           id?: string
           is_active?: boolean | null
