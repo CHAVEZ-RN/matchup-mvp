@@ -37,8 +37,6 @@ const CoachProfileSetup = () => {
   const [venueDetails, setVenueDetails] = useState<Record<string, string>>({});
   const [certifications, setCertifications] = useState<string[]>([""]);
   const [cancellationPolicy, setCancellationPolicy] = useState("");
-  const [depositRequired, setDepositRequired] = useState(true);
-  const [depositPercentage, setDepositPercentage] = useState("50");
 
   useEffect(() => {
     checkAuth();
@@ -101,8 +99,6 @@ const CoachProfileSetup = () => {
       setVenueDetails((coachProfile.venue_details as Record<string, string>) || {});
       setCertifications(coachProfile.certifications || [""]);
       setCancellationPolicy(coachProfile.cancellation_policy || "");
-      setDepositRequired(coachProfile.deposit_required);
-      setDepositPercentage(coachProfile.deposit_percentage?.toString() || "50");
     }
   };
 
@@ -283,8 +279,6 @@ const CoachProfileSetup = () => {
         locations: selectedLocations,
         venue_details: venueDetails,
         cancellation_policy: cancellationPolicy,
-        deposit_required: depositRequired,
-        deposit_percentage: parseInt(depositPercentage),
       };
 
       const { error } = existingProfile
@@ -602,32 +596,6 @@ const CoachProfileSetup = () => {
                   className="border-2 border-border bg-background"
                 />
               </div>
-
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="depositRequired"
-                  checked={depositRequired}
-                  onCheckedChange={(checked) => setDepositRequired(checked as boolean)}
-                />
-                <Label htmlFor="depositRequired" className="cursor-pointer">
-                  Require deposit for bookings
-                </Label>
-              </div>
-
-              {depositRequired && (
-                <div>
-                  <Label htmlFor="depositPercentage">Deposit Percentage (%)</Label>
-                  <Input
-                    id="depositPercentage"
-                    type="number"
-                    min="1"
-                    max="100"
-                    value={depositPercentage}
-                    onChange={(e) => setDepositPercentage(e.target.value)}
-                    className="border-2 border-border bg-background"
-                  />
-                </div>
-              )}
             </div>
           </Card>
 

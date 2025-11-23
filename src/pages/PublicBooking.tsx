@@ -65,12 +65,6 @@ const PublicBooking = () => {
     return coach.hourly_rate * parseFloat(duration);
   };
 
-  const calculateDeposit = () => {
-    if (!coach?.deposit_required) return 0;
-    const total = calculateTotal();
-    return (total * coach.deposit_percentage) / 100;
-  };
-
   const handleBooking = async () => {
     if (!selectedSport || !selectedLocation || !sessionDate || !sessionTime || !athleteName || !athletePhone) {
       toast({
@@ -383,16 +377,6 @@ const PublicBooking = () => {
                       <span className="text-primary">₱{calculateTotal()}</span>
                     </div>
                   </div>
-                  {coach.deposit_required && (
-                    <div className="bg-secondary/10 p-3 rounded-lg mt-3">
-                      <p className="text-sm text-foreground">
-                        <strong>Deposit Required:</strong> ₱{calculateDeposit()} ({coach.deposit_percentage}%)
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        Pay the deposit to secure your booking. Full payment before the session.
-                      </p>
-                    </div>
-                  )}
                 </div>
               </Card>
 

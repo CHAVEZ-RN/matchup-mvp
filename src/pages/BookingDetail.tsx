@@ -60,9 +60,7 @@ const BookingDetail = () => {
           *,
           coach_profiles:coach_profiles!coach_id(
             profiles:profiles(full_name, phone),
-            business_name,
-            deposit_required,
-            deposit_percentage
+            business_name
           ),
           payments:payments(*)
         `)
@@ -82,14 +80,9 @@ const BookingDetail = () => {
 
       setBooking(data);
 
-      // Set default payment amount
-      if (data.coach_profiles?.deposit_required) {
-        const depositAmount = (data.total_amount * data.coach_profiles.deposit_percentage) / 100;
-        setPaymentAmount(depositAmount.toString());
-      } else {
-        setPaymentAmount(data.total_amount.toString());
-        setIsDeposit(false);
-      }
+      // Set default payment amount to total
+      setPaymentAmount(data.total_amount.toString());
+      setIsDeposit(false);
     } catch (error: any) {
       toast({
         title: "Error",
