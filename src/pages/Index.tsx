@@ -117,7 +117,7 @@ const Index = () => {
               </div>
               <div className="flex items-center gap-2 bg-card px-4 py-2 rounded-lg border border-border">
                 <CheckCircle2 className="h-5 w-5 text-primary" />
-                <span className="font-medium text-foreground">500+ Active Coaches</span>
+                <span className="font-medium text-foreground">Trusted by Filipino Coaches</span>
               </div>
             </div>
           </div>
@@ -306,7 +306,7 @@ const Index = () => {
         </div>
         <div className="container relative mx-auto px-4 text-center">
           <h2 className="mb-6 text-4xl font-extrabold text-foreground md:text-5xl">
-            Join 500+ Top Coaches Worldwide
+            Join Filipino Coaches Taking Control
           </h2>
           <p className="mb-10 text-xl text-muted-foreground font-light leading-relaxed">
             Basketball, Tennis, Golf, Badminton, and S&C coaches save 10+ hours weekly with MatchUp
