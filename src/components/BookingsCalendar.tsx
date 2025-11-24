@@ -53,7 +53,7 @@ export const BookingsCalendar = ({ bookings }: BookingsCalendarProps) => {
   };
 
   return (
-    <div className="grid gap-6 lg:grid-cols-2">
+    <div className="grid gap-6 lg:grid-cols-2 items-start">
       {/* Calendar */}
       <Card className="p-6 border-2 border-border">
         <h3 className="text-2xl font-bold text-foreground mb-4">Select Date</h3>
