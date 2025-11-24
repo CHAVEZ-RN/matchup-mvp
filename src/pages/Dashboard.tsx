@@ -24,6 +24,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import AIAssistant from "@/components/AIAssistant";
+import { BookingsCalendar } from "@/components/BookingsCalendar";
 
 interface Booking {
   id: string;
@@ -264,6 +265,18 @@ const Dashboard = () => {
               Home
             </Button>
             <Button
+              variant={activeTab === "calendar" ? "default" : "ghost"}
+              className={`w-full justify-start h-12 text-base font-medium transition-all ${
+                activeTab === "calendar" 
+                  ? "bg-primary text-foreground shadow-lg" 
+                  : "hover:bg-primary/20"
+              }`}
+              onClick={() => setActiveTab("calendar")}
+            >
+              <Calendar className="mr-3 h-5 w-5" />
+              Calendar
+            </Button>
+            <Button
               variant={activeTab === "bookings" ? "default" : "ghost"}
               className={`w-full justify-start h-12 text-base font-medium transition-all ${
                 activeTab === "bookings" 
@@ -273,7 +286,7 @@ const Dashboard = () => {
               onClick={() => setActiveTab("bookings")}
             >
               <CalendarDays className="mr-3 h-5 w-5" />
-              Bookings
+              All Bookings
             </Button>
             <Button
               variant={activeTab === "transactions" ? "default" : "ghost"}
@@ -675,6 +688,18 @@ const Dashboard = () => {
                   </div>
                 )}
               </>
+            ) : activeTab === "calendar" ? (
+              /* Calendar Tab View */
+              <div>
+                <div className="mb-10">
+                  <h2 className="mb-2 text-4xl font-extrabold text-foreground">Calendar View</h2>
+                  <p className="text-lg text-muted-foreground">
+                    View and manage your bookings on the calendar
+                  </p>
+                </div>
+
+                <BookingsCalendar bookings={bookings} />
+              </div>
             ) : (
               /* Bookings Tab View */
               <div>
@@ -698,46 +723,60 @@ const Dashboard = () => {
                     {!isCoach && (
                       <Button
                         size="lg"
-                        className="bg-secondary text-secondary-foreground hover:bg-secondary-hover"
+                        className="bg-secondary text-secondary-foreground hover:bg-secondary-hover shadow-lg"
                         onClick={() => navigate("/browse-coaches")}
                       >
-                        <Plus className="mr-2 h-5 w-5" />
-                        Find a Coach
+                        Browse Coaches
                       </Button>
                     )}
                   </Card>
                 ) : (
-                  <div className="space-y-4">
+                  <div className="grid gap-4">
                     {bookings.map((booking) => (
-                      <Card key={booking.id} className="group overflow-hidden border-2 border-border bg-card p-6 transition-all hover:border-secondary hover:shadow-xl hover:shadow-secondary/10 hover:-translate-y-1">
+                      <Card key={booking.id} className="group overflow-hidden border-2 border-border bg-card p-6 transition-all hover:border-secondary hover:shadow-xl hover:shadow-secondary/10">
                         <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-6">
-                            <div className="flex h-20 w-20 flex-col items-center justify-center rounded-2xl bg-accent shadow-lg border-2 border-muted/50">
-                              <span className="text-xs font-medium text-muted-foreground">{new Date(booking.session_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
-                              <span className="text-lg font-bold text-foreground">{booking.session_time.slice(0, 5)}</span>
+                          <div className="flex items-center gap-6 flex-1">
+                            <div className="flex h-24 w-24 flex-col items-center justify-center rounded-2xl bg-accent shadow-lg border-2 border-muted/50">
+                              <span className="text-sm font-medium text-muted-foreground">
+                                {new Date(booking.session_date).toLocaleDateString('en-US', { month: 'short' })}
+                              </span>
+                              <span className="text-3xl font-extrabold text-foreground">
+                                {new Date(booking.session_date).getDate()}
+                              </span>
+                              <span className="text-xs font-medium text-muted-foreground">
+                                {booking.session_time.slice(0, 5)}
+                              </span>
                             </div>
                             
-                            <div>
-                            <div className="mb-2 flex items-center gap-3">
-                              <p className="text-xl font-bold text-foreground">
-                                {booking.athlete_name}
-                              </p>
-                              {getStatusBadge(booking.status)}
-                            </div>
-                              <p className="mb-2 text-sm font-medium text-muted-foreground">{booking.sport}</p>
-                              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                <MapPin className="h-4 w-4" />
-                                <span>{booking.location}</span>
+                            <div className="flex-1">
+                              <div className="mb-2 flex items-center gap-3">
+                                <p className="text-2xl font-bold text-foreground">
+                                  {booking.athlete_name}
+                                </p>
+                                {getStatusBadge(booking.status)}
+                              </div>
+                              <div className="flex items-center gap-2 mb-2">
+                                <p className="text-sm font-medium text-foreground">{booking.sport}</p>
+                                <span className="text-muted-foreground">•</span>
+                                <p className="text-sm text-muted-foreground">{booking.booking_reference}</p>
+                              </div>
+                              <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                                <div className="flex items-center gap-2">
+                                  <MapPin className="h-4 w-4" />
+                                  <span>{booking.location}</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <span className="font-semibold text-foreground">₱{booking.total_amount}</span>
+                                </div>
                               </div>
                             </div>
                           </div>
                           
                           <Button 
-                            variant="outline" 
-                            className="border-2 border-primary/30 hover:bg-primary hover:text-foreground transition-all"
+                            className="bg-primary text-foreground shadow-lg hover:bg-primary-hover hover:shadow-xl transition-all"
                             onClick={() => navigate(`/booking/${booking.id}`)}
                           >
-                            {isCoach && booking.status === "pending" ? "Review" : "View"}
+                            {isCoach && booking.status === "pending" ? "Review Booking" : "View Details"}
                           </Button>
                         </div>
                       </Card>
@@ -750,46 +789,14 @@ const Dashboard = () => {
         </main>
       </div>
 
-      {/* AI Assistant Floating */}
-      {showAI && <AIAssistant onClose={() => setShowAI(false)} />}
-
-      {/* Mobile Bottom Nav */}
-      <nav className="fixed bottom-0 left-0 right-0 border-t-2 border-border bg-card md:hidden shadow-2xl">
-        <div className="flex items-center justify-around p-4">
-          <Button
-            variant={activeTab === "home" ? "default" : "ghost"}
-            size="sm"
-            onClick={() => setActiveTab("home")}
-            className={activeTab === "home" ? "bg-primary text-foreground" : ""}
-          >
-            <Home className="h-5 w-5" />
-          </Button>
-          <Button
-            variant={activeTab === "bookings" ? "default" : "ghost"}
-            size="sm"
-            onClick={() => setActiveTab("bookings")}
-            className={activeTab === "bookings" ? "bg-primary text-foreground" : ""}
-          >
-            <CalendarDays className="h-5 w-5" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setShowAI(!showAI)}
-            className="relative"
-          >
-            <MessageSquare className="h-5 w-5 text-secondary" />
-            <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-secondary animate-pulse" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleSignOut}
-          >
-            <LogOut className="h-5 w-5" />
-          </Button>
+      {/* AI Assistant Overlay */}
+      {showAI && (
+        <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <Card className="w-full max-w-3xl h-[80vh] border-2 border-secondary shadow-2xl shadow-secondary/20 flex flex-col overflow-hidden">
+            <AIAssistant onClose={() => setShowAI(false)} />
+          </Card>
         </div>
-      </nav>
+      )}
     </div>
   );
 };
