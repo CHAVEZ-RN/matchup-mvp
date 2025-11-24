@@ -261,28 +261,30 @@ const CoachProfileSetup = () => {
     setIsLoading(true);
 
     try {
-      // Upload photo first
+      // Upload photo if provided
       const photoUrl = await uploadPhoto(user.id);
 
-      if (!photoUrl) {
-        setIsLoading(false);
-        return;
-      }
-
-      // Update profile with photo URL and phone (if provided)
+      // Update profile with photo URL (if uploaded) and phone (if provided)
       const phoneValidation = phone && phone.trim() ? validateAndFormatPhone(phone) : null;
-      const updateData: any = { avatar_url: photoUrl };
+      const updateData: any = {};
+      
+      if (photoUrl) {
+        updateData.avatar_url = photoUrl;
+      }
       
       if (phoneValidation?.valid) {
         updateData.phone = phoneValidation.formatted;
       }
 
-      const { error: profileError } = await supabase
-        .from("profiles")
-        .update(updateData)
-        .eq("id", user.id);
+      // Only update profile if there's data to update
+      if (Object.keys(updateData).length > 0) {
+        const { error: profileError } = await supabase
+          .from("profiles")
+          .update(updateData)
+          .eq("id", user.id);
 
-      if (profileError) throw profileError;
+        if (profileError) throw profileError;
+      }
       const profileData = {
         id: user.id,
         business_name: businessName,
