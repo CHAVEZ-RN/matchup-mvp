@@ -133,7 +133,6 @@ export const BookingsCalendar = ({ bookings }: BookingsCalendarProps) => {
           </div>
         ) : (
           <div className="text-center py-12">
-            <Calendar className="h-16 w-16 text-muted-foreground mx-auto mb-4 opacity-50" />
             <p className="text-muted-foreground">No bookings for this date</p>
           </div>
         )}

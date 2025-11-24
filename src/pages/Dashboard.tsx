@@ -265,18 +265,6 @@ const Dashboard = () => {
               Home
             </Button>
             <Button
-              variant={activeTab === "calendar" ? "default" : "ghost"}
-              className={`w-full justify-start h-12 text-base font-medium transition-all ${
-                activeTab === "calendar" 
-                  ? "bg-primary text-foreground shadow-lg" 
-                  : "hover:bg-primary/20"
-              }`}
-              onClick={() => setActiveTab("calendar")}
-            >
-              <Calendar className="mr-3 h-5 w-5" />
-              Calendar
-            </Button>
-            <Button
               variant={activeTab === "bookings" ? "default" : "ghost"}
               className={`w-full justify-start h-12 text-base font-medium transition-all ${
                 activeTab === "bookings" 
