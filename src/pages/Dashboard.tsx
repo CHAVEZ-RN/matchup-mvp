@@ -628,25 +628,13 @@ const Dashboard = () => {
                   </div>
                 )}
               </>
-            ) : activeTab === "calendar" ? (
-              /* Calendar Tab View */
-              <div>
-                <div className="mb-10">
-                  <h2 className="mb-2 text-4xl font-extrabold text-foreground">Calendar View</h2>
-                  <p className="text-lg text-muted-foreground">
-                    View and manage your bookings on the calendar
-                  </p>
-                </div>
-
-                <BookingsCalendar bookings={bookings} />
-              </div>
             ) : (
               /* Bookings Tab View */
               <div>
                 <div className="mb-10">
-                  <h2 className="mb-2 text-4xl font-extrabold text-foreground">All Bookings</h2>
+                  <h2 className="mb-2 text-4xl font-extrabold text-foreground">Bookings</h2>
                   <p className="text-lg text-muted-foreground">
-                    {isCoach ? "Manage all your athlete bookings" : "View all your session bookings"}
+                    {isCoach ? "View your calendar and manage all bookings" : "View your calendar and all session bookings"}
                   </p>
                 </div>
 
@@ -671,8 +659,17 @@ const Dashboard = () => {
                     )}
                   </Card>
                 ) : (
-                  <div className="grid gap-4">
-                    {bookings.map((booking) => (
+                  <>
+                    {/* Calendar View */}
+                    <div className="mb-10">
+                      <BookingsCalendar bookings={bookings} />
+                    </div>
+
+                    {/* All Bookings List */}
+                    <div>
+                      <h3 className="text-2xl font-bold text-foreground mb-6">All Bookings</h3>
+                      <div className="grid gap-4">
+                        {bookings.map((booking) => (
                       <Card key={booking.id} className="group overflow-hidden border-2 border-border bg-card p-6 transition-all hover:border-secondary hover:shadow-xl hover:shadow-secondary/10">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-6 flex-1">
@@ -720,8 +717,10 @@ const Dashboard = () => {
                           </Button>
                         </div>
                       </Card>
-                    ))}
-                  </div>
+                      ))}
+                      </div>
+                    </div>
+                  </>
                 )}
               </div>
             )}
