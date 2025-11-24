@@ -225,16 +225,6 @@ const CoachProfileSetup = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validation - Photo is required
-    if (!photoPreview && !photoFile) {
-      toast({
-        title: "Photo Required",
-        description: "Please upload a profile photo",
-        variant: "destructive",
-      });
-      return;
-    }
-
     // Validate phone number if provided
     if (phone && phone.trim()) {
       const phoneValidation = validateAndFormatPhone(phone);
@@ -414,7 +404,7 @@ const CoachProfileSetup = () => {
                     </Button>
                   </Label>
                   <p className="text-xs text-muted-foreground mt-2">
-                    JPG, PNG or WEBP (max 5MB)
+                    JPG, PNG or WEBP (max 5MB) • Optional
                   </p>
                 </div>
               </div>
