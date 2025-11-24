@@ -89,7 +89,7 @@ const Index = () => {
             </h1>
             
             <p className="mb-10 text-xl text-muted-foreground md:text-2xl font-light leading-relaxed">
-              Smart calendar + deposit-backed bookings + AI assistant for GCash, Maya, and cash.
+              Smart calendar + AI assistant for GCash, Maya, and cash payments.
               <br />
               <span className="font-medium text-foreground">Everything in one place. No more SMS. No more spreadsheets.</span>
             </p>
@@ -196,9 +196,9 @@ const Index = () => {
                   </div>
                 </div>
                 <div>
-                  <h3 className="mb-3 text-2xl font-bold text-foreground">Deposit-Backed Bookings</h3>
+                  <h3 className="mb-3 text-2xl font-bold text-foreground">Payment Tracking</h3>
                   <p className="text-muted-foreground leading-relaxed">
-                    Set policies once. Every booking includes GCash, Maya, or cash tracking—zero no-shows guaranteed.
+                    Track all payments seamlessly with GCash, Maya, or cash—complete transparency for every session.
                   </p>
                 </div>
               </div>
@@ -350,7 +350,7 @@ const Index = () => {
             <div>
               <h4 className="font-semibold text-foreground mb-3">Contact</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li>support@matchup.ph</li>
+                <li>matchup.ph@gmail.com</li>
                 <li>Metro Manila, Philippines</li>
               </ul>
             </div>
