@@ -718,10 +718,8 @@ const Dashboard = () => {
 
       {/* AI Assistant Overlay */}
       {showAI && (
-        <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <Card className="w-full max-w-3xl h-[80vh] border-2 border-secondary shadow-2xl shadow-secondary/20 flex flex-col overflow-hidden">
-            <AIAssistant onClose={() => setShowAI(false)} />
-          </Card>
+        <div className="fixed inset-0 z-50 backdrop-blur-sm">
+          <AIAssistant onClose={() => setShowAI(false)} />
         </div>
       )}
     </div>
