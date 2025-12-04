@@ -3,14 +3,13 @@ import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { Calendar, ArrowLeft, Loader2, MapPin, User, CheckCircle, XCircle, DollarSign, Ban } from "lucide-react";
+import { Calendar, ArrowLeft, Loader2, MapPin, User, CheckCircle, XCircle, DollarSign, Ban, Clock, AlertTriangle, RotateCcw, Phone, Mail } from "lucide-react";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { sendBookingEmail } from "@/lib/emailService";
 import { CancelBookingDialog } from "@/components/CancelBookingDialog";
 
@@ -24,12 +23,13 @@ const BookingDetail = () => {
   const [user, setUser] = useState<any>(null);
   const [isCoach, setIsCoach] = useState(false);
   const [showCancelDialog, setShowCancelDialog] = useState(false);
+  const [activeTab, setActiveTab] = useState("approval");
 
   // Payment tracking state
   const [paymentMethod, setPaymentMethod] = useState<"gcash" | "maya" | "cash">("gcash");
   const [referenceNumber, setReferenceNumber] = useState("");
   const [paymentAmount, setPaymentAmount] = useState("");
-  const [isDeposit, setIsDeposit] = useState(true);
+  const [isDeposit, setIsDeposit] = useState(false);
 
   useEffect(() => {
     checkAuth();
@@ -72,20 +72,24 @@ const BookingDetail = () => {
 
       if (error) throw error;
 
-      // Check if user has access to this booking (coaches only now)
       if (userIsCoach && data.coach_id !== userId) {
         throw new Error("Access denied");
       }
       if (!userIsCoach) {
-        // Non-coaches shouldn't access this page
         throw new Error("Access denied");
       }
 
       setBooking(data);
-
-      // Set default payment amount to total
       setPaymentAmount(data.total_amount.toString());
-      setIsDeposit(false);
+      
+      // Set active tab based on status
+      if (data.status === "pending") {
+        setActiveTab("approval");
+      } else if (data.status === "approved") {
+        setActiveTab("payment");
+      } else {
+        setActiveTab("session");
+      }
     } catch (error: any) {
       toast({
         title: "Error",
@@ -110,7 +114,7 @@ const BookingDetail = () => {
 
       toast({
         title: "Booking Approved!",
-        description: "The athlete has been notified.",
+        description: "The booking is now awaiting payment from the athlete.",
       });
 
       await fetchBookingDetails(user.id, isCoach);
@@ -135,7 +139,6 @@ const BookingDetail = () => {
 
       if (error) throw error;
 
-      // Send rejection email
       try {
         await sendBookingEmail(
           booking.athlete_email || "",
@@ -197,7 +200,6 @@ const BookingDetail = () => {
 
       if (error) throw error;
 
-      // Check if full payment is made
       const totalPaid = booking.payments.reduce((sum: number, p: any) => sum + parseFloat(p.amount), 0) + parseFloat(paymentAmount);
       
       if (totalPaid >= booking.total_amount) {
@@ -212,8 +214,42 @@ const BookingDetail = () => {
         description: `₱${parseFloat(paymentAmount).toLocaleString()} payment recorded successfully.`,
       });
 
-      // Reset form
       setReferenceNumber("");
+      await fetchBookingDetails(user.id, isCoach);
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const handleAllowRebooking = async () => {
+    // Send rebooking link to athlete
+    toast({
+      title: "Rebooking Link Sent",
+      description: "The athlete has been sent a new booking link.",
+    });
+  };
+
+  const handleCloseRequest = async () => {
+    setIsUpdating(true);
+    try {
+      const { error } = await supabase
+        .from("bookings")
+        .update({ status: "cancelled", cancellation_reason: "Payment not received - Request closed" })
+        .eq("id", bookingId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Request Closed",
+        description: "The booking request has been closed.",
+      });
+
       await fetchBookingDetails(user.id, isCoach);
     } catch (error: any) {
       toast({
@@ -236,25 +272,45 @@ const BookingDetail = () => {
 
   if (!booking) return null;
 
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case "completed":
-        return <Badge className="bg-success text-success-foreground">Completed</Badge>;
-      case "approved":
-        return <Badge className="bg-warning text-warning-foreground">Approved</Badge>;
+  const totalPaid = booking.payments?.reduce((sum: number, p: any) => sum + parseFloat(p.amount), 0) || 0;
+  const remainingBalance = booking.total_amount - totalPaid;
+  const isPaid = totalPaid >= booking.total_amount;
+
+  // Determine display status
+  const getDisplayStatus = () => {
+    if (booking.status === "completed" || isPaid) return "paid";
+    if (booking.status === "approved" && !isPaid) return "awaiting_payment";
+    if (booking.status === "cancelled") return "cancelled";
+    if (booking.status === "rejected") return "rejected";
+    return booking.status;
+  };
+
+  const displayStatus = getDisplayStatus();
+
+  const getStatusBadge = () => {
+    switch (displayStatus) {
+      case "paid":
+        return <Badge className="bg-success text-success-foreground text-lg px-4 py-2">Paid</Badge>;
+      case "awaiting_payment":
+        return <Badge className="bg-warning text-warning-foreground text-lg px-4 py-2">Awaiting Payment</Badge>;
       case "pending":
-        return <Badge className="bg-muted text-muted-foreground">Pending</Badge>;
+        return <Badge className="bg-muted text-muted-foreground text-lg px-4 py-2">Pending Approval</Badge>;
       case "rejected":
-        return <Badge className="bg-destructive text-destructive-foreground">Rejected</Badge>;
+        return <Badge className="bg-destructive text-destructive-foreground text-lg px-4 py-2">Rejected</Badge>;
       case "cancelled":
-        return <Badge className="bg-destructive text-destructive-foreground">Cancelled</Badge>;
+        return <Badge className="bg-destructive text-destructive-foreground text-lg px-4 py-2">Cancelled</Badge>;
+      case "expired":
+        return <Badge className="bg-destructive/80 text-destructive-foreground text-lg px-4 py-2">Expired</Badge>;
       default:
         return null;
     }
   };
 
-  const totalPaid = booking.payments?.reduce((sum: number, p: any) => sum + parseFloat(p.amount), 0) || 0;
-  const remainingBalance = booking.total_amount - totalPaid;
+  const sessionDate = new Date(booking.session_date);
+  const sessionEndTime = booking.session_time.slice(0, 5);
+  const [hours, minutes] = sessionEndTime.split(':').map(Number);
+  const endHours = hours + booking.duration_hours;
+  const endTime = `${String(endHours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
 
   return (
     <div className="min-h-screen bg-background">
@@ -273,251 +329,398 @@ const BookingDetail = () => {
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary shadow-xl">
               <Calendar className="h-7 w-7 text-foreground" />
             </div>
-            <div>
-              <h1 className="text-2xl font-bold tracking-tight text-foreground">Booking Details</h1>
-              <p className="text-xs text-muted-foreground">#{booking.id.slice(0, 8)}</p>
+            <div className="flex-1">
+              <h1 className="text-xl font-bold tracking-tight text-foreground">
+                Booking with {booking.athlete_name}
+              </h1>
+              <p className="text-xs text-muted-foreground">#{booking.booking_reference}</p>
             </div>
           </div>
         </div>
       </header>
 
+      {/* Status Banner */}
+      <div className="bg-card border-b-2 border-border">
+        <div className="container mx-auto px-4 py-4 flex items-center justify-center">
+          {getStatusBadge()}
+        </div>
+      </div>
+
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8 max-w-4xl">
-        <div className="space-y-6">
-          {/* Booking Info */}
-          <Card className="border-2 border-border bg-card p-6">
-            <div className="flex items-start justify-between mb-6">
+      <main className="container mx-auto px-4 py-6 max-w-2xl">
+        {/* Booking Details Card */}
+        <Card className="border-2 border-border bg-card p-6 mb-6">
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <Calendar className="h-5 w-5 text-secondary" />
               <div>
-                <h2 className="text-3xl font-bold text-foreground mb-2">
-                  {booking.sport} Session
-                </h2>
-                {getStatusBadge(booking.status)}
-              </div>
-              <div className="text-right">
-                <p className="text-sm text-muted-foreground">Total Amount</p>
-                <p className="text-3xl font-bold text-secondary">₱{booking.total_amount.toLocaleString()}</p>
+                <p className="font-bold text-foreground">
+                  {sessionDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}, {booking.session_time.slice(0, 5)}–{endTime}
+                </p>
               </div>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-6">
-              <div>
-                <h3 className="font-bold text-foreground mb-3">Session Details</h3>
-                <div className="space-y-2 text-sm">
-                  <div className="flex items-start gap-2">
-                    <Calendar className="h-4 w-4 text-muted-foreground mt-0.5" />
-                    <div>
-                      <p className="font-medium">
-                        {new Date(booking.session_date).toLocaleDateString('en-US', {
-                          weekday: 'long',
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric'
-                        })}
-                      </p>
-                      <p className="text-muted-foreground">{booking.session_time.slice(0, 5)} • {booking.duration_hours} hour(s)</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <MapPin className="h-4 w-4 text-muted-foreground mt-0.5" />
-                    <span>{booking.location}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <h3 className="font-bold text-foreground mb-3">
-                  {isCoach ? "Athlete" : "Coach"}
-                </h3>
-                <div className="flex items-start gap-2 text-sm">
-                  <User className="h-4 w-4 text-muted-foreground mt-0.5" />
-                  <div>
-                    <p className="font-medium">
-                      {isCoach 
-                        ? booking.athlete_profiles?.profiles?.full_name
-                        : booking.coach_profiles?.profiles?.full_name || booking.coach_profiles?.business_name
-                      }
-                    </p>
-                    {(isCoach ? booking.athlete_profiles?.profiles?.phone : booking.coach_profiles?.profiles?.phone) && (
-                      <p className="text-muted-foreground">
-                        {isCoach ? booking.athlete_profiles.profiles.phone : booking.coach_profiles.profiles.phone}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </div>
+            <div className="flex items-center gap-3">
+              <MapPin className="h-5 w-5 text-secondary" />
+              <p className="text-foreground">{booking.location}</p>
             </div>
 
-            {booking.notes && (
-              <div className="mt-6 pt-6 border-t border-border">
-                <h3 className="font-bold text-foreground mb-2">Notes</h3>
-                <p className="text-sm text-muted-foreground">{booking.notes}</p>
+            <div className="flex items-center gap-3">
+              <Clock className="h-5 w-5 text-secondary" />
+              <p className="text-foreground">{booking.duration_hours * 60} mins</p>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <User className="h-5 w-5 text-secondary" />
+              <p className="text-foreground">{booking.sport}</p>
+            </div>
+
+            <div className="pt-4 border-t border-border flex items-center justify-between">
+              <span className="text-muted-foreground">Price</span>
+              <span className="text-xl font-bold text-foreground">
+                ₱{booking.total_amount.toLocaleString()} • {booking.payment_method || 'Not specified'}
+              </span>
+            </div>
+          </div>
+        </Card>
+
+        {/* Athlete Contact Info */}
+        <Card className="border-2 border-border bg-card p-6 mb-6">
+          <h3 className="font-bold text-foreground mb-4">Athlete Contact</h3>
+          <div className="space-y-3">
+            <div className="flex items-center gap-3">
+              <User className="h-4 w-4 text-muted-foreground" />
+              <span className="text-foreground">{booking.athlete_name}</span>
+            </div>
+            {booking.athlete_phone && (
+              <div className="flex items-center gap-3">
+                <Phone className="h-4 w-4 text-muted-foreground" />
+                <span className="text-foreground">{booking.athlete_phone}</span>
               </div>
             )}
-          </Card>
+            {booking.athlete_email && (
+              <div className="flex items-center gap-3">
+                <Mail className="h-4 w-4 text-muted-foreground" />
+                <span className="text-foreground">{booking.athlete_email}</span>
+              </div>
+            )}
+            {booking.athlete_notes && (
+              <div className="pt-3 border-t border-border">
+                <p className="text-sm text-muted-foreground mb-1">Notes from athlete:</p>
+                <p className="text-foreground text-sm">{booking.athlete_notes}</p>
+              </div>
+            )}
+          </div>
+        </Card>
 
-          {/* Coach Actions - Approve/Reject */}
-          {isCoach && booking.status === "pending" && (
-            <Card className="border-2 border-secondary bg-card p-6">
-              <h3 className="text-xl font-bold text-foreground mb-4">Review Booking</h3>
-              <div className="flex gap-4">
-                <Button
-                  onClick={handleApproveBooking}
-                  disabled={isUpdating}
-                  className="flex-1 h-12 bg-success text-success-foreground hover:bg-success/90"
-                >
-                  <CheckCircle className="mr-2 h-5 w-5" />
-                  Approve Booking
-                </Button>
-                <Button
-                  onClick={handleRejectBooking}
-                  disabled={isUpdating}
-                  variant="destructive"
-                  className="flex-1 h-12"
-                >
-                  <XCircle className="mr-2 h-5 w-5" />
-                  Reject Booking
-                </Button>
+        {/* Tabs for Actions */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-3 mb-6">
+            <TabsTrigger value="approval" className="data-[state=active]:bg-primary">
+              Approval
+            </TabsTrigger>
+            <TabsTrigger value="payment" className="data-[state=active]:bg-primary">
+              Payment
+            </TabsTrigger>
+            <TabsTrigger value="session" className="data-[state=active]:bg-primary">
+              Session
+            </TabsTrigger>
+          </TabsList>
+
+          {/* Approval Tab */}
+          <TabsContent value="approval">
+            {booking.status === "pending" ? (
+              <Card className="border-2 border-secondary bg-card p-6">
+                <h3 className="text-lg font-bold text-foreground mb-4">Review and approve or reject this booking</h3>
+                <div className="flex gap-4">
+                  <Button
+                    onClick={handleApproveBooking}
+                    disabled={isUpdating}
+                    className="flex-1 h-14 bg-success text-success-foreground hover:bg-success/90 text-lg"
+                  >
+                    <CheckCircle className="mr-2 h-5 w-5" />
+                    Approve Booking
+                  </Button>
+                  <Button
+                    onClick={handleRejectBooking}
+                    disabled={isUpdating}
+                    variant="destructive"
+                    className="flex-1 h-14 text-lg"
+                  >
+                    <XCircle className="mr-2 h-5 w-5" />
+                    Reject Booking
+                  </Button>
+                </div>
+              </Card>
+            ) : (
+              <Card className="border-2 border-border bg-card p-6">
+                <div className="text-center py-4">
+                  <CheckCircle className="h-12 w-12 text-success mx-auto mb-3" />
+                  <p className="text-lg font-bold text-foreground">
+                    {booking.status === "approved" || booking.status === "completed" 
+                      ? "Booking Approved" 
+                      : booking.status === "rejected" 
+                        ? "Booking Rejected" 
+                        : "Booking Cancelled"}
+                  </p>
+                  <p className="text-muted-foreground mt-2">
+                    {booking.status === "approved" && "Waiting for payment from athlete"}
+                    {booking.status === "completed" && "Session completed"}
+                    {booking.status === "rejected" && "This booking was rejected"}
+                    {booking.status === "cancelled" && "This booking was cancelled"}
+                  </p>
+                </div>
+              </Card>
+            )}
+          </TabsContent>
+
+          {/* Payment Tab */}
+          <TabsContent value="payment">
+            {displayStatus === "awaiting_payment" && (
+              <Card className="border-2 border-warning/30 bg-warning/5 p-6 mb-6">
+                <div className="flex items-start gap-4">
+                  <AlertTriangle className="h-6 w-6 text-warning flex-shrink-0 mt-1" />
+                  <div>
+                    <h3 className="font-bold text-foreground mb-1">Awaiting Payment</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Payment request sent. Booking will expire in 24 hours if unpaid. 
+                      Automatic reminders are being sent to the athlete.
+                    </p>
+                  </div>
+                </div>
+              </Card>
+            )}
+
+            {/* Payment Summary */}
+            <Card className="border-2 border-border bg-card p-6 mb-6">
+              <h3 className="text-lg font-bold text-foreground mb-4">Payment Summary</h3>
+              <div className="space-y-3">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Total Amount</span>
+                  <span className="font-bold text-foreground">₱{booking.total_amount.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Total Paid</span>
+                  <span className="font-bold text-success">₱{totalPaid.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between border-t border-border pt-3">
+                  <span className="text-muted-foreground">Remaining Balance</span>
+                  <span className={`font-bold ${remainingBalance > 0 ? 'text-warning' : 'text-success'}`}>
+                    ₱{remainingBalance.toLocaleString()}
+                  </span>
+                </div>
               </div>
             </Card>
-          )}
-
-          {/* Cancel Booking - Show for approved/pending bookings */}
-          {isCoach && (booking?.status === "approved" || booking?.status === "pending") && (
-            <Card className="border-2 border-destructive/20 bg-card p-6">
-              <h3 className="text-xl font-bold text-destructive mb-4">Cancel Booking</h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                Cancel this booking and notify the athlete. This action cannot be undone.
-              </p>
-              <Button
-                onClick={() => setShowCancelDialog(true)}
-                disabled={isUpdating}
-                variant="destructive"
-                className="w-full h-12"
-              >
-                <Ban className="mr-2 h-5 w-5" />
-                Cancel Booking
-              </Button>
-            </Card>
-          )}
-
-          {/* Payment Tracking */}
-          <Card className="border-2 border-border bg-card p-6">
-            <h3 className="text-xl font-bold text-foreground mb-4">Payment Tracking</h3>
-            
-            <div className="mb-6 p-4 bg-accent rounded-lg">
-              <div className="flex justify-between mb-2">
-                <span className="text-sm text-muted-foreground">Total Paid:</span>
-                <span className="font-bold text-success">₱{totalPaid.toLocaleString()}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-sm text-muted-foreground">Remaining Balance:</span>
-                <span className="font-bold text-foreground">₱{remainingBalance.toLocaleString()}</span>
-              </div>
-            </div>
 
             {/* Payment History */}
             {booking.payments && booking.payments.length > 0 && (
-              <div className="mb-6">
-                <h4 className="font-bold text-foreground mb-3">Payment History</h4>
-                <div className="space-y-2">
+              <Card className="border-2 border-border bg-card p-6 mb-6">
+                <h3 className="text-lg font-bold text-foreground mb-4">Payment History</h3>
+                <div className="space-y-3">
                   {booking.payments.map((payment: any) => (
-                    <div key={payment.id} className="flex justify-between items-center p-3 bg-accent rounded-lg text-sm">
+                    <div key={payment.id} className="flex justify-between items-center p-4 bg-accent rounded-lg">
                       <div>
-                        <p className="font-medium">
+                        <p className="font-bold text-foreground">
                           ₱{parseFloat(payment.amount).toLocaleString()}
                           {payment.is_deposit && <Badge className="ml-2 text-xs">Deposit</Badge>}
                         </p>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-sm text-muted-foreground">
                           {payment.payment_method.toUpperCase()}
-                          {payment.reference_number && ` • ${payment.reference_number}`}
+                          {payment.reference_number && ` • Ref: ${payment.reference_number}`}
                         </p>
                       </div>
-                      <p className="text-xs text-muted-foreground">
-                        {new Date(payment.payment_date).toLocaleDateString()}
-                      </p>
+                      <div className="text-right">
+                        <Badge className="bg-success text-success-foreground">Paid</Badge>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {new Date(payment.payment_date).toLocaleDateString()}
+                        </p>
+                      </div>
                     </div>
                   ))}
                 </div>
-              </div>
+              </Card>
             )}
 
-            {/* Record Payment Form - Only for coaches */}
-            {isCoach && remainingBalance > 0 && booking.status === "approved" && (
-              <div className="space-y-4 pt-6 border-t border-border">
-                <h4 className="font-bold text-foreground">Record Payment</h4>
-                
-                <div>
-                  <Label>Payment Method</Label>
-                  <RadioGroup value={paymentMethod} onValueChange={(value: any) => setPaymentMethod(value)}>
-                    <div className="flex gap-4">
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="gcash" id="gcash" />
-                        <Label htmlFor="gcash" className="cursor-pointer">GCash</Label>
+            {/* Record Payment Form */}
+            {isCoach && remainingBalance > 0 && (booking.status === "approved" || booking.status === "pending") && (
+              <Card className="border-2 border-secondary bg-card p-6">
+                <h3 className="text-lg font-bold text-foreground mb-4">Record Payment</h3>
+                <div className="space-y-4">
+                  <div>
+                    <Label className="mb-2 block">Payment Method</Label>
+                    <RadioGroup value={paymentMethod} onValueChange={(value: any) => setPaymentMethod(value)}>
+                      <div className="flex gap-4">
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="gcash" id="gcash" />
+                          <Label htmlFor="gcash" className="cursor-pointer">GCash</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="maya" id="maya" />
+                          <Label htmlFor="maya" className="cursor-pointer">Maya</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="cash" id="cash" />
+                          <Label htmlFor="cash" className="cursor-pointer">Cash</Label>
+                        </div>
                       </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="maya" id="maya" />
-                        <Label htmlFor="maya" className="cursor-pointer">Maya</Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="cash" id="cash" />
-                        <Label htmlFor="cash" className="cursor-pointer">Cash</Label>
-                      </div>
+                    </RadioGroup>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="amount">Amount *</Label>
+                      <Input
+                        id="amount"
+                        type="number"
+                        step="0.01"
+                        value={paymentAmount}
+                        onChange={(e) => setPaymentAmount(e.target.value)}
+                        placeholder="1500"
+                        className="border-2 border-border"
+                      />
                     </div>
-                  </RadioGroup>
-                </div>
-
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="amount">Amount *</Label>
-                    <Input
-                      id="amount"
-                      type="number"
-                      step="0.01"
-                      value={paymentAmount}
-                      onChange={(e) => setPaymentAmount(e.target.value)}
-                      placeholder="1500"
-                      className="border-2 border-border"
-                    />
+                    <div>
+                      <Label htmlFor="reference">Reference # (optional)</Label>
+                      <Input
+                        id="reference"
+                        type="text"
+                        value={referenceNumber}
+                        onChange={(e) => setReferenceNumber(e.target.value)}
+                        placeholder="GC12345678"
+                        className="border-2 border-border"
+                      />
+                    </div>
                   </div>
 
-                  <div>
-                    <Label htmlFor="reference">Reference # (optional)</Label>
-                    <Input
-                      id="reference"
-                      type="text"
-                      value={referenceNumber}
-                      onChange={(e) => setReferenceNumber(e.target.value)}
-                      placeholder="GC12345678"
-                      className="border-2 border-border"
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="isDeposit"
+                      checked={isDeposit}
+                      onChange={(e) => setIsDeposit(e.target.checked)}
+                      className="rounded"
                     />
+                    <Label htmlFor="isDeposit" className="cursor-pointer">
+                      This is a deposit payment
+                    </Label>
                   </div>
-                </div>
 
-                <div className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    id="isDeposit"
-                    checked={isDeposit}
-                    onChange={(e) => setIsDeposit(e.target.checked)}
-                    className="rounded"
-                  />
-                  <Label htmlFor="isDeposit" className="cursor-pointer">
-                    This is a deposit payment
-                  </Label>
+                  <Button
+                    onClick={handleRecordPayment}
+                    disabled={isUpdating}
+                    className="w-full h-12 bg-secondary text-secondary-foreground hover:bg-secondary-hover"
+                  >
+                    <DollarSign className="mr-2 h-5 w-5" />
+                    Record Payment
+                  </Button>
                 </div>
-
-                <Button
-                  onClick={handleRecordPayment}
-                  disabled={isUpdating}
-                  className="w-full h-12 bg-secondary text-secondary-foreground hover:bg-secondary-hover"
-                >
-                  <DollarSign className="mr-2 h-5 w-5" />
-                  Record Payment
-                </Button>
-              </div>
+              </Card>
             )}
-          </Card>
-        </div>
+
+            {/* Expired State Actions */}
+            {displayStatus === "expired" && (
+              <Card className="border-2 border-destructive/30 bg-destructive/5 p-6">
+                <div className="flex items-start gap-4 mb-6">
+                  <AlertTriangle className="h-6 w-6 text-destructive flex-shrink-0 mt-1" />
+                  <div>
+                    <h3 className="font-bold text-foreground mb-1">Booking Expired</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Booking was not paid on time. It has been removed from your calendar.
+                    </p>
+                  </div>
+                </div>
+                <div className="flex gap-4">
+                  <Button
+                    onClick={handleAllowRebooking}
+                    disabled={isUpdating}
+                    variant="outline"
+                    className="flex-1 h-12 border-2"
+                  >
+                    <RotateCcw className="mr-2 h-5 w-5" />
+                    Allow re-booking
+                  </Button>
+                  <Button
+                    onClick={handleCloseRequest}
+                    disabled={isUpdating}
+                    variant="destructive"
+                    className="flex-1 h-12"
+                  >
+                    <Ban className="mr-2 h-5 w-5" />
+                    Don't allow re-booking
+                  </Button>
+                </div>
+              </Card>
+            )}
+          </TabsContent>
+
+          {/* Session Tab */}
+          <TabsContent value="session">
+            {isPaid ? (
+              <Card className="border-2 border-success/30 bg-success/5 p-6 mb-6">
+                <div className="flex items-start gap-4">
+                  <CheckCircle className="h-6 w-6 text-success flex-shrink-0 mt-1" />
+                  <div>
+                    <h3 className="font-bold text-foreground mb-1">Payment Received</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Rescheduling allowed until {sessionDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}, {sessionEndTime} (12 hours before session).
+                    </p>
+                  </div>
+                </div>
+              </Card>
+            ) : (
+              <Card className="border-2 border-border bg-card p-6 mb-6">
+                <div className="text-center py-4">
+                  <Clock className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
+                  <p className="text-muted-foreground">
+                    Session details will be available after payment is confirmed.
+                  </p>
+                </div>
+              </Card>
+            )}
+
+            {/* Session Actions */}
+            {isPaid && (
+              <Card className="border-2 border-border bg-card p-6">
+                <h3 className="text-lg font-bold text-foreground mb-4">Manage reschedules or issue a refund for this booking</h3>
+                <div className="flex gap-4">
+                  <Button
+                    variant="outline"
+                    className="flex-1 h-12 border-2"
+                    onClick={() => toast({ title: "Coming Soon", description: "Reschedule feature is coming soon!" })}
+                  >
+                    View/Reschedule
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    className="flex-1 h-12"
+                    onClick={() => setShowCancelDialog(true)}
+                  >
+                    Cancel & Refund
+                  </Button>
+                </div>
+              </Card>
+            )}
+
+            {/* Cancel for non-paid */}
+            {!isPaid && (booking.status === "approved" || booking.status === "pending") && (
+              <Card className="border-2 border-destructive/20 bg-card p-6">
+                <h3 className="text-lg font-bold text-destructive mb-4">Cancel Booking</h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Cancel this booking and notify the athlete. This action cannot be undone.
+                </p>
+                <Button
+                  onClick={() => setShowCancelDialog(true)}
+                  disabled={isUpdating}
+                  variant="destructive"
+                  className="w-full h-12"
+                >
+                  <Ban className="mr-2 h-5 w-5" />
+                  Cancel Booking
+                </Button>
+              </Card>
+            )}
+          </TabsContent>
+        </Tabs>
       </main>
 
       {/* Cancel Booking Dialog */}

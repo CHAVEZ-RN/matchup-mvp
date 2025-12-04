@@ -52,6 +52,23 @@ export const BookingsCalendar = ({ bookings }: BookingsCalendarProps) => {
     }
   };
 
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case "completed":
+        return "Paid";
+      case "approved":
+        return "Awaiting Payment";
+      case "pending":
+        return "Pending";
+      case "rejected":
+        return "Rejected";
+      case "cancelled":
+        return "Cancelled";
+      default:
+        return status;
+    }
+  };
+
   return (
     <div className="grid gap-6 lg:grid-cols-2 items-start">
       {/* Calendar */}
@@ -106,7 +123,7 @@ export const BookingsCalendar = ({ bookings }: BookingsCalendarProps) => {
                     <p className="text-sm text-muted-foreground">{booking.booking_reference}</p>
                   </div>
                   <Badge className={getStatusColor(booking.status)}>
-                    {booking.status}
+                    {getStatusLabel(booking.status)}
                   </Badge>
                 </div>
 
