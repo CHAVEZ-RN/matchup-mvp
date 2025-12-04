@@ -157,9 +157,9 @@ const Dashboard = () => {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "completed":
-        return <Badge className="bg-success text-success-foreground shadow-sm">Completed</Badge>;
+        return <Badge className="bg-success text-success-foreground shadow-sm">Paid</Badge>;
       case "approved":
-        return <Badge className="bg-warning text-warning-foreground shadow-sm">Approved</Badge>;
+        return <Badge className="bg-warning text-warning-foreground shadow-sm">Awaiting Payment</Badge>;
       case "pending":
         return <Badge className="bg-muted text-muted-foreground shadow-sm">Pending</Badge>;
       case "rejected":
