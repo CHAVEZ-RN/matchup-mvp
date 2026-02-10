@@ -1,14 +1,15 @@
 
 
-## Add Back Button to Coach Profile Setup Page
+## Align Heading and Subheading on Coach Profile Setup
 
-Add a back-to-dashboard button on the profile setup page, positioned to the left of the "Update Your Profile" heading.
+Move the back button and heading row so that the "Update Your Profile" text and the "Athletes will see..." subheading are left-aligned.
 
-### Changes
+### Change
 
 **File: `src/pages/CoachProfileSetup.tsx`**
-- Import the `ArrowLeft` icon from `lucide-react`
-- In the heading section (around line 253), add a back button to the left of the title text
-- The button navigates to `/dashboard` using the existing `useNavigate` hook
-- Style it as a subtle icon button consistent with the app's design
+
+Move the back button outside/above the heading block, or use a negative margin/absolute positioning so the arrow sits to the left without pushing the heading text rightward. The simplest approach: give the back button a negative left margin so it sits outside the content flow, keeping both the heading and subheading aligned at the same left edge.
+
+- On the flex container (line 346), add a negative left margin: `className="flex items-center gap-3 -ml-12"`
+- This pulls the back arrow into the left margin area while keeping the heading text aligned with the subheading below it
 
