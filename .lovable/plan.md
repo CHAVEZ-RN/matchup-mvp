@@ -1,27 +1,42 @@
 
 
-## Fix: Payment Status Showing as "Paid" When Still Pending
+## Fix Booking Detail Payment Issues
 
-**Problem**: The booking detail page counts ALL payment records toward the "total paid" amount, regardless of whether those payments are actually completed. Since a payment record with `payment_status: 'pending'` is created when the booking is made, the system incorrectly considers the full amount as "paid."
+### 1. Payment History: Show correct status and date for pending payments
 
-**Root Cause**: Line 255 in `src/pages/BookingDetail.tsx`:
-```
-const totalPaid = booking.payments?.reduce((sum, p) => sum + parseFloat(p.amount), 0) || 0;
-```
-This sums every payment record's amount without filtering by `payment_status`.
+**File: `src/pages/BookingDetail.tsx`** (lines 496-514)
 
-**Fix**: Filter to only include payments with `payment_status === 'paid'` before summing:
+Currently, every payment record displays a green "Paid" badge and formats the `payment_date`. For pending payments, this is incorrect.
 
-```typescript
-const totalPaid = booking.payments
-  ?.filter((p: any) => p.payment_status === 'paid')
-  .reduce((sum: number, p: any) => sum + parseFloat(p.amount), 0) || 0;
-```
+Changes:
+- Show "Unpaid" badge (muted/warning style) when `payment_status !== 'paid'`
+- Show "--/--/----" instead of a date when `payment_status !== 'paid'`
+- Keep "Deposit" badge logic, but rename it to "Partial" to match item 2
 
-This single-line change ensures:
-- The status badge correctly shows "Awaiting Payment" for approved bookings with pending payments
-- The payment summary shows the correct paid vs. remaining amounts
-- The "paid" status only appears when payments are actually confirmed
+### 2. Change "deposit" to "partial payment" with remaining balance
 
-### File Changed
-- **`src/pages/BookingDetail.tsx`** -- line 255: add `.filter()` to exclude non-paid payment records
+**File: `src/pages/BookingDetail.tsx`** (lines 571-582)
+
+- Change label from "This is a deposit payment" to "This is a partial payment"
+- When checked, display the remaining balance below the checkbox (e.g., "Remaining balance: [amount]")
+- The `isDeposit` state variable stays the same internally since it maps to the `is_deposit` DB column
+
+### 3. Reference number: only last 4 digits, hidden for cash
+
+**File: `src/pages/BookingDetail.tsx`** (lines 558-568)
+
+- Change label from "Reference # (optional)" to "Last 4 digits of Ref #"
+- Change placeholder from "GC12345678" to "1234"
+- Add `maxLength={4}` to the input
+- Conditionally hide the entire reference number field when `paymentMethod === "cash"`
+
+### 4. Remove icon from Record Payment button
+
+**File: `src/pages/BookingDetail.tsx`** (lines 584-591)
+
+- Remove the `<DollarSign>` icon from the "Record Payment" button
+
+### Technical Details
+
+All changes are in a single file: `src/pages/BookingDetail.tsx`. No database or backend changes needed.
+
