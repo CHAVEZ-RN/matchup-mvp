@@ -115,13 +115,13 @@ const AIAssistant = ({ onClose }: AIAssistantProps) => {
               className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
             >
               <div
-                className={`max-w-[80%] rounded-2xl px-4 py-3 break-words overflow-hidden ${
+                className={`max-w-[80%] min-w-0 rounded-2xl px-4 py-3 break-words overflow-hidden ${
                   message.role === "user"
                     ? "bg-primary text-foreground border border-border"
                     : "bg-accent text-foreground border border-border"
                 }`}
               >
-                <p className="text-sm whitespace-pre-wrap break-words overflow-wrap-anywhere">{message.content}</p>
+                <p className="text-sm whitespace-pre-wrap break-words" style={{ overflowWrap: 'anywhere', wordBreak: 'break-word' }}>{message.content}</p>
               </div>
             </div>
           ))}
