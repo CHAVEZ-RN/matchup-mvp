@@ -68,7 +68,7 @@ const PublicBooking = () => {
       
       setMessages([{
         role: "assistant",
-        content: `Hello, I am Coach ${data.profiles.full_name}'s AI Assistant, Machi! 👋\n\nWould you like to book a training session?`
+        content: `Hello, I am Coach ${data.profiles.full_name}'s AI Assistant, Machi! 👋\n\nLet's get your session booked! Here's what I'll need from you:\n\n• Full name\n• Phone number\n• Preferred sport\n• Location/venue\n• Date & time range\n• Payment method (GCash, Maya, or Cash)\n• Any special requests (optional)\n\nYou can send everything in one message or answer one by one — whatever's easiest!`
       }]);
     } catch (error) {
       console.error('Error fetching coach:', error);
@@ -263,7 +263,7 @@ const PublicBooking = () => {
       {/* Chat Interface */}
       <div className="max-w-4xl mx-auto h-[calc(100vh-200px)] flex flex-col">
         {/* Messages Container */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
           {messages.map((message, index) => (
             <div
               key={index}
@@ -326,8 +326,8 @@ const PublicBooking = () => {
               placeholder={uploadingFile ? "Uploading receipt..." : bookingCompleted ? "Booking completed!" : "Type your message..."}
               disabled={isSending || bookingCompleted || uploadingFile}
               rows={1}
-              className="flex-1 resize-none overflow-hidden rounded-md border-2 border-border bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
-              style={{ maxHeight: '120px' }}
+              className="flex-1 resize-none overflow-hidden rounded-md border-2 border-border bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm scrollbar-hide"
+              style={{ maxHeight: '120px', scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             />
             <Button
               onClick={handleSend}
