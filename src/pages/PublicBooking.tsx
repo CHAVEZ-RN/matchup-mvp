@@ -54,21 +54,17 @@ const PublicBooking = () => {
   const fetchCoachDetails = async () => {
     try {
       const { data, error } = await supabase
-        .from('coach_profiles')
-        .select(`
-          *,
-          profiles!inner(full_name, phone)
-        `)
-        .eq('id', coachId)
-        .single();
+        .rpc('get_coach_public_info', { coach_uuid: coachId });
 
       if (error) throw error;
+      if (!data) throw new Error('Coach not found');
 
-      setCoach(data);
+      const coachData = data as any;
+      setCoach(coachData);
       
       setMessages([{
         role: "assistant",
-        content: `Hello, I am Coach ${data.profiles.full_name}'s AI Assistant, Machi! 👋\n\nLet's get your session booked! Here's what I'll need from you:\n\n• Full name\n• Phone number\n• Preferred sport\n• Location/venue\n• Date & time range\n• Payment method (GCash, Maya, or Cash)\n• Any special requests (optional)\n\nYou can send everything in one message or answer one by one — whatever's easiest!`
+        content: `Hello, I am Coach ${coachData.full_name}'s AI Assistant, Machi! 👋\n\nLet's get your session booked! Here's what I'll need from you:\n\n• Full name\n• Phone number\n• Preferred sport\n• Location/venue\n• Date & time range\n• Payment method (GCash, Maya, or Cash)\n• Any special requests (optional)\n\nYou can send everything in one message or answer one by one — whatever's easiest!`
       }]);
     } catch (error) {
       console.error('Error fetching coach:', error);
@@ -232,7 +228,7 @@ const PublicBooking = () => {
           <div className="flex items-start gap-4">
             <div className="flex-1">
               <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
-                {coach.profiles.full_name}
+                {coach.full_name}
               </h1>
               {coach.business_name && (
                 <p className="text-lg text-muted-foreground mb-3">{coach.business_name}</p>
