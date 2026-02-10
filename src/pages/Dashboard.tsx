@@ -18,7 +18,9 @@ import {
   LogOut,
   Settings,
   Loader2,
-  Plus
+  Plus,
+  Sun,
+  Moon
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -64,6 +66,7 @@ const Dashboard = () => {
     reschedules: 0
   });
   const [blockings, setBlockings] = useState<any[]>([]);
+  const [isDarkMode, setIsDarkMode] = useState(() => document.documentElement.classList.contains("dark"));
 
   const fetchBlockings = async (coachId: string) => {
     const { data } = await supabase
@@ -228,6 +231,18 @@ const Dashboard = () => {
                 <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-secondary text-[10px] font-bold text-secondary-foreground flex items-center justify-center">
                   {stats.pending}
                 </span>
+              </Button>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="hover:bg-primary/20 border border-border"
+                onClick={() => {
+                  const isDark = document.documentElement.classList.toggle("dark");
+                  localStorage.setItem("theme", isDark ? "dark" : "light");
+                  setIsDarkMode(isDark);
+                }}
+              >
+                {isDarkMode ? <Sun className="h-5 w-5 text-foreground" /> : <Moon className="h-5 w-5 text-foreground" />}
               </Button>
               {isCoach && (
                 <Button 

@@ -8,75 +8,68 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Charcoal Black base - #1A1A1A */
-    --background: 0 0% 10%;
-    --foreground: 0 0% 78%;
+    /* Light mode - Clean whites and grays */
+    --background: 0 0% 98%;
+    --foreground: 0 0% 15%;
 
-    /* Card Background - #262626 */
-    --card: 0 0% 15%;
-    --card-foreground: 0 0% 78%;
+    /* Card Background - White */
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 15%;
 
-    --popover: 0 0% 15%;
-    --popover-foreground: 0 0% 78%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 15%;
 
-    /* Cobalt Blue - Primary #003F8A */
+    /* Cobalt Blue - Primary */
     --primary: 210 100% 27%;
-    --primary-foreground: 0 0% 78%;
+    --primary-foreground: 0 0% 98%;
     --primary-dark: 210 100% 22%;
     --primary-hover: 211 91% 35%;
     
-    /* Rust Orange - Secondary #C65D29 */
+    /* Rust Orange - Secondary */
     --secondary: 18 65% 47%;
-    --secondary-foreground: 0 0% 10%;
+    --secondary-foreground: 0 0% 98%;
     --secondary-hover: 17 63% 54%;
     
-    /* Graphite Gray - Accent #3A3A3A */
-    --accent: 0 0% 23%;
-    --accent-foreground: 0 0% 78%;
+    /* Light Gray - Accent */
+    --accent: 0 0% 93%;
+    --accent-foreground: 0 0% 15%;
 
-    /* Soft Divider - #3A3A3A */
-    --muted: 0 0% 23%;
-    --muted-foreground: 0 0% 78%;
+    /* Muted */
+    --muted: 0 0% 93%;
+    --muted-foreground: 0 0% 45%;
 
     /* UI Feedback States */
     --success: 122 39% 49%;
-    --success-foreground: 0 0% 10%;
+    --success-foreground: 0 0% 98%;
     
     --warning: 43 100% 47%;
     --warning-foreground: 0 0% 10%;
 
     --destructive: 350 75% 50%;
-    --destructive-foreground: 0 0% 10%;
+    --destructive-foreground: 0 0% 98%;
 
     /* Borders */
-    --border: 0 0% 23%;
-    --input: 0 0% 35%;
+    --border: 0 0% 85%;
+    --input: 0 0% 80%;
     --ring: 210 100% 27%;
 
     --radius: 0.5rem;
     
-    /* Solid Shadows - No gradients */
-    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
-    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.5);
-    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.6);
-    --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.7);
+    /* Solid Shadows */
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
+    --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.15);
     
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
     --sidebar-background: 0 0% 98%;
-
     --sidebar-foreground: 240 5.3% 26.1%;
-
     --sidebar-primary: 240 5.9% 10%;
-
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
-
     --sidebar-border: 220 13% 91%;
-
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
