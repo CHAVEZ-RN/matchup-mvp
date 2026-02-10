@@ -1,34 +1,29 @@
 
 
-## Add Light/Dark Mode Toggle to Dashboard Header
+## Replace All Blue Shades with #008ECC
 
-Add a theme toggle button between the notification bell and settings icon in the dashboard header.
+Update the primary color (currently Cobalt Blue) across the design system to use #008ECC (HSL: 197 100% 40%) and its variants.
 
-### What Changes
-
-**File: `src/pages/Dashboard.tsx`**
-
-1. Import `Sun` and `Moon` icons from `lucide-react`
-2. Add a `theme` state (`useState`) initialized by reading `document.documentElement.classList` (check if `dark` class is present)
-3. Add a toggle function that:
-   - Toggles the `dark` class on `document.documentElement`
-   - Saves preference to `localStorage`
-   - Updates state
-4. Insert a new icon button between the Bell button (line 231) and the Settings button (line 232), showing `Sun` in dark mode and `Moon` in light mode, styled consistently with the existing buttons
-
-**File: `src/main.tsx`**
-
-5. Add a small script at the top to read `localStorage` for the saved theme preference and apply the `dark` class on initial load, so the preference persists across sessions
+### Changes
 
 **File: `src/index.css`**
 
-6. The CSS already has a `.dark` variant defined, so the existing dark mode styles will activate automatically when the class is toggled. The default (no `dark` class) will show the light theme -- but the current `:root` variables are also dark-themed. Update the `:root` (light mode) CSS variables to use actual light colors (white/light gray backgrounds, dark text) so toggling actually produces a visible light theme.
+Update the primary-related CSS variables in both light and dark modes:
 
-### Technical Details
+**Light mode (`:root`)**
+- `--primary`: `210 100% 27%` -> `197 100% 40%` (#008ECC)
+- `--primary-dark`: `210 100% 22%` -> `197 100% 33%` (darker shade)
+- `--primary-hover`: `211 91% 35%` -> `197 100% 47%` (lighter hover)
+- `--ring`: `210 100% 27%` -> `197 100% 40%`
+- `--sidebar-ring`: `217.2 91.2% 59.8%` -> `197 100% 40%`
 
-- `:root` variables updated to light values: `--background: 0 0% 98%`, `--foreground: 0 0% 10%`, `--card: 0 0% 100%`, etc.
-- `.dark` variables remain as they currently are (the existing dark palette)
-- The `dark` class is applied to `<html>` element (already configured in `tailwind.config.ts` as `darkMode: ["class"]`)
-- On first visit with no saved preference, default to dark mode to preserve the current experience
-- Button style: `variant="ghost" size="icon"` with `hover:bg-primary/20 border border-border` matching adjacent buttons
+**Dark mode (`.dark`)**
+- `--primary`: `211 91% 35%` -> `197 100% 40%` (#008ECC)
+- `--primary-dark`: `210 100% 27%` -> `197 100% 33%`
+- `--primary-hover`: `211 91% 42%` -> `197 100% 50%`
+- `--ring`: `211 91% 35%` -> `197 100% 40%`
+- `--sidebar-primary`: `224.3 76.3% 48%` -> `197 100% 40%`
+- `--sidebar-ring`: `217.2 91.2% 59.8%` -> `197 100% 40%`
+
+This single file change will propagate the new blue (#008ECC) everywhere the primary color is used throughout the app -- buttons, links, rings, focus states, calendar selections, sidebar highlights, etc.
 
