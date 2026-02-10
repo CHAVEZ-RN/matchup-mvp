@@ -371,32 +371,6 @@ const Dashboard = () => {
                               Copy Link
                             </Button>
                           </div>
-                          <div className="flex gap-2">
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              className="border-primary/30 hover:bg-primary/10"
-                              onClick={() => {
-                                const link = `${window.location.origin}/book/${user?.id}`;
-                                const message = `Book a session with me on MatchUp! ${link}`;
-                                window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
-                              }}
-                            >
-                              Share on WhatsApp
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              className="border-primary/30 hover:bg-primary/10"
-                              onClick={() => {
-                                const link = `${window.location.origin}/book/${user?.id}`;
-                                const message = `Book a session with me on MatchUp! ${link}`;
-                                window.open(`sms:?body=${encodeURIComponent(message)}`, '_blank');
-                              }}
-                            >
-                              Share via SMS
-                            </Button>
-                          </div>
                         </div>
                       </div>
                     </Card>
