@@ -154,8 +154,8 @@ const Transactions = () => {
                 <FileText className="h-7 w-7 text-foreground" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold tracking-tight text-foreground">Past Transactions</h1>
-                <p className="text-xs text-muted-foreground">Completed sessions & payments</p>
+                <h1 className="text-2xl font-bold tracking-tight text-foreground">Transactions</h1>
+                <p className="text-xs text-muted-foreground">Sessions & payments</p>
               </div>
             </div>
           </div>
@@ -338,31 +338,22 @@ const Transactions = () => {
                           </span>
                         </div>
 
-                        {transaction.payments.length > 0 ? (
+                        {transaction.payments.filter(p => p.payment_status === 'paid').length > 0 ? (
                           <div className="space-y-3 pt-3 border-t border-border">
-                            {transaction.payments.map(payment => (
+                            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Payment History</p>
+                            {transaction.payments
+                              .filter(p => p.payment_status === 'paid')
+                              .map(payment => (
                               <div key={payment.id} className="space-y-2">
                                 <div className="flex items-center justify-between">
                                   <div className="flex items-center gap-2">
-                                    {payment.payment_status === 'paid' ? (
-                                      <CheckCircle2 className="h-5 w-5 text-green-500" />
-                                    ) : payment.payment_status === 'pending' ? (
-                                      <Clock className="h-5 w-5 text-yellow-500" />
-                                    ) : (
-                                      <XCircle className="h-5 w-5 text-red-500" />
-                                    )}
+                                    <CheckCircle2 className="h-5 w-5 text-green-500" />
                                     <span className="text-sm font-medium capitalize">
                                       {payment.payment_method}
                                     </span>
                                   </div>
-                                  <span className={`px-2 py-1 rounded text-xs font-semibold ${
-                                    payment.payment_status === 'paid'
-                                      ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
-                                      : payment.payment_status === 'pending'
-                                      ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400'
-                                      : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
-                                  }`}>
-                                    {payment.payment_status}
+                                  <span className="text-sm font-bold text-foreground">
+                                    ₱{Number(payment.amount).toLocaleString()}
                                   </span>
                                 </div>
 
@@ -391,6 +382,18 @@ const Transactions = () => {
                                 )}
                               </div>
                             ))}
+                            {(() => {
+                              const totalPaid = transaction.payments
+                                .filter(p => p.payment_status === 'paid')
+                                .reduce((sum, p) => sum + Number(p.amount), 0);
+                              const remaining = Number(transaction.total_amount) - totalPaid;
+                              return remaining > 0 ? (
+                                <div className="flex items-center justify-between pt-2 border-t border-border">
+                                  <span className="text-xs text-muted-foreground">Remaining Balance</span>
+                                  <span className="text-sm font-bold text-warning">₱{remaining.toLocaleString()}</span>
+                                </div>
+                              ) : null;
+                            })()}
                           </div>
                         ) : (
                           <p className="text-sm text-muted-foreground text-center pt-3 border-t border-border">
