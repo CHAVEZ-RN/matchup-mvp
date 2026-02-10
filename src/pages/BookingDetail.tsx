@@ -166,6 +166,24 @@ const BookingDetail = () => {
       return;
     }
 
+    if (paymentMethod !== "cash" && (!referenceNumber || referenceNumber.trim().length === 0)) {
+      toast({
+        title: "Error",
+        description: "Please enter the last 4 digits of the reference number",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (parseFloat(paymentAmount) > remainingBalance) {
+      toast({
+        title: "Error",
+        description: `Amount cannot exceed the remaining balance of ₱${remainingBalance.toLocaleString()}`,
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsUpdating(true);
     try {
       const { error } = await supabase.from("payments").insert({
@@ -517,20 +535,29 @@ const BookingDetail = () => {
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="amount">Amount *</Label>
+                      <Label htmlFor="amount">Amount</Label>
                       <Input
                         id="amount"
                         type="number"
                         step="0.01"
+                        max={remainingBalance}
                         value={paymentAmount}
-                        onChange={(e) => setPaymentAmount(e.target.value)}
+                        onChange={(e) => {
+                          const val = parseFloat(e.target.value);
+                          if (val > remainingBalance) {
+                            setPaymentAmount(remainingBalance.toString());
+                          } else {
+                            setPaymentAmount(e.target.value);
+                          }
+                        }}
                         placeholder="1500"
-                        className="border-2 border-border"
+                        className="border-2 border-border [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        required
                       />
                     </div>
                     {paymentMethod !== "cash" && (
                       <div>
-                        <Label htmlFor="reference">Last 4 digits of Ref #</Label>
+                        <Label htmlFor="reference">Last 4 digits of Reference Number</Label>
                         <Input
                           id="reference"
                           type="text"
@@ -539,6 +566,7 @@ const BookingDetail = () => {
                           onChange={(e) => setReferenceNumber(e.target.value)}
                           placeholder="1234"
                           className="border-2 border-border"
+                          required
                         />
                       </div>
                     )}
