@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { Calendar, ArrowLeft, Loader2, MapPin, User, CheckCircle, XCircle, DollarSign, Ban, Clock, AlertTriangle, RotateCcw, Phone } from "lucide-react";
+import { Calendar, ArrowLeft, Loader2, MapPin, User, CheckCircle, XCircle, Ban, Clock, AlertTriangle, RotateCcw, Phone } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -498,7 +498,7 @@ const BookingDetail = () => {
                       <div>
                         <p className="font-bold text-foreground">
                           ₱{parseFloat(payment.amount).toLocaleString()}
-                          {payment.is_deposit && <Badge className="ml-2 text-xs">Deposit</Badge>}
+                          {payment.is_deposit && <Badge className="ml-2 text-xs" variant="secondary">Partial</Badge>}
                         </p>
                         <p className="text-sm text-muted-foreground">
                           {payment.payment_method.toUpperCase()}
@@ -506,9 +506,15 @@ const BookingDetail = () => {
                         </p>
                       </div>
                       <div className="text-right">
-                        <Badge className="bg-success text-success-foreground">Paid</Badge>
+                        {payment.payment_status === 'paid' ? (
+                          <Badge className="bg-success text-success-foreground">Paid</Badge>
+                        ) : (
+                          <Badge variant="outline" className="text-muted-foreground">Unpaid</Badge>
+                        )}
                         <p className="text-xs text-muted-foreground mt-1">
-                          {new Date(payment.payment_date).toLocaleDateString()}
+                          {payment.payment_status === 'paid' && payment.payment_date
+                            ? new Date(payment.payment_date).toLocaleDateString()
+                            : '--/--/----'}
                         </p>
                       </div>
                     </div>
@@ -555,30 +561,40 @@ const BookingDetail = () => {
                         className="border-2 border-border"
                       />
                     </div>
-                    <div>
-                      <Label htmlFor="reference">Reference # (optional)</Label>
-                      <Input
-                        id="reference"
-                        type="text"
-                        value={referenceNumber}
-                        onChange={(e) => setReferenceNumber(e.target.value)}
-                        placeholder="GC12345678"
-                        className="border-2 border-border"
-                      />
-                    </div>
+                    {paymentMethod !== "cash" && (
+                      <div>
+                        <Label htmlFor="reference">Last 4 digits of Ref #</Label>
+                        <Input
+                          id="reference"
+                          type="text"
+                          maxLength={4}
+                          value={referenceNumber}
+                          onChange={(e) => setReferenceNumber(e.target.value)}
+                          placeholder="1234"
+                          className="border-2 border-border"
+                        />
+                      </div>
+                    )}
                   </div>
 
-                  <div className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      id="isDeposit"
-                      checked={isDeposit}
-                      onChange={(e) => setIsDeposit(e.target.checked)}
-                      className="rounded"
-                    />
-                    <Label htmlFor="isDeposit" className="cursor-pointer">
-                      This is a deposit payment
-                    </Label>
+                  <div>
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id="isDeposit"
+                        checked={isDeposit}
+                        onChange={(e) => setIsDeposit(e.target.checked)}
+                        className="rounded"
+                      />
+                      <Label htmlFor="isDeposit" className="cursor-pointer">
+                        This is a partial payment
+                      </Label>
+                    </div>
+                    {isDeposit && (
+                      <p className="text-sm text-muted-foreground mt-2 ml-6">
+                        Remaining balance: ₱{(remainingBalance - (parseFloat(paymentAmount) || 0)).toLocaleString()}
+                      </p>
+                    )}
                   </div>
 
                   <Button
@@ -586,7 +602,6 @@ const BookingDetail = () => {
                     disabled={isUpdating}
                     className="w-full h-12 bg-secondary text-secondary-foreground hover:bg-secondary-hover"
                   >
-                    <DollarSign className="mr-2 h-5 w-5" />
                     Record Payment
                   </Button>
                 </div>
