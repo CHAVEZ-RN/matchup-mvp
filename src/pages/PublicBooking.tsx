@@ -68,7 +68,7 @@ const PublicBooking = () => {
       
       setMessages([{
         role: "assistant",
-        content: `Hello! 👋 I'm the booking assistant for Coach ${data.profiles.full_name}.\n\nWould you like to book a training session?`
+        content: `Hello, I am Coach ${data.profiles.full_name}'s AI Assistant! 👋\n\nWould you like to book a training session?`
       }]);
     } catch (error) {
       console.error('Error fetching coach:', error);
@@ -326,7 +326,7 @@ const PublicBooking = () => {
               placeholder={uploadingFile ? "Uploading receipt..." : bookingCompleted ? "Booking completed!" : "Type your message..."}
               disabled={isSending || bookingCompleted || uploadingFile}
               rows={1}
-              className="flex-1 resize-none overflow-y-auto rounded-md border-2 border-border bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+              className="flex-1 resize-none overflow-hidden rounded-md border-2 border-border bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
               style={{ maxHeight: '120px' }}
             />
             <Button
