@@ -52,6 +52,14 @@ serve(async (req) => {
       throw new Error('Failed to fetch bookings');
     }
 
+    // Fetch coach's blocked times
+    const { data: blockedTimes } = await supabase
+      .from('coach_blockings')
+      .select('blocked_date, start_time, end_time, reason')
+      .eq('coach_id', coachId)
+      .gte('blocked_date', new Date().toISOString().split('T')[0])
+      .order('blocked_date', { ascending: true });
+
     // Find next available slot
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
@@ -121,7 +129,10 @@ IMPORTANT RULES:
 - When you have ALL required information (name, phone, sport, location, date, time, duration, payment_method), summarize everything and respond with "READY_TO_BOOK" followed by JSON: {athlete_name, athlete_phone, athlete_email, sport, location, session_date, session_time, duration_hours, payment_method, notes}
 
 EXISTING BOOKINGS TO AVOID CONFLICTS:
-${existingBookings.length > 0 ? existingBookings.map(b => `- ${b.session_date} at ${b.session_time} for ${b.duration_hours} hours (${b.status})`).join('\n') : 'No existing bookings'}`;
+${existingBookings.length > 0 ? existingBookings.map(b => `- ${b.session_date} at ${b.session_time} for ${b.duration_hours} hours (${b.status})`).join('\n') : 'No existing bookings'}
+
+BLOCKED TIMES (Coach is unavailable during these times - DO NOT allow bookings during these slots):
+${blockedTimes && blockedTimes.length > 0 ? blockedTimes.map(b => `- ${b.blocked_date} from ${b.start_time} to ${b.end_time}${b.reason ? ` (${b.reason})` : ''}`).join('\n') : 'No blocked times'}`;
     }
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
