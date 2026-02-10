@@ -19,7 +19,7 @@ const AIAssistant = ({ onClose }: AIAssistantProps) => {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
-      content: "Hello! I'm your MatchUp AI assistant. Ask me anything about your bookings, payments, schedules, or how to use MatchUp!"
+      content: "Hello! I'm your MatchUp AI assistant, Machi!"
     }
   ]);
   const [input, setInput] = useState("");
@@ -93,7 +93,7 @@ const AIAssistant = ({ onClose }: AIAssistantProps) => {
               <Sparkles className="h-6 w-6 text-secondary-foreground" />
             </div>
             <div>
-              <h3 className="font-bold text-foreground">MatchUp AI</h3>
+              <h3 className="font-bold text-foreground">Machi</h3>
               <p className="text-xs text-muted-foreground">Your 24/7 assistant</p>
             </div>
           </div>
