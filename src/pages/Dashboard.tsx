@@ -4,31 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { 
-  Calendar, 
-  Bell, 
-  Home,
-  CalendarDays,
-  Receipt,
-  User,
-  Clock,
-  MapPin,
-  ChevronRight,
-  MessageSquare,
-  LogOut,
-  Settings,
-  Loader2,
-  Plus,
-  Sun,
-  Moon
-} from "lucide-react";
+import { Calendar, Bell, Home, CalendarDays, Receipt, User, Clock, MapPin, ChevronRight, MessageSquare, LogOut, Settings, Loader2, Plus, Sun, Moon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import AIAssistant from "@/components/AIAssistant";
 import { BookingsCalendar } from "@/components/BookingsCalendar";
 import { BlockingsDialog } from "@/components/BlockingsDialog";
-
 interface Booking {
   id: string;
   sport: string;
@@ -49,10 +31,11 @@ interface Booking {
     };
   };
 }
-
 const Dashboard = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const {
+    toast
+  } = useToast();
   const [activeTab, setActiveTab] = useState("home");
   const [showAI, setShowAI] = useState(false);
   const [user, setUser] = useState<any>(null);
@@ -67,48 +50,40 @@ const Dashboard = () => {
   });
   const [blockings, setBlockings] = useState<any[]>([]);
   const [isDarkMode, setIsDarkMode] = useState(() => document.documentElement.classList.contains("dark"));
-
   const fetchBlockings = async (coachId: string) => {
-    const { data } = await supabase
-      .from("coach_blockings")
-      .select("*")
-      .eq("coach_id", coachId)
-      .gte("blocked_date", new Date().toISOString().split("T")[0])
-      .order("blocked_date", { ascending: true });
+    const {
+      data
+    } = await supabase.from("coach_blockings").select("*").eq("coach_id", coachId).gte("blocked_date", new Date().toISOString().split("T")[0]).order("blocked_date", {
+      ascending: true
+    });
     setBlockings(data || []);
   };
-
   useEffect(() => {
     checkAuth();
   }, []);
-
   const checkAuth = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    
+    const {
+      data: {
+        session
+      }
+    } = await supabase.auth.getSession();
     if (!session) {
       navigate("/auth");
       return;
     }
-
     setUser(session.user);
 
     // Get profile
-    const { data: profileData } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("id", session.user.id)
-      .single();
-
+    const {
+      data: profileData
+    } = await supabase.from("profiles").select("*").eq("id", session.user.id).single();
     setProfile(profileData);
 
     // If coach, check for coach profile
     if (profileData?.user_type === "coach") {
-      const { data: coachData } = await supabase
-        .from("coach_profiles")
-        .select("*")
-        .eq("id", session.user.id)
-        .single();
-
+      const {
+        data: coachData
+      } = await supabase.from("coach_profiles").select("*").eq("id", session.user.id).single();
       setCoachProfile(coachData);
 
       // If no coach profile, redirect to setup
@@ -124,21 +99,18 @@ const Dashboard = () => {
       // Fetch athlete bookings
       await fetchAthleteBookings(session.user.id);
     }
-
     setIsLoading(false);
   };
-
   const fetchCoachBookings = async (coachId: string) => {
     console.log("Fetching bookings for coach:", coachId);
-    const { data, error } = await supabase
-      .from("bookings")
-      .select("*")
-      .eq("coach_id", coachId)
-      .order("session_date", { ascending: true });
-
+    const {
+      data,
+      error
+    } = await supabase.from("bookings").select("*").eq("coach_id", coachId).order("session_date", {
+      ascending: true
+    });
     console.log("Bookings data:", data);
     console.log("Bookings error:", error);
-
     if (error) {
       toast({
         title: "Error fetching bookings",
@@ -150,26 +122,26 @@ const Dashboard = () => {
       calculateStats(data);
     }
   };
-
   const fetchAthleteBookings = async (athleteId: string) => {
     // Athletes no longer have accounts, this function is deprecated
     // Redirecting to browse coaches instead
     navigate("/browse-coaches");
   };
-
   const calculateStats = (bookingsData: Booking[]) => {
     const pending = bookingsData.filter(b => b.status === "pending").length;
     const awaitingPayment = bookingsData.filter(b => b.status === "approved").length; // Approved but not paid
     const reschedules = 0; // TODO: Add rescheduling logic
 
-    setStats({ pending, awaitingPayment, reschedules });
+    setStats({
+      pending,
+      awaitingPayment,
+      reschedules
+    });
   };
-
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     navigate("/auth");
   };
-
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "completed":
@@ -186,35 +158,27 @@ const Dashboard = () => {
         return null;
     }
   };
-
   const todayBookings = bookings.filter(b => {
     const today = new Date().toISOString().split('T')[0];
     return b.session_date === today;
   });
-
   const upcomingBookings = bookings.filter(b => {
     const today = new Date().toISOString().split('T')[0];
     return b.session_date > today;
   }).slice(0, 5);
-
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+    return <div className="min-h-screen bg-background flex items-center justify-center">
         <Loader2 className="h-12 w-12 animate-spin text-primary" />
-      </div>
-    );
+      </div>;
   }
-
   const isCoach = profile?.user_type === "coach";
-
-  return (
-    <div className="min-h-screen bg-background">
+  return <div className="min-h-screen bg-background">
       {/* Premium Header */}
       <header className="border-b-2 border-border bg-card backdrop-blur-xl sticky top-0 z-50 shadow-xl">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary shadow-xl">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl shadow-xl bg-[#008fcc]">
                 <Calendar className="h-7 w-7 text-foreground" />
               </div>
               <div>
@@ -232,34 +196,17 @@ const Dashboard = () => {
                   {stats.pending}
                 </span>
               </Button>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="hover:bg-primary/20 border border-border"
-                onClick={() => {
-                  const isDark = document.documentElement.classList.toggle("dark");
-                  localStorage.setItem("theme", isDark ? "dark" : "light");
-                  setIsDarkMode(isDark);
-                }}
-              >
+              <Button variant="ghost" size="icon" className="hover:bg-primary/20 border border-border" onClick={() => {
+              const isDark = document.documentElement.classList.toggle("dark");
+              localStorage.setItem("theme", isDark ? "dark" : "light");
+              setIsDarkMode(isDark);
+            }}>
                 {isDarkMode ? <Sun className="h-5 w-5 text-foreground" /> : <Moon className="h-5 w-5 text-foreground" />}
               </Button>
-              {isCoach && (
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="hover:bg-primary/20 border border-border"
-                  onClick={() => navigate("/coach/profile-setup")}
-                >
+              {isCoach && <Button variant="ghost" size="icon" className="hover:bg-primary/20 border border-border" onClick={() => navigate("/coach/profile-setup")}>
                   <Settings className="h-5 w-5 text-foreground" />
-                </Button>
-              )}
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="hover:bg-destructive/20 border border-border"
-                onClick={handleSignOut}
-              >
+                </Button>}
+              <Button variant="ghost" size="icon" className="hover:bg-destructive/20 border border-border" onClick={handleSignOut}>
                 <LogOut className="h-5 w-5 text-foreground" />
               </Button>
             </div>
@@ -271,39 +218,15 @@ const Dashboard = () => {
         {/* Premium Sidebar */}
         <aside className="hidden w-72 border-r-2 border-border bg-card md:block">
           <nav className="space-y-2 p-6">
-            <Button
-              variant={activeTab === "home" ? "default" : "ghost"}
-              className={`w-full justify-start h-12 text-base font-medium transition-all ${
-                activeTab === "home" 
-                  ? "bg-primary text-foreground shadow-lg" 
-                  : "hover:bg-primary/20"
-              }`}
-              onClick={() => setActiveTab("home")}
-            >
+            <Button variant={activeTab === "home" ? "default" : "ghost"} className={`w-full justify-start h-12 text-base font-medium transition-all ${activeTab === "home" ? "bg-primary text-foreground shadow-lg" : "hover:bg-primary/20"}`} onClick={() => setActiveTab("home")}>
               <Home className="mr-3 h-5 w-5" />
               Home
             </Button>
-            <Button
-              variant={activeTab === "bookings" ? "default" : "ghost"}
-              className={`w-full justify-start h-12 text-base font-medium transition-all ${
-                activeTab === "bookings" 
-                  ? "bg-primary text-foreground shadow-lg" 
-                  : "hover:bg-primary/20"
-              }`}
-              onClick={() => setActiveTab("bookings")}
-            >
+            <Button variant={activeTab === "bookings" ? "default" : "ghost"} className={`w-full justify-start h-12 text-base font-medium transition-all ${activeTab === "bookings" ? "bg-primary text-foreground shadow-lg" : "hover:bg-primary/20"}`} onClick={() => setActiveTab("bookings")}>
               <CalendarDays className="mr-3 h-5 w-5" />
               Bookings
             </Button>
-            <Button
-              variant={activeTab === "transactions" ? "default" : "ghost"}
-              className={`w-full justify-start h-12 text-base font-medium transition-all ${
-                activeTab === "transactions" 
-                  ? "bg-primary text-foreground shadow-lg" 
-                  : "hover:bg-primary/20"
-              }`}
-              onClick={() => navigate("/transactions")}
-            >
+            <Button variant={activeTab === "transactions" ? "default" : "ghost"} className={`w-full justify-start h-12 text-base font-medium transition-all ${activeTab === "transactions" ? "bg-primary text-foreground shadow-lg" : "hover:bg-primary/20"}`} onClick={() => navigate("/transactions")}>
               <Receipt className="mr-3 h-5 w-5" />
               Transactions
             </Button>
@@ -319,11 +242,7 @@ const Dashboard = () => {
                 <p className="mb-4 text-sm text-muted-foreground">
                   24/7 assistant for booking questions
                 </p>
-                <Button 
-                  className="w-full bg-secondary text-secondary-foreground hover:bg-secondary-hover shadow-lg" 
-                  size="sm"
-                  onClick={() => setShowAI(!showAI)}
-                >
+                <Button className="w-full bg-secondary text-secondary-foreground hover:bg-secondary-hover shadow-lg" size="sm" onClick={() => setShowAI(!showAI)}>
                   Chat Now
                 </Button>
               </div>
@@ -334,24 +253,19 @@ const Dashboard = () => {
         {/* Main Content */}
         <main className="flex-1 p-8">
           <div className="mx-auto max-w-7xl">
-            {activeTab === "home" ? (
-              <>
+            {activeTab === "home" ? <>
                 {/* Welcome Section */}
                 <div className="mb-10">
                   <h2 className="mb-2 text-4xl font-extrabold text-foreground">
                     Welcome, {profile?.full_name?.split(' ')[0]}! 👋
                   </h2>
                   <p className="text-lg text-muted-foreground">
-                    {isCoach 
-                      ? "Here's what's happening with your sessions today"
-                      : "Find coaches and manage your bookings"
-                    }
+                    {isCoach ? "Here's what's happening with your sessions today" : "Find coaches and manage your bookings"}
                   </p>
                 </div>
 
                 {/* Stats Cards - Only for Coaches */}
-                {isCoach && (
-                  <>
+                {isCoach && <>
                     {/* Booking Link Card - Always Visible */}
                     <Card className="mb-6 border-2 border-secondary/30 bg-gradient-to-r from-secondary/10 to-primary/10 p-6">
                       <div className="flex items-start gap-4">
@@ -361,19 +275,14 @@ const Dashboard = () => {
                         <div className="flex-1">
                           <h3 className="text-xl font-bold text-foreground mb-2">Share Your Booking Link</h3>
                           <div className="flex gap-2 mb-3">
-                            <Input 
-                              value={`${window.location.origin}/book/${user?.id}`}
-                              readOnly
-                              className="bg-background border-2 border-border font-mono text-sm flex-1"
-                            />
-                            <Button
-                              variant="outline"
-                              className="border-2 border-secondary hover:bg-secondary hover:text-secondary-foreground"
-                              onClick={() => {
-                                navigator.clipboard.writeText(`${window.location.origin}/book/${user?.id}`);
-                                toast({ title: "Copied!", description: "Booking link copied to clipboard" });
-                              }}
-                            >
+                            <Input value={`${window.location.origin}/book/${user?.id}`} readOnly className="bg-background border-2 border-border font-mono text-sm flex-1" />
+                            <Button variant="outline" className="border-2 border-secondary hover:bg-secondary hover:text-secondary-foreground" onClick={() => {
+                        navigator.clipboard.writeText(`${window.location.origin}/book/${user?.id}`);
+                        toast({
+                          title: "Copied!",
+                          description: "Booking link copied to clipboard"
+                        });
+                      }}>
                               Copy Link
                             </Button>
                           </div>
@@ -421,12 +330,10 @@ const Dashboard = () => {
                         </div>
                       </Card>
                     </div>
-                  </>
-                )}
+                  </>}
 
                 {/* Empty State for Coaches with No Bookings */}
-                {isCoach && bookings.length === 0 && (
-                  <Card className="border-2 border-primary/30 bg-card p-12 mb-10">
+                {isCoach && bookings.length === 0 && <Card className="border-2 border-primary/30 bg-card p-12 mb-10">
                     <div className="max-w-2xl mx-auto text-center">
                       <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-accent shadow-xl border-2 border-primary/30 mx-auto mb-6">
                         <CalendarDays className="h-10 w-10 text-primary" />
@@ -439,19 +346,14 @@ const Dashboard = () => {
                       <Card className="border-2 border-secondary/30 bg-accent p-6 mb-8">
                         <Label className="text-sm text-muted-foreground mb-2 block">Your Booking Link</Label>
                         <div className="flex gap-2">
-                          <Input 
-                            value={`${window.location.origin}/book/${user?.id}`}
-                            readOnly
-                            className="bg-background border-2 border-border font-mono text-sm"
-                          />
-                          <Button
-                            variant="outline"
-                            className="border-2 border-secondary hover:bg-secondary/20"
-                            onClick={() => {
-                              navigator.clipboard.writeText(`${window.location.origin}/book/${user?.id}`);
-                              toast({ title: "Copied!", description: "Booking link copied to clipboard" });
-                            }}
-                          >
+                          <Input value={`${window.location.origin}/book/${user?.id}`} readOnly className="bg-background border-2 border-border font-mono text-sm" />
+                          <Button variant="outline" className="border-2 border-secondary hover:bg-secondary/20" onClick={() => {
+                      navigator.clipboard.writeText(`${window.location.origin}/book/${user?.id}`);
+                      toast({
+                        title: "Copied!",
+                        description: "Booking link copied to clipboard"
+                      });
+                    }}>
                             Copy
                           </Button>
                         </div>
@@ -487,39 +389,27 @@ const Dashboard = () => {
                       </div>
 
                       <div className="flex gap-4 justify-center">
-                        <Button
-                          size="lg"
-                          variant="outline"
-                          className="border-2 border-secondary hover:bg-secondary/10 h-14 px-8"
-                          onClick={() => setShowAI(true)}
-                        >
+                        <Button size="lg" variant="outline" className="border-2 border-secondary hover:bg-secondary/10 h-14 px-8" onClick={() => setShowAI(true)}>
                           <MessageSquare className="mr-2 h-5 w-5" />
                           Chat with AI
                         </Button>
-                        <Button
-                          size="lg"
-                          className="bg-primary text-foreground hover:bg-primary-hover h-14 px-8"
-                          onClick={() => navigate("/coach/profile-setup")}
-                        >
+                        <Button size="lg" className="bg-primary text-foreground hover:bg-primary-hover h-14 px-8" onClick={() => navigate("/coach/profile-setup")}>
                           <Settings className="mr-2 h-5 w-5" />
                           Edit Profile
                         </Button>
                       </div>
                     </div>
-                  </Card>
-                )}
+                  </Card>}
 
 
             {/* Today's Sessions */}
-            {todayBookings.length > 0 && (
-              <div className="mb-10">
+            {todayBookings.length > 0 && <div className="mb-10">
                 <div className="mb-6 flex items-center justify-between">
                   <h3 className="text-3xl font-bold text-foreground">Today's Sessions</h3>
                 </div>
 
                 <div className="space-y-4">
-                  {todayBookings.map((booking) => (
-                    <Card key={booking.id} className="group overflow-hidden border-2 border-border bg-card p-6 transition-all hover:border-secondary hover:shadow-xl hover:shadow-secondary/10 hover:-translate-y-1">
+                  {todayBookings.map(booking => <Card key={booking.id} className="group overflow-hidden border-2 border-border bg-card p-6 transition-all hover:border-secondary hover:shadow-xl hover:shadow-secondary/10 hover:-translate-y-1">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-6">
                           <div className="flex h-20 w-20 flex-col items-center justify-center rounded-2xl bg-accent shadow-lg border-2 border-secondary/30">
@@ -542,41 +432,33 @@ const Dashboard = () => {
                           </div>
                         </div>
                         
-                        <Button 
-                          className="bg-primary text-foreground shadow-lg hover:bg-primary-hover hover:shadow-xl transition-all"
-                          onClick={() => navigate(`/booking/${booking.id}`)}
-                        >
+                        <Button className="bg-primary text-foreground shadow-lg hover:bg-primary-hover hover:shadow-xl transition-all" onClick={() => navigate(`/booking/${booking.id}`)}>
                           View Details
                         </Button>
                       </div>
-                    </Card>
-                  ))}
+                    </Card>)}
                 </div>
-              </div>
-            )}
+              </div>}
 
                 {/* Upcoming Bookings */}
-                {upcomingBookings.length > 0 && (
-                  <div>
+                {upcomingBookings.length > 0 && <div>
                     <div className="mb-6 flex items-center justify-between">
                       <h3 className="text-3xl font-bold text-foreground">Upcoming Bookings</h3>
-                      <Button 
-                        variant="ghost" 
-                        className="gap-2 hover:bg-primary/10"
-                        onClick={() => setActiveTab("bookings")}
-                      >
+                      <Button variant="ghost" className="gap-2 hover:bg-primary/10" onClick={() => setActiveTab("bookings")}>
                         View All
                         <ChevronRight className="h-5 w-5" />
                       </Button>
                     </div>
 
                     <div className="space-y-4">
-                      {upcomingBookings.map((booking) => (
-                        <Card key={booking.id} className="group overflow-hidden border-2 border-border bg-card p-6 transition-all hover:border-secondary hover:shadow-xl hover:shadow-secondary/10 hover:-translate-y-1">
+                      {upcomingBookings.map(booking => <Card key={booking.id} className="group overflow-hidden border-2 border-border bg-card p-6 transition-all hover:border-secondary hover:shadow-xl hover:shadow-secondary/10 hover:-translate-y-1">
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-6">
                               <div className="flex h-20 w-20 flex-col items-center justify-center rounded-2xl bg-accent shadow-lg border-2 border-muted/50">
-                                <span className="text-xs font-medium text-muted-foreground">{new Date(booking.session_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                                <span className="text-xs font-medium text-muted-foreground">{new Date(booking.session_date).toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric'
+                          })}</span>
                                 <span className="text-lg font-bold text-foreground">{booking.session_time.slice(0, 5)}</span>
                               </div>
                               
@@ -595,23 +477,15 @@ const Dashboard = () => {
                               </div>
                             </div>
                             
-                            <Button 
-                              variant="outline" 
-                              className="border-2 border-primary/30 hover:bg-primary hover:text-foreground transition-all"
-                              onClick={() => navigate(`/booking/${booking.id}`)}
-                            >
+                            <Button variant="outline" className="border-2 border-primary/30 hover:bg-primary hover:text-foreground transition-all" onClick={() => navigate(`/booking/${booking.id}`)}>
                               {isCoach && booking.status === "pending" ? "Review" : "View"}
                             </Button>
                           </div>
-                        </Card>
-                      ))}
+                        </Card>)}
                     </div>
-                  </div>
-                )}
-              </>
-            ) : (
-              /* Bookings Tab View */
-              <div>
+                  </div>}
+              </> : (/* Bookings Tab View */
+          <div>
                 <div className="mb-10 flex items-start justify-between">
                   <div>
                     <h2 className="mb-2 text-4xl font-extrabold text-foreground">Bookings</h2>
@@ -619,33 +493,19 @@ const Dashboard = () => {
                       {isCoach ? "View your calendar and manage all bookings" : "View your calendar and all session bookings"}
                     </p>
                   </div>
-                  {isCoach && user && (
-                    <BlockingsDialog coachId={user.id} onBlockingsChange={() => fetchBlockings(user.id)} />
-                  )}
+                  {isCoach && user && <BlockingsDialog coachId={user.id} onBlockingsChange={() => fetchBlockings(user.id)} />}
                 </div>
 
-                {bookings.length === 0 ? (
-                  <Card className="border-2 border-primary/30 bg-card p-12 text-center">
+                {bookings.length === 0 ? <Card className="border-2 border-primary/30 bg-card p-12 text-center">
                     <CalendarDays className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
                     <h3 className="text-2xl font-bold text-foreground mb-2">No bookings yet</h3>
                     <p className="text-muted-foreground mb-6">
-                      {isCoach 
-                        ? "Your bookings will appear here once athletes start booking sessions with you"
-                        : "Start by browsing available coaches and booking your first session"
-                      }
+                      {isCoach ? "Your bookings will appear here once athletes start booking sessions with you" : "Start by browsing available coaches and booking your first session"}
                     </p>
-                    {!isCoach && (
-                      <Button
-                        size="lg"
-                        className="bg-secondary text-secondary-foreground hover:bg-secondary-hover shadow-lg"
-                        onClick={() => navigate("/browse-coaches")}
-                      >
+                    {!isCoach && <Button size="lg" className="bg-secondary text-secondary-foreground hover:bg-secondary-hover shadow-lg" onClick={() => navigate("/browse-coaches")}>
                         Browse Coaches
-                      </Button>
-                    )}
-                  </Card>
-                ) : (
-                  <>
+                      </Button>}
+                  </Card> : <>
                     {/* Calendar View */}
                     <div className="mb-10">
                       <BookingsCalendar bookings={bookings} blockings={blockings} />
@@ -655,13 +515,14 @@ const Dashboard = () => {
                     <div>
                       <h3 className="text-2xl font-bold text-foreground mb-6">All Bookings</h3>
                       <div className="grid gap-4">
-                        {bookings.map((booking) => (
-                      <Card key={booking.id} className="group overflow-hidden border-2 border-border bg-card p-6 transition-all hover:border-secondary hover:shadow-xl hover:shadow-secondary/10">
+                        {bookings.map(booking => <Card key={booking.id} className="group overflow-hidden border-2 border-border bg-card p-6 transition-all hover:border-secondary hover:shadow-xl hover:shadow-secondary/10">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-6 flex-1">
                             <div className="flex h-24 w-24 flex-col items-center justify-center rounded-2xl bg-accent shadow-lg border-2 border-muted/50">
                               <span className="text-sm font-medium text-muted-foreground">
-                                {new Date(booking.session_date).toLocaleDateString('en-US', { month: 'short' })}
+                                {new Date(booking.session_date).toLocaleDateString('en-US', {
+                              month: 'short'
+                            })}
                               </span>
                               <span className="text-3xl font-extrabold text-foreground">
                                 {new Date(booking.session_date).getDate()}
@@ -695,33 +556,23 @@ const Dashboard = () => {
                             </div>
                           </div>
                           
-                          <Button 
-                            className="bg-primary text-foreground shadow-lg hover:bg-primary-hover hover:shadow-xl transition-all"
-                            onClick={() => navigate(`/booking/${booking.id}`)}
-                          >
+                          <Button className="bg-primary text-foreground shadow-lg hover:bg-primary-hover hover:shadow-xl transition-all" onClick={() => navigate(`/booking/${booking.id}`)}>
                             {isCoach && booking.status === "pending" ? "Review Booking" : "View Details"}
                           </Button>
                         </div>
-                      </Card>
-                      ))}
+                      </Card>)}
                       </div>
                     </div>
-                  </>
-                )}
-              </div>
-            )}
+                  </>}
+              </div>)}
           </div>
         </main>
       </div>
 
       {/* AI Assistant Overlay */}
-      {showAI && (
-        <div className="fixed inset-0 z-50 backdrop-blur-sm">
+      {showAI && <div className="fixed inset-0 z-50 backdrop-blur-sm">
           <AIAssistant onClose={() => setShowAI(false)} />
-        </div>
-      )}
-    </div>
-  );
+        </div>}
+    </div>;
 };
-
 export default Dashboard;
