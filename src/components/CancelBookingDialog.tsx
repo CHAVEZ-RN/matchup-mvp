@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { sendBookingEmail } from "@/lib/emailService";
+
 
 interface CancelBookingDialogProps {
   open: boolean;
@@ -44,29 +44,6 @@ export const CancelBookingDialog = ({ open, onOpenChange, booking, onSuccess }: 
         .eq("id", booking.id);
 
       if (error) throw error;
-
-      // Send email notification
-      try {
-        await sendBookingEmail(
-          booking.athlete_email || "",
-          "booking_cancelled",
-          {
-            athleteName: booking.athlete_name,
-            coachName: booking.coach_profiles?.profiles?.full_name || "Coach",
-            sport: booking.sport,
-            location: booking.location,
-            sessionDate: new Date(booking.session_date).toLocaleDateString(),
-            sessionTime: booking.session_time,
-            duration: booking.duration_hours,
-            totalAmount: booking.total_amount,
-            bookingReference: booking.booking_reference,
-            cancellationReason: reason,
-          }
-        );
-      } catch (emailError) {
-        console.error("Failed to send cancellation email:", emailError);
-        // Don't fail the cancellation if email fails
-      }
 
       toast({
         title: "Booking Cancelled",

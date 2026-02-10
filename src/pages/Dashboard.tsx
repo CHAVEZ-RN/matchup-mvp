@@ -21,7 +21,7 @@ interface Booking {
   total_amount: number;
   coach_id: string;
   athlete_name: string;
-  athlete_email?: string;
+  
   athlete_phone: string;
   athlete_notes?: string;
   booking_reference: string;
