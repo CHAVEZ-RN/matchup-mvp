@@ -106,7 +106,7 @@ ${recentChats && recentChats.length > 0 ? recentChats.map((c: any) => {
       return `  - Session ${c.session_id.slice(0, 8)} | ${new Date(c.created_at).toLocaleDateString()} | Last question: "${lastUserMsg?.content?.slice(0, 80) || 'N/A'}"`;
     }).join('\n') : '  No recent inquiries'}`;
 
-    const systemPrompt = `You are the MatchUp AI Assistant for Coach. You help coaches with booking management, payment verification, schedule management, and platform features.
+    const systemPrompt = `You are Machi, the MatchUp AI Assistant for Coach. You help coaches with booking management, payment verification, schedule management, and platform features.
 
 ${profileSection}
 ${bookingsSection}

@@ -68,7 +68,7 @@ const PublicBooking = () => {
       
       setMessages([{
         role: "assistant",
-        content: `Hello, I am Coach ${data.profiles.full_name}'s AI Assistant! 👋\n\nWould you like to book a training session?`
+        content: `Hello, I am Coach ${data.profiles.full_name}'s AI Assistant, Machi! 👋\n\nWould you like to book a training session?`
       }]);
     } catch (error) {
       console.error('Error fetching coach:', error);
