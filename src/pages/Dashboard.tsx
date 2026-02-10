@@ -269,7 +269,7 @@ const Dashboard = () => {
                     {/* Booking Link Card - Always Visible */}
                     <Card className="mb-6 border-2 border-secondary/30 bg-card p-6">
                       <div className="flex flex-col items-center text-center gap-3">
-                        <h3 className="text-xl font-bold text-foreground">Your Booking Link</h3>
+                        <h3 className="text-2xl font-bold text-foreground">Your Booking Link</h3>
                         <p className="text-sm text-muted-foreground">Share this link with your clients so they can book a lesson!</p>
                         <div className="flex gap-2 w-full max-w-lg">
                           <Input value={`${window.location.origin}/book/${user?.id}`} readOnly className="bg-background border-2 border-border font-mono text-sm flex-1" />
