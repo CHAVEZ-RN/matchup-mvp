@@ -35,7 +35,7 @@ interface Transaction {
   booking_reference: string;
   athlete_name: string;
   athlete_phone: string;
-  athlete_email: string | null;
+  
   sport: string;
   location: string;
   session_date: string;

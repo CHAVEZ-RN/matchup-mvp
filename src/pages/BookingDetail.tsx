@@ -6,11 +6,11 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { Calendar, ArrowLeft, Loader2, MapPin, User, CheckCircle, XCircle, DollarSign, Ban, Clock, AlertTriangle, RotateCcw, Phone, Mail } from "lucide-react";
+import { Calendar, ArrowLeft, Loader2, MapPin, User, CheckCircle, XCircle, DollarSign, Ban, Clock, AlertTriangle, RotateCcw, Phone } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { sendBookingEmail } from "@/lib/emailService";
+
 import { CancelBookingDialog } from "@/components/CancelBookingDialog";
 
 const BookingDetail = () => {
@@ -139,29 +139,9 @@ const BookingDetail = () => {
 
       if (error) throw error;
 
-      try {
-        await sendBookingEmail(
-          booking.athlete_email || "",
-          "booking_rejected",
-          {
-            athleteName: booking.athlete_name,
-            coachName: booking.coach_profiles?.profiles?.full_name || "Coach",
-            sport: booking.sport,
-            location: booking.location,
-            sessionDate: new Date(booking.session_date).toLocaleDateString(),
-            sessionTime: booking.session_time,
-            duration: booking.duration_hours,
-            totalAmount: booking.total_amount,
-            bookingReference: booking.booking_reference,
-          }
-        );
-      } catch (emailError) {
-        console.error("Failed to send rejection email:", emailError);
-      }
-
       toast({
         title: "Booking Rejected",
-        description: "The athlete has been notified via email.",
+        description: "The booking has been rejected.",
       });
 
       await fetchBookingDetails(user.id, isCoach);
@@ -396,12 +376,6 @@ const BookingDetail = () => {
               <div className="flex items-center gap-3">
                 <Phone className="h-4 w-4 text-muted-foreground" />
                 <span className="text-foreground">{booking.athlete_phone}</span>
-              </div>
-            )}
-            {booking.athlete_email && (
-              <div className="flex items-center gap-3">
-                <Mail className="h-4 w-4 text-muted-foreground" />
-                <span className="text-foreground">{booking.athlete_email}</span>
               </div>
             )}
             {booking.athlete_notes && (
