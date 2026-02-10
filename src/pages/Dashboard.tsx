@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Calendar, Bell, Home, CalendarDays, Receipt, User, Clock, MapPin, ChevronRight, MessageSquare, LogOut, Settings, Loader2, Sun, Moon } from "lucide-react";
+import { Calendar, Bell, Home, CalendarDays, Receipt, User, Clock, MapPin, ChevronRight, MessageSquare, LogOut, Settings, Loader2, Sun, Moon, Link2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -267,9 +267,12 @@ const Dashboard = () => {
                 {/* Stats Cards - Only for Coaches */}
                 {isCoach && <>
                     {/* Booking Link Card - Always Visible */}
-                    <Card className="mb-6 border-2 border-secondary/30 bg-card p-6">
+                    <Card className="mb-6 border-2 border-secondary/30 bg-gradient-to-r from-secondary/10 via-secondary/5 to-transparent p-6 shadow-md shadow-secondary/10">
                       <div className="flex flex-col items-center text-center gap-3">
-                        <h3 className="text-2xl font-bold text-foreground">Your Booking Link</h3>
+                        <div className="flex items-center gap-2">
+                          <Link2 className="h-7 w-7 text-secondary" />
+                          <h3 className="text-3xl font-bold text-foreground">Your Booking Link</h3>
+                        </div>
                         <p className="text-sm text-muted-foreground">Share this link with your clients so they can book a lesson!</p>
                         <div className="flex gap-2 w-full max-w-lg">
                           <Input value={`${window.location.origin}/book/${user?.id}`} readOnly className="bg-background border-2 border-border font-mono text-sm flex-1" />
