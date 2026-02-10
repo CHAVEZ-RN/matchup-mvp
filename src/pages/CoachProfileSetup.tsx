@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Calendar, Loader2, Plus, X, Upload, User } from "lucide-react";
+import { ArrowLeft, Calendar, Loader2, Plus, X, Upload, User } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { validateAndFormatPhone } from "@/lib/phoneValidation";
@@ -343,9 +343,20 @@ const CoachProfileSetup = () => {
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8 max-w-4xl">
         <div className="mb-8">
-          <h2 className="text-4xl font-extrabold text-foreground mb-2">
-            {existingProfile ? "Update Your Profile" : "Complete Your Coach Profile"}
-          </h2>
+          <div className="flex items-center gap-3">
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate("/dashboard")}
+              className="shrink-0"
+            >
+              <ArrowLeft className="h-6 w-6" />
+            </Button>
+            <h2 className="text-4xl font-extrabold text-foreground mb-0">
+              {existingProfile ? "Update Your Profile" : "Complete Your Coach Profile"}
+            </h2>
+          </div>
           <p className="text-lg text-muted-foreground">
             Athletes will see this information when booking sessions
           </p>
