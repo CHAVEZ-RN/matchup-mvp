@@ -1,50 +1,43 @@
 
 
-## Streamline Booking Chatbot Fields
+## Remove Email Field from Client Contacts
 
-Simplify the information the chatbot collects by removing Email and Duration as separate fields, and updating the Location field behavior.
+Remove all references to `athlete_email` from the UI across the app, since email is no longer collected from clients.
+
+Note: The database column `athlete_email` will remain (it's nullable and already set to null for new bookings), so no migration is needed. We're only removing it from the display and type definitions in the frontend.
 
 ---
 
 ### Changes
 
-**File: `supabase/functions/booking-assistant/index.ts`** (lines 117-170)
+**1. `src/pages/BookingDetail.tsx`** (lines 401-406)
+- Remove the conditional block that displays the athlete's email with the Mail icon
 
-Update the system prompt's conversation flow and rules:
+**2. `src/pages/BookingDetail.tsx`** (lines 143-144)
+- The `sendBookingEmail` call on rejection uses `booking.athlete_email` as the recipient — since there's no email to send to, remove this email notification call (or keep it but it will gracefully do nothing since email is empty)
 
-**Fields to ask (updated list):**
-- Full name
-- Phone number (Philippine format)
-- Sport (only if multiple sports -- skip if single sport, same as now)
-- Location (free-text, but remind the client that sessions must be within the coach's area: [coach locations])
-- Preferred date and time, including duration (e.g., "Jan 15, 2-4pm" implies 2 hours)
-- Payment method (GCash, Maya, or Cash)
-- Special requests/notes (optional)
+**3. `src/components/CancelBookingDialog.tsx`** (line 51)
+- Same situation — `sendBookingEmail` uses `booking.athlete_email` which will always be empty. Remove the email notification call for cancellations
 
-**Fields removed:**
-- Email (remove from the list and from the confirmation summary)
-- Duration as a separate question (merged into date/time -- the bot infers duration from the time range given)
+**4. `src/pages/Dashboard.tsx`** (line 24)
+- Remove `athlete_email` from the Booking interface type
 
-**Location behavior change:**
-- Instead of restricting to exact coach location options, allow any location but remind the client that sessions should be within the coach's designated area
+**5. `src/pages/Transactions.tsx`** (line 38)
+- Remove `athlete_email` from the Transaction interface type
 
-**Confirmation summary updated to match:**
-- Remove Email line
-- Remove separate Duration line (show it as part of date/time, e.g., "Jan 15, 2:00 PM - 4:00 PM (2 hours)")
-- Keep Total amount (calculated from inferred duration x hourly rate)
-
-**JSON output:** Keep `duration_hours` in the READY_TO_BOOK JSON (derived from the time range). Set `athlete_email` to null since it's no longer collected.
+**6. `src/lib/emailService.ts`**
+- No changes needed — this service is used for coach emails too, not just athlete emails
 
 ---
 
 ### Technical Details
 
-**`supabase/functions/booking-assistant/index.ts`**
+| File | Change |
+|------|--------|
+| `BookingDetail.tsx` | Remove email display block (lines 401-406), remove email icon import if unused |
+| `BookingDetail.tsx` | Remove athlete email notification on rejection (lines 142-160) since no email exists |
+| `CancelBookingDialog.tsx` | Remove athlete email notification on cancellation (lines 48-69) |
+| `Dashboard.tsx` | Remove `athlete_email` from interface (line 24) |
+| `Transactions.tsx` | Remove `athlete_email` from interface (line 38) |
 
-Lines 119-170: Replace the conversation flow, confirmation summary, and rules sections of the system prompt to reflect the reduced field set. Key changes:
-
-- Step 2 list: remove email and duration, update location instruction, merge duration into date/time
-- Step 4 confirmation summary: remove email row, show date/time with duration inline
-- READY_TO_BOOK JSON instruction: note that `athlete_email` should be null, `duration_hours` is inferred from time range
-- Location validation rule: change from "must match available options" to "remind client sessions should be in coach's area"
-
+The database column stays as-is (nullable, defaults to null). No migration needed.
