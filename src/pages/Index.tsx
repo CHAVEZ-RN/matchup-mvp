@@ -93,7 +93,7 @@ const Index = () => {
                 className="h-16 px-10 text-lg font-semibold shadow-xl hover:shadow-2xl transition-all bg-secondary text-secondary-foreground hover:bg-secondary-hover luxury-glow"
                 onClick={() => navigate("/auth")}
               >
-                Start Free Trial
+                Try Premium for a Week for Free
                 <ArrowRight className="ml-2 h-6 w-6" />
               </Button>
             </div>
@@ -278,7 +278,7 @@ const Index = () => {
                     size="lg" 
                     onClick={() => navigate("/auth")}
                   >
-                    Start Free Trial
+                    Try Premium for a Week for Free
                   </Button>
                   
                   <p className="mt-6 text-center text-sm text-muted-foreground">
@@ -309,7 +309,7 @@ const Index = () => {
             className="h-16 px-10 text-lg font-semibold bg-secondary text-secondary-foreground shadow-xl hover:bg-secondary-hover hover:shadow-2xl hover:scale-105 transition-all luxury-glow"
             onClick={() => navigate("/auth")}
           >
-            Start Free Trial
+            Try Premium for a Week for Free
             <ArrowRight className="ml-2 h-6 w-6" />
           </Button>
         </div>
