@@ -4,7 +4,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 
 serve(async (req) => {
@@ -96,6 +96,13 @@ Ask the user to upload a screenshot of their payment receipt. Once they mention 
 
 Be friendly and guide them through the payment process.`;
     } else {
+      // Single sport auto-selection logic
+      const isSingleSport = coachProfile.sports_offered.length === 1;
+      const singleSport = isSingleSport ? coachProfile.sports_offered[0] : null;
+      const sportInstruction = isSingleSport
+        ? `5. SKIP this step — the coach only offers ${singleSport}, so auto-select it. Briefly mention: "Since Coach ${coachProfile.profiles.full_name} specializes in ${singleSport}, I've already selected that for you." Then move to the next question.`
+        : `5. Ask which sport they want to train (show available options: ${coachProfile.sports_offered.join(', ')})`;
+
       // Regular booking flow
       systemPrompt = `You are a friendly and professional booking assistant for Coach ${coachProfile.profiles.full_name}.
 
@@ -113,7 +120,7 @@ CONVERSATION FLOW - ASK ONE QUESTION AT A TIME:
 2. Ask for their full name
 3. Ask for their phone number
 4. Ask for their email (mention it's optional)
-5. Ask which sport they want to train (show available options: ${coachProfile.sports_offered.join(', ')})
+${sportInstruction}
 6. Ask for their preferred location (show available options: ${coachProfile.locations.join(', ')})
 7. Ask for their preferred date and time
 8. Ask for duration in hours (suggest common options like 1, 1.5, 2 hours)
@@ -125,7 +132,9 @@ IMPORTANT RULES:
 - Ask ONLY ONE question per message
 - Wait for the user's answer before moving to the next question
 - Be warm and conversational
+- Keep responses SHORT and concise — no long paragraphs
 - Validate answers (e.g., sport and location must match available options)
+${isSingleSport ? `- The sport is auto-selected as "${singleSport}" — do NOT ask the user to choose a sport` : ''}
 - When you have ALL required information (name, phone, sport, location, date, time, duration, payment_method), summarize everything and respond with "READY_TO_BOOK" followed by JSON: {athlete_name, athlete_phone, athlete_email, sport, location, session_date, session_time, duration_hours, payment_method, notes}
 
 EXISTING BOOKINGS TO AVOID CONFLICTS:
@@ -135,6 +144,7 @@ BLOCKED TIMES (Coach is unavailable during these times - DO NOT allow bookings d
 ${blockedTimes && blockedTimes.length > 0 ? blockedTimes.map(b => `- ${b.blocked_date} from ${b.start_time} to ${b.end_time}${b.reason ? ` (${b.reason})` : ''}`).join('\n') : 'No blocked times'}`;
     }
 
+    // Use streaming for the AI call
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -142,11 +152,12 @@ ${blockedTimes && blockedTimes.length > 0 ? blockedTimes.map(b => `- ${b.blocked
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.5-flash',
+        model: 'google/gemini-2.5-flash-lite',
         messages: [
           { role: 'system', content: systemPrompt },
           ...messages
         ],
+        stream: true,
       }),
     });
 
@@ -170,9 +181,57 @@ ${blockedTimes && blockedTimes.length > 0 ? blockedTimes.map(b => `- ${b.blocked
       throw new Error(`AI gateway error: ${response.status}`);
     }
 
-    const data = await response.json();
-    const aiReply = data.choices[0].message.content;
+    // Read the full streamed response, accumulate it, and check for READY_TO_BOOK
+    const reader = response.body!.getReader();
+    const decoder = new TextDecoder();
+    let fullContent = '';
+    let textBuffer = '';
+    const chunks: string[] = [];
 
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      textBuffer += decoder.decode(value, { stream: true });
+
+      let newlineIndex: number;
+      while ((newlineIndex = textBuffer.indexOf('\n')) !== -1) {
+        let line = textBuffer.slice(0, newlineIndex);
+        textBuffer = textBuffer.slice(newlineIndex + 1);
+        if (line.endsWith('\r')) line = line.slice(0, -1);
+        if (!line.startsWith('data: ')) continue;
+        const jsonStr = line.slice(6).trim();
+        if (jsonStr === '[DONE]') break;
+        try {
+          const parsed = JSON.parse(jsonStr);
+          const content = parsed.choices?.[0]?.delta?.content;
+          if (content) {
+            fullContent += content;
+            chunks.push(content);
+          }
+        } catch { /* partial JSON, skip */ }
+      }
+    }
+
+    // Flush remaining buffer
+    if (textBuffer.trim()) {
+      for (let raw of textBuffer.split('\n')) {
+        if (!raw) continue;
+        if (raw.endsWith('\r')) raw = raw.slice(0, -1);
+        if (!raw.startsWith('data: ')) continue;
+        const jsonStr = raw.slice(6).trim();
+        if (jsonStr === '[DONE]') continue;
+        try {
+          const parsed = JSON.parse(jsonStr);
+          const content = parsed.choices?.[0]?.delta?.content;
+          if (content) {
+            fullContent += content;
+            chunks.push(content);
+          }
+        } catch { /* ignore */ }
+      }
+    }
+
+    const aiReply = fullContent;
     console.log('AI Reply:', aiReply);
 
     // Check if the AI has collected all information and is ready to book
@@ -356,8 +415,9 @@ ${blockedTimes && blockedTimes.length > 0 ? blockedTimes.map(b => `- ${b.blocked
         onConflict: 'session_id'
       });
 
+    // Return streamed chunks for the frontend to replay quickly
     return new Response(
-      JSON.stringify({ reply: aiReply }),
+      JSON.stringify({ reply: aiReply, chunks }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 

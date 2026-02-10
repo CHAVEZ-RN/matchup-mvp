@@ -1,9 +1,8 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Trophy, Award, Briefcase, Send, Sparkles, Image as ImageIcon } from "lucide-react";
 
@@ -23,8 +22,10 @@ const PublicBooking = () => {
   const [sessionId] = useState(() => crypto.randomUUID());
   const [bookingCompleted, setBookingCompleted] = useState(false);
   const [uploadingFile, setUploadingFile] = useState(false);
+  const [isStreaming, setIsStreaming] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -37,6 +38,18 @@ const PublicBooking = () => {
   useEffect(() => {
     fetchCoachDetails();
   }, [coachId]);
+
+  const adjustTextareaHeight = useCallback(() => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      textarea.style.height = 'auto';
+      textarea.style.height = `${Math.min(textarea.scrollHeight, 120)}px`;
+    }
+  }, []);
+
+  useEffect(() => {
+    adjustTextareaHeight();
+  }, [input, adjustTextareaHeight]);
 
   const fetchCoachDetails = async () => {
     try {
@@ -53,7 +66,6 @@ const PublicBooking = () => {
 
       setCoach(data);
       
-      // Set initial greeting message - simple and focused
       setMessages([{
         role: "assistant",
         content: `Hello! 👋 I'm the booking assistant for Coach ${data.profiles.full_name}.\n\nWould you like to book a training session?`
@@ -78,6 +90,11 @@ const PublicBooking = () => {
     setInput("");
     setIsSending(true);
 
+    // Reset textarea height
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+    }
+
     try {
       const { data, error } = await supabase.functions.invoke('booking-assistant', {
         body: { 
@@ -90,7 +107,27 @@ const PublicBooking = () => {
       if (error) throw error;
 
       if (data?.reply) {
-        setMessages(prev => [...prev, { role: "assistant", content: data.reply }]);
+        // If we have chunks, animate them for a streaming feel
+        if (data.chunks && data.chunks.length > 0) {
+          setIsStreaming(true);
+          let accumulated = '';
+          setMessages(prev => [...prev, { role: "assistant", content: '' }]);
+          
+          for (const chunk of data.chunks) {
+            accumulated += chunk;
+            const content = accumulated;
+            setMessages(prev => {
+              const updated = [...prev];
+              updated[updated.length - 1] = { role: "assistant", content };
+              return updated;
+            });
+            // Small delay between chunks for streaming effect
+            await new Promise(r => setTimeout(r, 15));
+          }
+          setIsStreaming(false);
+        } else {
+          setMessages(prev => [...prev, { role: "assistant", content: data.reply }]);
+        }
         
         // Check if bot is asking for receipt upload
         if (data.reply.includes('RECEIPT_READY') || 
@@ -125,7 +162,6 @@ const PublicBooking = () => {
 
     setUploadingFile(true);
     try {
-      // Upload to Supabase Storage
       const fileExt = file.name.split('.').pop();
       const fileName = `${sessionId}-${Date.now()}.${fileExt}`;
       const filePath = `payment-receipts/${fileName}`;
@@ -136,12 +172,10 @@ const PublicBooking = () => {
 
       if (uploadError) throw uploadError;
 
-      // Get public URL
       const { data: { publicUrl } } = supabase.storage
         .from('coach-photos')
         .getPublicUrl(filePath);
 
-      // Send confirmation message
       setMessages(prev => [...prev, {
         role: "assistant",
         content: `✅ Receipt uploaded successfully!\n\nYour payment receipt has been forwarded to the coach for verification. You'll be notified once confirmed!`
@@ -233,7 +267,7 @@ const PublicBooking = () => {
           {messages.map((message, index) => (
             <div
               key={index}
-              className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
+              className={`flex ${message.role === "user" ? "justify-end" : "justify-start"} animate-in fade-in-0 slide-in-from-bottom-2 duration-300`}
             >
               <div
                 className={`max-w-[80%] rounded-2xl px-4 py-3 ${
@@ -246,10 +280,14 @@ const PublicBooking = () => {
               </div>
             </div>
           ))}
-          {isSending && (
-            <div className="flex justify-start">
+          {isSending && !isStreaming && (
+            <div className="flex justify-start animate-in fade-in-0 duration-200">
               <div className="bg-accent rounded-2xl px-4 py-3 border border-border">
-                <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                <div className="flex gap-1">
+                  <span className="w-2 h-2 bg-primary/60 rounded-full animate-bounce [animation-delay:0ms]" />
+                  <span className="w-2 h-2 bg-primary/60 rounded-full animate-bounce [animation-delay:150ms]" />
+                  <span className="w-2 h-2 bg-primary/60 rounded-full animate-bounce [animation-delay:300ms]" />
+                </div>
               </div>
             </div>
           )}
@@ -258,7 +296,7 @@ const PublicBooking = () => {
 
         {/* Input Area */}
         <div className="border-t-2 border-border bg-card p-4">
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-end">
             <input
               ref={fileInputRef}
               type="file"
@@ -280,13 +318,16 @@ const PublicBooking = () => {
                 <ImageIcon className="h-5 w-5" />
               )}
             </Button>
-            <Input
+            <textarea
+              ref={textareaRef}
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              onKeyPress={handleKeyPress}
+              onKeyDown={handleKeyPress}
               placeholder={uploadingFile ? "Uploading receipt..." : bookingCompleted ? "Booking completed!" : "Type your message..."}
               disabled={isSending || bookingCompleted || uploadingFile}
-              className="flex-1 border-2 border-border"
+              rows={1}
+              className="flex-1 resize-none overflow-y-auto rounded-md border-2 border-border bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+              style={{ maxHeight: '120px' }}
             />
             <Button
               onClick={handleSend}
