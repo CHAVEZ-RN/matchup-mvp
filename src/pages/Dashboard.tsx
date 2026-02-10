@@ -122,10 +122,9 @@ const Dashboard = () => {
       calculateStats(data);
     }
   };
-  const fetchAthleteBookings = async (athleteId: string) => {
-    // Athletes no longer have accounts, this function is deprecated
-    // Redirecting to browse coaches instead
-    navigate("/browse-coaches");
+  const fetchAthleteBookings = async (_athleteId: string) => {
+    // Athletes no longer have accounts - redirect to home
+    navigate("/");
   };
   const calculateStats = (bookingsData: Booking[]) => {
     const pending = bookingsData.filter(b => b.status === "pending").length;
@@ -498,12 +497,9 @@ const Dashboard = () => {
                 {bookings.length === 0 ? <Card className="border-2 border-primary/30 bg-card p-12 text-center">
                     <CalendarDays className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
                     <h3 className="text-2xl font-bold text-foreground mb-2">No bookings yet</h3>
-                    <p className="text-muted-foreground mb-6">
-                      {isCoach ? "Your bookings will appear here once athletes start booking sessions with you" : "Start by browsing available coaches and booking your first session"}
-                    </p>
-                    {!isCoach && <Button size="lg" className="bg-secondary text-secondary-foreground hover:bg-secondary-hover shadow-lg" onClick={() => navigate("/browse-coaches")}>
-                        Browse Coaches
-                      </Button>}
+                     <p className="text-muted-foreground mb-6">
+                       Your bookings will appear here once athletes start booking sessions with you
+                     </p>
                   </Card> : <>
                     {/* Calendar View */}
                     <div className="mb-10">
