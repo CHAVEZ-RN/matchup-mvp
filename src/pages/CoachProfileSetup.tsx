@@ -617,15 +617,7 @@ const CoachProfileSetup = () => {
           </Card>
 
           {/* Submit */}
-          <div className="flex gap-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => navigate("/dashboard")}
-              className="flex-1 h-12 border-2"
-            >
-              Cancel
-            </Button>
+          <div>
             <Button
               type="submit"
               disabled={isLoading}
