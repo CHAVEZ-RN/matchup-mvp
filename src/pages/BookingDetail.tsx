@@ -252,7 +252,9 @@ const BookingDetail = () => {
 
   if (!booking) return null;
 
-  const totalPaid = booking.payments?.reduce((sum: number, p: any) => sum + parseFloat(p.amount), 0) || 0;
+  const totalPaid = booking.payments
+    ?.filter((p: any) => p.payment_status === 'paid')
+    .reduce((sum: number, p: any) => sum + parseFloat(p.amount), 0) || 0;
   const remainingBalance = booking.total_amount - totalPaid;
   const isPaid = totalPaid >= booking.total_amount;
 
