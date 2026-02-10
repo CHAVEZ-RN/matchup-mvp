@@ -2,7 +2,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
-import { Clock, MapPin, User } from "lucide-react";
+import { Clock, MapPin, User, Ban } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface Booking {
@@ -17,11 +17,20 @@ interface Booking {
   booking_reference: string;
 }
 
-interface BookingsCalendarProps {
-  bookings: Booking[];
+interface Blocking {
+  id: string;
+  blocked_date: string;
+  start_time: string;
+  end_time: string;
+  reason: string | null;
 }
 
-export const BookingsCalendar = ({ bookings }: BookingsCalendarProps) => {
+interface BookingsCalendarProps {
+  bookings: Booking[];
+  blockings?: Blocking[];
+}
+
+export const BookingsCalendar = ({ bookings, blockings = [] }: BookingsCalendarProps) => {
   const navigate = useNavigate();
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
 
@@ -34,6 +43,16 @@ export const BookingsCalendar = ({ bookings }: BookingsCalendarProps) => {
 
   // Get dates that have bookings
   const bookedDates = bookings.map(booking => new Date(booking.session_date));
+
+  // Get dates that have blockings
+  const blockedDates = blockings.map(b => new Date(b.blocked_date + "T00:00:00"));
+
+  // Get blockings for selected date
+  const selectedDateBlockings = blockings.filter(b => {
+    if (!selectedDate) return false;
+    const bDate = new Date(b.blocked_date + "T00:00:00");
+    return bDate.toDateString() === selectedDate.toDateString();
+  });
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -81,6 +100,7 @@ export const BookingsCalendar = ({ bookings }: BookingsCalendarProps) => {
           className="rounded-md border-2 border-border"
           modifiers={{
             booked: bookedDates,
+            blocked: blockedDates,
           }}
           modifiersStyles={{
             booked: {
@@ -88,11 +108,24 @@ export const BookingsCalendar = ({ bookings }: BookingsCalendarProps) => {
               backgroundColor: "hsl(var(--secondary) / 0.2)",
               color: "hsl(var(--secondary))",
             },
+            blocked: {
+              fontWeight: "bold",
+              backgroundColor: "hsl(var(--destructive) / 0.2)",
+              color: "hsl(var(--destructive))",
+            },
           }}
         />
-        <div className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
-          <div className="w-4 h-4 rounded-full bg-secondary/20 border-2 border-secondary"></div>
-          <span>Days with bookings</span>
+        <div className="mt-4 flex flex-col gap-2 text-sm text-muted-foreground">
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 rounded-full bg-secondary/20 border-2 border-secondary"></div>
+            <span>Days with bookings</span>
+          </div>
+          {blockings.length > 0 && (
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 rounded-full bg-destructive/20 border-2 border-destructive"></div>
+              <span>Blocked times</span>
+            </div>
+          )}
         </div>
       </Card>
 
@@ -108,6 +141,24 @@ export const BookingsCalendar = ({ bookings }: BookingsCalendarProps) => {
               })}`
             : "Select a date"}
         </h3>
+
+        {/* Blocked times for selected date */}
+        {selectedDateBlockings.length > 0 && (
+          <div className="space-y-2 mb-4">
+            {selectedDateBlockings.map((b) => (
+              <Card key={b.id} className="p-3 border-2 border-destructive/30 bg-destructive/5">
+                <div className="flex items-center gap-2">
+                  <Ban className="h-4 w-4 text-destructive" />
+                  <span className="text-sm font-semibold text-destructive">Blocked</span>
+                  <span className="text-sm text-muted-foreground">
+                    {b.start_time.slice(0, 5)} – {b.end_time.slice(0, 5)}
+                  </span>
+                  {b.reason && <span className="text-xs text-muted-foreground">· {b.reason}</span>}
+                </div>
+              </Card>
+            ))}
+          </div>
+        )}
 
         {selectedDateBookings.length > 0 ? (
           <div className="space-y-4">
@@ -150,7 +201,9 @@ export const BookingsCalendar = ({ bookings }: BookingsCalendarProps) => {
           </div>
         ) : (
           <div className="text-center py-12">
-            <p className="text-muted-foreground">No bookings for this date</p>
+            <p className="text-muted-foreground">
+              {selectedDateBlockings.length > 0 ? "No bookings for this date (blocked times shown above)" : "No bookings for this date"}
+            </p>
           </div>
         )}
       </Card>

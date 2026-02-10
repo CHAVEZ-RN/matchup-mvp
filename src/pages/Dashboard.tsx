@@ -25,6 +25,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import AIAssistant from "@/components/AIAssistant";
 import { BookingsCalendar } from "@/components/BookingsCalendar";
+import { BlockingsDialog } from "@/components/BlockingsDialog";
 
 interface Booking {
   id: string;
@@ -62,6 +63,17 @@ const Dashboard = () => {
     awaitingPayment: 0,
     reschedules: 0
   });
+  const [blockings, setBlockings] = useState<any[]>([]);
+
+  const fetchBlockings = async (coachId: string) => {
+    const { data } = await supabase
+      .from("coach_blockings")
+      .select("*")
+      .eq("coach_id", coachId)
+      .gte("blocked_date", new Date().toISOString().split("T")[0])
+      .order("blocked_date", { ascending: true });
+    setBlockings(data || []);
+  };
 
   useEffect(() => {
     checkAuth();
@@ -102,8 +114,9 @@ const Dashboard = () => {
         return;
       }
 
-      // Fetch coach bookings
+      // Fetch coach bookings and blockings
       await fetchCoachBookings(session.user.id);
+      await fetchBlockings(session.user.id);
     } else {
       // Fetch athlete bookings
       await fetchAthleteBookings(session.user.id);
@@ -619,11 +632,16 @@ const Dashboard = () => {
             ) : (
               /* Bookings Tab View */
               <div>
-                <div className="mb-10">
-                  <h2 className="mb-2 text-4xl font-extrabold text-foreground">Bookings</h2>
-                  <p className="text-lg text-muted-foreground">
-                    {isCoach ? "View your calendar and manage all bookings" : "View your calendar and all session bookings"}
-                  </p>
+                <div className="mb-10 flex items-start justify-between">
+                  <div>
+                    <h2 className="mb-2 text-4xl font-extrabold text-foreground">Bookings</h2>
+                    <p className="text-lg text-muted-foreground">
+                      {isCoach ? "View your calendar and manage all bookings" : "View your calendar and all session bookings"}
+                    </p>
+                  </div>
+                  {isCoach && user && (
+                    <BlockingsDialog coachId={user.id} onBlockingsChange={() => fetchBlockings(user.id)} />
+                  )}
                 </div>
 
                 {bookings.length === 0 ? (
@@ -650,7 +668,7 @@ const Dashboard = () => {
                   <>
                     {/* Calendar View */}
                     <div className="mb-10">
-                      <BookingsCalendar bookings={bookings} />
+                      <BookingsCalendar bookings={bookings} blockings={blockings} />
                     </div>
 
                     {/* All Bookings List */}

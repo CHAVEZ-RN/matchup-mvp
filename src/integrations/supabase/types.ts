@@ -130,6 +130,36 @@ export type Database = {
           },
         ]
       }
+      coach_blockings: {
+        Row: {
+          blocked_date: string
+          coach_id: string
+          created_at: string
+          end_time: string
+          id: string
+          reason: string | null
+          start_time: string
+        }
+        Insert: {
+          blocked_date: string
+          coach_id: string
+          created_at?: string
+          end_time: string
+          id?: string
+          reason?: string | null
+          start_time: string
+        }
+        Update: {
+          blocked_date?: string
+          coach_id?: string
+          created_at?: string
+          end_time?: string
+          id?: string
+          reason?: string | null
+          start_time?: string
+        }
+        Relationships: []
+      }
       coach_profiles: {
         Row: {
           bio: string | null
