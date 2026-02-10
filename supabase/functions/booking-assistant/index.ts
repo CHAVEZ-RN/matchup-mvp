@@ -14,6 +14,21 @@ serve(async (req) => {
 
   try {
     const { messages, coachId, sessionId } = await req.json();
+
+    // Basic input validation
+    if (!coachId || typeof coachId !== 'string' || !sessionId || typeof sessionId !== 'string') {
+      return new Response(
+        JSON.stringify({ error: 'Invalid request parameters' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    if (!Array.isArray(messages) || messages.length > 50) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid or too many messages' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
@@ -262,6 +277,47 @@ ${blockedTimes && blockedTimes.length > 0 ? blockedTimes.map(b => `- ${b.blocked
               !bookingData.location || !bookingData.session_date || !bookingData.session_time || 
               !bookingData.duration_hours || !bookingData.payment_method) {
             throw new Error('Missing required booking information');
+          }
+
+          // Sanitize and validate inputs
+          const stripHtml = (str: string) => str.replace(/<[^>]*>/g, '').trim();
+          
+          bookingData.athlete_name = stripHtml(bookingData.athlete_name).slice(0, 100);
+          if (!/^[a-zA-ZÀ-ÿ\s'\-\.]+$/.test(bookingData.athlete_name) || bookingData.athlete_name.length < 2) {
+            return new Response(
+              JSON.stringify({ reply: 'Please provide a valid name (letters, spaces, and hyphens only, 2-100 characters).' }),
+              { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            );
+          }
+
+          // Validate sport against coach's offered sports
+          if (!coachProfile.sports_offered.map((s: string) => s.toLowerCase()).includes(bookingData.sport.toLowerCase())) {
+            return new Response(
+              JSON.stringify({ reply: `Invalid sport. Available options: ${coachProfile.sports_offered.join(', ')}` }),
+              { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            );
+          }
+
+          // Sanitize text fields
+          bookingData.location = stripHtml(bookingData.location).slice(0, 200);
+          if (bookingData.notes) bookingData.notes = stripHtml(bookingData.notes).slice(0, 500);
+          if (bookingData.athlete_notes) bookingData.athlete_notes = stripHtml(bookingData.athlete_notes).slice(0, 500);
+
+          // Validate date format
+          if (!/^\d{4}-\d{2}-\d{2}$/.test(bookingData.session_date)) {
+            return new Response(
+              JSON.stringify({ reply: 'Invalid date format. Please provide a valid date.' }),
+              { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            );
+          }
+
+          // Validate duration
+          const duration = Number(bookingData.duration_hours);
+          if (isNaN(duration) || duration < 0.5 || duration > 8) {
+            return new Response(
+              JSON.stringify({ reply: 'Duration must be between 0.5 and 8 hours.' }),
+              { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            );
           }
 
           // Validate payment method

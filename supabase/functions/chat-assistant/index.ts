@@ -272,6 +272,28 @@ CRITICAL RULES:
     if (reply.includes('CONFIRM_PAYMENT:')) {
       const paymentId = reply.split('CONFIRM_PAYMENT:')[1].split('\n')[0].trim();
       
+      // Validate UUID format
+      if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(paymentId)) {
+        return new Response(
+          JSON.stringify({ reply: 'Invalid payment reference. Please try again.' }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      // Validate ownership - payment must belong to this coach's booking
+      const { data: payment } = await supabase
+        .from('payments')
+        .select('id, booking_id, reference_number, bookings!inner(coach_id)')
+        .eq('id', paymentId)
+        .maybeSingle();
+
+      if (!payment || (payment as any).bookings.coach_id !== user.id) {
+        return new Response(
+          JSON.stringify({ reply: 'Payment not found or you do not have permission to confirm this payment.' }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
       const { error: confirmError } = await supabase
         .from('payments')
         .update({ payment_status: 'paid', payment_date: new Date().toISOString() })
@@ -279,15 +301,7 @@ CRITICAL RULES:
 
       if (confirmError) console.error('Payment confirmation error:', confirmError);
 
-      const { data: payment } = await supabase
-        .from('payments')
-        .select('booking_id')
-        .eq('id', paymentId)
-        .maybeSingle();
-
-      if (payment) {
-        await supabase.from('bookings').update({ status: 'completed' }).eq('id', payment.booking_id);
-      }
+      await supabase.from('bookings').update({ status: 'completed' }).eq('id', payment.booking_id);
 
       return new Response(
         JSON.stringify({ reply: 'Payment confirmed successfully! The booking is now marked as completed.' }),
@@ -298,24 +312,38 @@ CRITICAL RULES:
     if (reply.includes('DISPUTE_PAYMENT:')) {
       const parts = reply.split('DISPUTE_PAYMENT:')[1].split(':');
       const paymentId = parts[0].trim();
-      const reason = parts.slice(1).join(':').trim();
+      const reason = parts.slice(1).join(':').split('\n')[0].trim();
       
+      // Validate UUID format
+      if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(paymentId)) {
+        return new Response(
+          JSON.stringify({ reply: 'Invalid payment reference. Please try again.' }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      // Validate ownership
+      const { data: payment } = await supabase
+        .from('payments')
+        .select('id, booking_id, bookings!inner(coach_id)')
+        .eq('id', paymentId)
+        .maybeSingle();
+
+      if (!payment || (payment as any).bookings.coach_id !== user.id) {
+        return new Response(
+          JSON.stringify({ reply: 'Payment not found or you do not have permission to dispute this payment.' }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
       const { error: disputeError } = await supabase
         .from('payments')
-        .update({ dispute_initiated_at: new Date().toISOString(), dispute_reason: reason })
+        .update({ dispute_initiated_at: new Date().toISOString(), dispute_reason: reason.slice(0, 500) })
         .eq('id', paymentId);
 
       if (disputeError) console.error('Dispute error:', disputeError);
 
-      const { data: payment } = await supabase
-        .from('payments')
-        .select('booking_id')
-        .eq('id', paymentId)
-        .maybeSingle();
-
-      if (payment) {
-        await supabase.from('bookings').update({ status: 'pending' }).eq('id', payment.booking_id);
-      }
+      await supabase.from('bookings').update({ status: 'pending' }).eq('id', payment.booking_id);
 
       return new Response(
         JSON.stringify({ reply: 'Payment disputed. The booking status has been updated to pending for resolution.' }),
