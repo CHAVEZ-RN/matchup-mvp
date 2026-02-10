@@ -488,41 +488,6 @@ const BookingDetail = () => {
               </div>
             </Card>
 
-            {/* Payment History */}
-            {booking.payments && booking.payments.length > 0 && (
-              <Card className="border-2 border-border bg-card p-6 mb-6">
-                <h3 className="text-lg font-bold text-foreground mb-4">Payment History</h3>
-                <div className="space-y-3">
-                  {booking.payments.map((payment: any) => (
-                    <div key={payment.id} className="flex justify-between items-center p-4 bg-accent rounded-lg">
-                      <div>
-                        <p className="font-bold text-foreground">
-                          ₱{parseFloat(payment.amount).toLocaleString()}
-                          {payment.is_deposit && <Badge className="ml-2 text-xs" variant="secondary">Partial</Badge>}
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          {payment.payment_method.toUpperCase()}
-                          {payment.reference_number && ` • Ref: ${payment.reference_number}`}
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        {payment.payment_status === 'paid' ? (
-                          <Badge className="bg-success text-success-foreground">Paid</Badge>
-                        ) : (
-                          <Badge variant="outline" className="text-muted-foreground">Unpaid</Badge>
-                        )}
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {payment.payment_status === 'paid' && payment.payment_date
-                            ? new Date(payment.payment_date).toLocaleDateString()
-                            : '--/--/----'}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </Card>
-            )}
-
             {/* Record Payment Form */}
             {isCoach && remainingBalance > 0 && (booking.status === "approved" || booking.status === "pending") && (
               <Card className="border-2 border-secondary bg-card p-6">
