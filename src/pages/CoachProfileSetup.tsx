@@ -621,7 +621,7 @@ const CoachProfileSetup = () => {
             <Button
               type="submit"
               disabled={isLoading}
-              className="flex-1 h-12 bg-secondary text-secondary-foreground hover:bg-secondary-hover"
+              className="w-full h-14 text-lg font-semibold bg-secondary text-secondary-foreground hover:bg-secondary-hover"
             >
               {isLoading ? (
                 <>
