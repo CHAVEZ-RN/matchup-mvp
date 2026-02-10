@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { X, Send, Sparkles, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -138,13 +138,19 @@ const AIAssistant = ({ onClose }: AIAssistantProps) => {
         {/* Input */}
         <div className="border-t-2 border-border p-4 bg-card">
           <div className="flex gap-2">
-            <Input
+            <Textarea
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              onKeyPress={handleKeyPress}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSend();
+                }
+              }}
               placeholder="Type your question..."
               disabled={isLoading}
-              className="flex-1 border-2 border-border bg-background"
+              rows={1}
+              className="flex-1 border-2 border-border bg-background resize-none max-h-[120px] overflow-y-auto min-h-[40px]"
             />
             <Button
               onClick={handleSend}
