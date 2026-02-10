@@ -80,7 +80,7 @@ const BookingDetail = () => {
       }
 
       setBooking(data);
-      setPaymentAmount(data.total_amount.toString());
+      setPaymentAmount("0");
       
       // Set active tab based on status
       if (data.status === "pending") {
