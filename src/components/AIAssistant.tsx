@@ -150,7 +150,7 @@ const AIAssistant = ({ onClose }: AIAssistantProps) => {
               placeholder="Type your question..."
               disabled={isLoading}
               rows={1}
-              className="flex-1 border-2 border-border bg-background resize-none max-h-[120px] overflow-y-auto min-h-[40px]"
+              className="flex-1 border-2 border-border bg-background resize-none max-h-[120px] overflow-y-auto min-h-[40px] scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             />
             <Button
               onClick={handleSend}
