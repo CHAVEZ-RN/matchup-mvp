@@ -20,10 +20,10 @@ All colors MUST be HSL.
     --popover-foreground: 0 0% 15%;
 
     /* Cobalt Blue - Primary */
-    --primary: 210 100% 27%;
+    --primary: 197 100% 40%;
     --primary-foreground: 0 0% 98%;
-    --primary-dark: 210 100% 22%;
-    --primary-hover: 211 91% 35%;
+    --primary-dark: 197 100% 33%;
+    --primary-hover: 197 100% 47%;
     
     /* Rust Orange - Secondary */
     --secondary: 18 65% 47%;
@@ -51,7 +51,7 @@ All colors MUST be HSL.
     /* Borders */
     --border: 0 0% 85%;
     --input: 0 0% 80%;
-    --ring: 210 100% 27%;
+    --ring: 197 100% 40%;
 
     --radius: 0.5rem;
     
@@ -70,7 +70,7 @@ All colors MUST be HSL.
     --sidebar-accent: 240 4.8% 95.9%;
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-ring: 197 100% 40%;
   }
 
   .dark {
@@ -86,10 +86,10 @@ All colors MUST be HSL.
     --popover-foreground: 0 0% 78%;
 
     /* Cobalt Blue - brighter in dark */
-    --primary: 211 91% 35%;
+    --primary: 197 100% 40%;
     --primary-foreground: 0 0% 78%;
-    --primary-dark: 210 100% 27%;
-    --primary-hover: 211 91% 42%;
+    --primary-dark: 197 100% 33%;
+    --primary-hover: 197 100% 50%;
 
     /* Rust Orange */
     --secondary: 18 65% 47%;
@@ -117,15 +117,15 @@ All colors MUST be HSL.
     /* Borders */
     --border: 0 0% 16%;
     --input: 0 0% 35%;
-    --ring: 211 91% 35%;
+    --ring: 197 100% 40%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary: 197 100% 40%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 240 3.7% 15.9%;
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-ring: 197 100% 40%;
   }
 }
 
