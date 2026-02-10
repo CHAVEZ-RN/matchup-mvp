@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Calendar, Bell, Home, CalendarDays, Receipt, User, Clock, MapPin, ChevronRight, MessageSquare, LogOut, Settings, Loader2, Sun, Moon } from "lucide-react";
+import { Calendar, Bell, Home, CalendarDays, Receipt, User, Clock, MapPin, ChevronRight, MessageSquare, LogOut, Settings, Loader2, Plus, Sun, Moon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -21,7 +21,7 @@ interface Booking {
   total_amount: number;
   coach_id: string;
   athlete_name: string;
-  
+  athlete_email?: string;
   athlete_phone: string;
   athlete_notes?: string;
   booking_reference: string;
@@ -267,13 +267,16 @@ const Dashboard = () => {
                 {/* Stats Cards - Only for Coaches */}
                 {isCoach && <>
                     {/* Booking Link Card - Always Visible */}
-                    <Card className="mb-6 border-2 border-secondary/30 bg-card p-6">
-                      <div className="flex flex-col items-center text-center gap-3">
-                        <h3 className="text-2xl font-bold text-foreground">Your Booking Link</h3>
-                        <p className="text-sm text-muted-foreground">Share this link with your clients so they can book a lesson!</p>
-                        <div className="flex gap-2 w-full max-w-lg">
-                          <Input value={`${window.location.origin}/book/${user?.id}`} readOnly className="bg-background border-2 border-border font-mono text-sm flex-1" />
-                          <Button variant="outline" className="border-2 border-secondary hover:bg-secondary hover:text-secondary-foreground" onClick={() => {
+                    <Card className="mb-6 border-2 border-secondary/30 bg-gradient-to-r from-secondary/10 to-primary/10 p-6">
+                      <div className="flex items-start gap-4">
+                        <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-secondary shadow-lg text-center">
+                          <Plus className="h-7 w-7 text-secondary-foreground" />
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="text-xl font-bold text-foreground mb-2">Share Your Booking Link</h3>
+                          <div className="flex gap-2 mb-3">
+                            <Input value={`${window.location.origin}/book/${user?.id}`} readOnly className="bg-background border-2 border-border font-mono text-sm flex-1" />
+                            <Button variant="outline" className="border-2 border-secondary hover:bg-secondary hover:text-secondary-foreground" onClick={() => {
                         navigator.clipboard.writeText(`${window.location.origin}/book/${user?.id}`);
                         toast({
                           title: "Copied!",
@@ -282,6 +285,7 @@ const Dashboard = () => {
                       }}>
                               Copy Link
                             </Button>
+                          </div>
                         </div>
                       </div>
                     </Card>
