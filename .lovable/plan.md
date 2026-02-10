@@ -1,31 +1,22 @@
 
 
-## Fix: Text wrapping in AI Assistant chat bubbles
+## Fix: Text wrapping in the AI Assistant input field
 
-The current code uses `overflow-wrap-anywhere` as a Tailwind class, but this is **not a valid Tailwind utility**. It gets ignored by the browser, so long text still overflows the bubble.
+The current input field uses a single-line `<Input>` component, which does not support text wrapping -- text just scrolls horizontally when it gets long.
+
+### Solution
+
+Replace the `<Input>` component with a `<Textarea>` in `src/components/AIAssistant.tsx` so that text wraps and the field can grow as the coach types longer questions.
 
 ### Changes
 
 **File: `src/components/AIAssistant.tsx`**
 
-1. On the message `<p>` tag (line 124), remove the non-existent `overflow-wrap-anywhere` class and instead apply it as an inline style:
-   - Add `style={{ overflowWrap: 'anywhere' }}` to the `<p>` element
-   - Also add `word-break: break-word` as a fallback for older browsers
-
-2. On the bubble container `<div>` (line 118), add `min-w-0` to ensure the flex child can shrink below its content size, which is a common cause of overflow in flex layouts.
-
-### Technical Detail
-
-```tsx
-// Bubble container (line 118)
-className={`max-w-[80%] min-w-0 rounded-2xl px-4 py-3 break-words overflow-hidden ${...}`}
-
-// Message text (line 124)
-<p className="text-sm whitespace-pre-wrap break-words" 
-   style={{ overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
-  {message.content}
-</p>
-```
-
-This ensures all text — including long URLs or unbroken strings — wraps correctly within the chat bubbles for both user and assistant messages.
+1. Replace the `Input` import with `Textarea` (from `@/components/ui/textarea`)
+2. Swap the `<Input>` element (around line 137) for a `<Textarea>` with:
+   - `rows={1}` to start compact (same height as the current input)
+   - `resize-none` class to prevent manual resizing
+   - Auto-growing height via CSS (`max-h-[120px]` and `overflow-y-auto`) so it expands as the user types but caps at ~5 lines
+   - Same styling, placeholder, and event handlers as before
+   - Update `onKeyPress` to only send on Enter without Shift (already implemented), so Shift+Enter adds a new line
 
