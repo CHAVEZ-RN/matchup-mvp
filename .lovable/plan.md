@@ -1,26 +1,19 @@
 
 
-## Center the Booking Link Card
+## Update Booking Link Card Text and Remove Icon
 
-**File: `src/pages/Dashboard.tsx`** (lines 270-291)
+**File: `src/pages/Dashboard.tsx`** (lines ~270-280)
 
-Adjust the booking link card to be centered and visually cleaner:
-
-1. **Center the card content**: Change the inner layout from `flex items-start gap-4` (side-by-side icon + text) to a centered column layout using `flex flex-col items-center text-center`.
-
-2. **Center the icon**: Keep the orange icon but center it above the text.
-
-3. **Center the heading**: The "Share Your Booking Link" heading will be centered.
-
-4. **Center the input + button row**: Keep the input and copy button in a horizontal row, but center the group. Add `justify-center` and constrain the width with `max-w-lg w-full` so it doesn't stretch edge-to-edge.
-
-5. **Remove the gradient background**: Replace `bg-gradient-to-r from-secondary/10 to-primary/10` with a simpler `bg-card` to keep it clean and consistent with the rest of the dashboard.
+1. Remove the Plus icon circle entirely (the `div` with the orange background and `Plus` icon)
+2. Change the heading from "Share Your Booking Link" to "Your Booking Link"
+3. Add a subheading below it: "Share this link with your clients so they can book a lesson!"
+4. Clean up the `Plus` import from lucide-react if it's no longer used elsewhere in the file
 
 ### Technical Details
 
-**`src/pages/Dashboard.tsx`** lines 270-291:
-- Line 271: Change `flex items-start gap-4` to `flex flex-col items-center text-center gap-3`
-- Line 275: Remove `flex-1` wrapper div, move its children up
-- Line 277: Add `w-full max-w-lg` to the input+button row
-- Line 270: Simplify card classes -- remove gradient, keep border styling
+**`src/pages/Dashboard.tsx`**:
+- Remove lines 272-274 (the icon wrapper div)
+- Line 275: Change heading text to "Your Booking Link"
+- Insert a new `<p>` element after the heading with muted styling for the subheading
+- Check if `Plus` is used elsewhere; if not, remove it from the lucide-react import
 
