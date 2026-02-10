@@ -1,43 +1,26 @@
 
 
-## Remove Email Field from Client Contacts
+## Center the Booking Link Card
 
-Remove all references to `athlete_email` from the UI across the app, since email is no longer collected from clients.
+**File: `src/pages/Dashboard.tsx`** (lines 270-291)
 
-Note: The database column `athlete_email` will remain (it's nullable and already set to null for new bookings), so no migration is needed. We're only removing it from the display and type definitions in the frontend.
+Adjust the booking link card to be centered and visually cleaner:
 
----
+1. **Center the card content**: Change the inner layout from `flex items-start gap-4` (side-by-side icon + text) to a centered column layout using `flex flex-col items-center text-center`.
 
-### Changes
+2. **Center the icon**: Keep the orange icon but center it above the text.
 
-**1. `src/pages/BookingDetail.tsx`** (lines 401-406)
-- Remove the conditional block that displays the athlete's email with the Mail icon
+3. **Center the heading**: The "Share Your Booking Link" heading will be centered.
 
-**2. `src/pages/BookingDetail.tsx`** (lines 143-144)
-- The `sendBookingEmail` call on rejection uses `booking.athlete_email` as the recipient — since there's no email to send to, remove this email notification call (or keep it but it will gracefully do nothing since email is empty)
+4. **Center the input + button row**: Keep the input and copy button in a horizontal row, but center the group. Add `justify-center` and constrain the width with `max-w-lg w-full` so it doesn't stretch edge-to-edge.
 
-**3. `src/components/CancelBookingDialog.tsx`** (line 51)
-- Same situation — `sendBookingEmail` uses `booking.athlete_email` which will always be empty. Remove the email notification call for cancellations
-
-**4. `src/pages/Dashboard.tsx`** (line 24)
-- Remove `athlete_email` from the Booking interface type
-
-**5. `src/pages/Transactions.tsx`** (line 38)
-- Remove `athlete_email` from the Transaction interface type
-
-**6. `src/lib/emailService.ts`**
-- No changes needed — this service is used for coach emails too, not just athlete emails
-
----
+5. **Remove the gradient background**: Replace `bg-gradient-to-r from-secondary/10 to-primary/10` with a simpler `bg-card` to keep it clean and consistent with the rest of the dashboard.
 
 ### Technical Details
 
-| File | Change |
-|------|--------|
-| `BookingDetail.tsx` | Remove email display block (lines 401-406), remove email icon import if unused |
-| `BookingDetail.tsx` | Remove athlete email notification on rejection (lines 142-160) since no email exists |
-| `CancelBookingDialog.tsx` | Remove athlete email notification on cancellation (lines 48-69) |
-| `Dashboard.tsx` | Remove `athlete_email` from interface (line 24) |
-| `Transactions.tsx` | Remove `athlete_email` from interface (line 38) |
+**`src/pages/Dashboard.tsx`** lines 270-291:
+- Line 271: Change `flex items-start gap-4` to `flex flex-col items-center text-center gap-3`
+- Line 275: Remove `flex-1` wrapper div, move its children up
+- Line 277: Add `w-full max-w-lg` to the input+button row
+- Line 270: Simplify card classes -- remove gradient, keep border styling
 
-The database column stays as-is (nullable, defaults to null). No migration needed.
