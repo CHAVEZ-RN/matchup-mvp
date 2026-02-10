@@ -152,3 +152,7 @@ All colors MUST be HSL.
     animation: luxury-glow 3s ease-in-out infinite;
   }
 }
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
