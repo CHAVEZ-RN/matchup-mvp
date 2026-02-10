@@ -323,7 +323,7 @@ const BookingDetail = () => {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => navigate("/dashboard")}
+              onClick={() => navigate("/transactions")}
               className="hover:bg-primary/20"
             >
               <ArrowLeft className="h-5 w-5" />
