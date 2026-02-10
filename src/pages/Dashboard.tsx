@@ -235,11 +235,11 @@ const Dashboard = () => {
           <div className="mx-6 mt-8">
             <Card className="relative overflow-hidden border-2 border-secondary bg-card p-6 shadow-xl shadow-secondary/10">
               <div className="absolute top-0 right-0 w-2 h-full bg-secondary opacity-50"></div>
-              <div className="relative">
-                <MessageSquare className="mb-3 h-8 w-8 text-secondary" />
-                <h3 className="mb-2 font-bold text-foreground">AI Assistant</h3>
+              <div className="relative text-center">
+                <MessageSquare className="mb-3 h-8 w-8 text-secondary mx-auto" />
+                <h3 className="mb-2 font-bold text-foreground">Machi</h3>
                 <p className="mb-4 text-sm text-muted-foreground">
-                  24/7 assistant for booking questions
+                  Your 24/7 AI Assistant
                 </p>
                 <Button className="w-full bg-secondary text-secondary-foreground hover:bg-secondary-hover shadow-lg" size="sm" onClick={() => setShowAI(!showAI)}>
                   Chat Now
