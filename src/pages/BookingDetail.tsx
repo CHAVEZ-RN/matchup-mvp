@@ -665,7 +665,11 @@ const BookingDetail = () => {
             )}
 
             {/* Session Actions */}
-            {isPaid && (
+            {isPaid && (() => {
+              const now = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" }));
+              const sessionDate = new Date(booking.session_date + "T23:59:59");
+              return now <= sessionDate;
+            })() && (
               <Card className="border-2 border-border bg-card p-6">
                 <h3 className="text-lg font-bold text-foreground mb-4">Manage reschedules or issue a refund for this booking</h3>
                 <div className="flex gap-4">
