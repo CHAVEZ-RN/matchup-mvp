@@ -88,7 +88,7 @@ const Transactions = () => {
           payments (*)
         `)
         .eq('coach_id', userId)
-        .in('status', ['completed', 'cancelled'])
+        .in('status', ['completed', 'cancelled', 'approved', 'pending'])
         .order('session_date', { ascending: false });
 
       if (error) throw error;
@@ -106,19 +106,21 @@ const Transactions = () => {
     }
   };
 
-  const filteredTransactions = transactions.filter(transaction => {
-    const matchesSearch = 
-      transaction.athlete_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      transaction.booking_reference.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      transaction.sport.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesStatus = statusFilter === "all" || transaction.status === statusFilter;
-    
-    const matchesPayment = paymentFilter === "all" || 
-      transaction.payments.some(p => p.payment_status === paymentFilter);
+  const filteredTransactions = transactions
+    .filter(transaction => transaction.payments.some(p => p.payment_status === 'paid'))
+    .filter(transaction => {
+      const matchesSearch = 
+        transaction.athlete_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        transaction.booking_reference.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        transaction.sport.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      const matchesStatus = statusFilter === "all" || transaction.status === statusFilter;
+      
+      const matchesPayment = paymentFilter === "all" || 
+        transaction.payments.some(p => p.payment_status === paymentFilter);
 
-    return matchesSearch && matchesStatus && matchesPayment;
-  });
+      return matchesSearch && matchesStatus && matchesPayment;
+    });
 
   const totalRevenue = filteredTransactions
     .filter(t => t.status === 'completed')
@@ -224,6 +226,7 @@ const Transactions = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Status</SelectItem>
+                <SelectItem value="approved">Approved</SelectItem>
                 <SelectItem value="completed">Completed</SelectItem>
                 <SelectItem value="cancelled">Cancelled</SelectItem>
               </SelectContent>

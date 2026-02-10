@@ -180,7 +180,9 @@ const BookingDetail = () => {
 
       if (error) throw error;
 
-      const totalPaid = booking.payments.reduce((sum: number, p: any) => sum + parseFloat(p.amount), 0) + parseFloat(paymentAmount);
+      const totalPaid = booking.payments
+        .filter((p: any) => p.payment_status === 'paid')
+        .reduce((sum: number, p: any) => sum + parseFloat(p.amount), 0) + parseFloat(paymentAmount);
       
       if (totalPaid >= booking.total_amount) {
         await supabase
@@ -489,7 +491,7 @@ const BookingDetail = () => {
             </Card>
 
             {/* Record Payment Form */}
-            {isCoach && remainingBalance > 0 && (booking.status === "approved" || booking.status === "pending") && (
+            {isCoach && remainingBalance > 0 && (booking.status === "approved" || booking.status === "pending" || booking.status === "completed") && (
               <Card className="border-2 border-secondary bg-card p-6">
                 <h3 className="text-lg font-bold text-foreground mb-4">Record Payment</h3>
                 <div className="space-y-4">
