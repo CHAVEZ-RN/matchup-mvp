@@ -343,7 +343,7 @@ const CoachProfileSetup = () => {
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8 max-w-4xl">
         <div className="mb-8">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 -ml-12">
             <Button
               type="button"
               variant="ghost"
