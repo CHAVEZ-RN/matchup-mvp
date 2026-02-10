@@ -223,15 +223,6 @@ const Dashboard = () => {
             </div>
             
             <div className="flex items-center gap-3">
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="relative hover:bg-secondary/20 border border-border"
-                onClick={() => setShowAI(!showAI)}
-              >
-                <MessageSquare className="h-5 w-5 text-secondary" />
-                <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-secondary animate-pulse" />
-              </Button>
               <Button variant="ghost" size="icon" className="relative hover:bg-primary/20 border border-border">
                 <Bell className="h-5 w-5 text-foreground" />
                 <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-secondary text-[10px] font-bold text-secondary-foreground flex items-center justify-center">
