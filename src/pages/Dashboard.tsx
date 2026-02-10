@@ -267,16 +267,15 @@ const Dashboard = () => {
                 {/* Stats Cards - Only for Coaches */}
                 {isCoach && <>
                     {/* Booking Link Card - Always Visible */}
-                    <Card className="mb-6 border-2 border-secondary/30 bg-gradient-to-r from-secondary/10 to-primary/10 p-6">
-                      <div className="flex items-start gap-4">
+                    <Card className="mb-6 border-2 border-secondary/30 bg-card p-6">
+                      <div className="flex flex-col items-center text-center gap-3">
                         <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-secondary shadow-lg">
                           <Plus className="h-7 w-7 text-secondary-foreground" />
                         </div>
-                        <div className="flex-1">
-                          <h3 className="text-xl font-bold text-foreground mb-2">Share Your Booking Link</h3>
-                          <div className="flex gap-2 mb-3">
-                            <Input value={`${window.location.origin}/book/${user?.id}`} readOnly className="bg-background border-2 border-border font-mono text-sm flex-1" />
-                            <Button variant="outline" className="border-2 border-secondary hover:bg-secondary hover:text-secondary-foreground" onClick={() => {
+                        <h3 className="text-xl font-bold text-foreground">Share Your Booking Link</h3>
+                        <div className="flex gap-2 w-full max-w-lg">
+                          <Input value={`${window.location.origin}/book/${user?.id}`} readOnly className="bg-background border-2 border-border font-mono text-sm flex-1" />
+                          <Button variant="outline" className="border-2 border-secondary hover:bg-secondary hover:text-secondary-foreground" onClick={() => {
                         navigator.clipboard.writeText(`${window.location.origin}/book/${user?.id}`);
                         toast({
                           title: "Copied!",
@@ -285,7 +284,6 @@ const Dashboard = () => {
                       }}>
                               Copy Link
                             </Button>
-                          </div>
                         </div>
                       </div>
                     </Card>
