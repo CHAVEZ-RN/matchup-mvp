@@ -167,14 +167,12 @@ const PublicBooking = () => {
       const filePath = `payment-receipts/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
-        .from('coach-photos')
+        .from('payment-receipts')
         .upload(filePath, file);
 
       if (uploadError) throw uploadError;
 
-      const { data: { publicUrl } } = supabase.storage
-        .from('coach-photos')
-        .getPublicUrl(filePath);
+      // Receipt is in private bucket - coaches will access via signed URLs
 
       setMessages(prev => [...prev, {
         role: "assistant",
