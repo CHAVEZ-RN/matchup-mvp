@@ -322,6 +322,7 @@ export type Database = {
       cleanup_expired_booking_chats: { Args: never; Returns: undefined }
       format_philippine_phone: { Args: { phone: string }; Returns: string }
       generate_booking_reference: { Args: never; Returns: string }
+      get_coach_public_info: { Args: { coach_uuid: string }; Returns: Json }
       validate_philippine_phone: { Args: { phone: string }; Returns: boolean }
     }
     Enums: {
