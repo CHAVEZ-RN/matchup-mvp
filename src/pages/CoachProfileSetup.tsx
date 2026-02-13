@@ -6,12 +6,12 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Calendar, Loader2, Plus, X, Upload, User } from "lucide-react";
+import { ArrowLeft, Calendar, Loader2, Plus, X, Upload, User, Lock } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { validateAndFormatPhone } from "@/lib/phoneValidation";
 
-const SPORTS_OPTIONS = ["Basketball", "Tennis", "Volleyball", "Badminton", "Football", "Swimming", "Golf"];
+const SPORTS_OPTIONS = ["Basketball", "Tennis", "Volleyball", "Badminton", "Football", "Swimming", "Golf", "Fitness"];
 const METRO_MANILA_LOCATIONS = [
   "Makati", "BGC Taguig", "Quezon City", "Mandaluyong", "Pasig", 
   "Manila", "Pasay", "Paranaque", "Las Pinas", "Muntinlupa",
@@ -40,6 +40,10 @@ const CoachProfileSetup = () => {
   const [venueDetails, setVenueDetails] = useState<Record<string, string>>({});
   const [certifications, setCertifications] = useState<string[]>([""]);
   const [cancellationPolicy, setCancellationPolicy] = useState("");
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
 
   useEffect(() => {
     checkAuth();
@@ -624,6 +628,74 @@ const CoachProfileSetup = () => {
                   className="border-2 border-border bg-background"
                 />
               </div>
+            </div>
+          </Card>
+
+          {/* Change Password */}
+          <Card className="border-2 border-border bg-card p-6">
+            <h3 className="text-2xl font-bold text-foreground mb-4 flex items-center gap-2">
+              <Lock className="h-6 w-6" />
+              Change Password
+            </h3>
+            
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="newPassword">New Password</Label>
+                <Input
+                  id="newPassword"
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="Enter new password (min 6 characters)"
+                  className="border-2 border-border bg-background"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="confirmPassword">Confirm New Password</Label>
+                <Input
+                  id="confirmPassword"
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Confirm new password"
+                  className="border-2 border-border bg-background"
+                />
+              </div>
+
+              <Button
+                type="button"
+                disabled={isChangingPassword}
+                onClick={async () => {
+                  if (newPassword.length < 6) {
+                    toast({ title: "Error", description: "Password must be at least 6 characters.", variant: "destructive" });
+                    return;
+                  }
+                  if (newPassword !== confirmPassword) {
+                    toast({ title: "Error", description: "Passwords do not match.", variant: "destructive" });
+                    return;
+                  }
+                  setIsChangingPassword(true);
+                  try {
+                    const { error } = await supabase.auth.updateUser({ password: newPassword });
+                    if (error) throw error;
+                    toast({ title: "Success!", description: "Password updated successfully." });
+                    setNewPassword("");
+                    setConfirmPassword("");
+                  } catch (error: any) {
+                    toast({ title: "Error", description: error.message, variant: "destructive" });
+                  } finally {
+                    setIsChangingPassword(false);
+                  }
+                }}
+                className="w-full border-2 border-secondary bg-secondary text-secondary-foreground hover:bg-secondary-hover"
+              >
+                {isChangingPassword ? (
+                  <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Updating...</>
+                ) : (
+                  "Update Password"
+                )}
+              </Button>
             </div>
           </Card>
 
