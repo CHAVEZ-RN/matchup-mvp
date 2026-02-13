@@ -1,56 +1,41 @@
 
 
-## Changes: Client-Side Machi Scrollbar + Booking Flow Improvements
+## Plan: Add Change Password and Fitness Sport Option
 
-### 1. Hide scrollbar in client chat (PublicBooking.tsx)
+### 1. Add "Fitness" to Sports Options
 
-Add `scrollbar-hide` class and inline styles to the messages container and the textarea input, matching the same approach used on the coach side.
+Update the `SPORTS_OPTIONS` array in `src/pages/CoachProfileSetup.tsx` to include "Fitness":
 
-**File: `src/pages/PublicBooking.tsx`**
-- Messages container (the `overflow-y-auto` div): add `scrollbar-hide` class and `style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}`
-- Textarea input: add `scrollbar-hide` class and the same inline styles
-
-### 2. Skip initial confirmation question (booking-assistant edge function)
-
-**File: `supabase/functions/booking-assistant/index.ts`**
-
-Update the system prompt (line 119) to remove step 1 that says "First, confirm they want to book with this coach." Instead, Machi should greet them warmly and immediately present the list of required information.
-
-Change:
 ```
-1. First, confirm they want to book with this coach (if this is the first message).
-2. Once they confirm, present ALL required information at once...
+const SPORTS_OPTIONS = ["Basketball", "Tennis", "Volleyball", "Badminton", "Football", "Swimming", "Golf", "Fitness"];
 ```
 
-To:
-```
-1. Greet them warmly and immediately present ALL required information at once...
-```
+This is a one-line change with no backend impact since `sports_offered` is stored as a text array.
 
-Also update the initial greeting in `PublicBooking.tsx` (line ~72) from:
-```
-"Would you like to book a training session?"
-```
-To something like:
-```
-"Let's get your session booked! Here's what I'll need from you:"
-```
-followed by the list of required fields, so the very first message already asks for the info.
+### 2. Add Change Password Section
 
-### 3. Remove double confirmation (booking-assistant edge function)
+Add a new Card section at the bottom of the Coach Profile Setup page (before the Submit button) with:
+- A "Change Password" heading
+- Current password field (for verification)
+- New password field
+- Confirm new password field
+- A dedicated "Update Password" button (separate from the profile save button)
 
-**File: `supabase/functions/booking-assistant/index.ts`**
+The password change will use the built-in `supabase.auth.updateUser({ password })` method, which handles updating the authentication credentials directly. No database migration is needed.
 
-The system prompt currently has:
-- Step 4 (line 139-151): A confirmation step with emoji summary, asking "Does everything look correct?"
-- Step 5 (line 153): "ONLY after the client explicitly confirms, respond with READY_TO_BOOK"
+Validation rules:
+- New password must be at least 6 characters
+- New password and confirm password must match
+- Show success/error toast notifications
 
-The issue is the AI sometimes asks for confirmation twice -- once as a plain text summary and once with the emoji summary. Consolidate to a single confirmation step that uses the emoji-formatted summary, then immediately proceeds to READY_TO_BOOK upon confirmation. Make the instructions clearer that there should be exactly ONE confirmation prompt with the emoji format.
+### Technical Details
 
-### Technical Summary
+**File modified:** `src/pages/CoachProfileSetup.tsx`
 
-| File | Change |
-|------|--------|
-| `src/pages/PublicBooking.tsx` | Hide scrollbars on messages area and textarea |
-| `supabase/functions/booking-assistant/index.ts` | Remove initial "want to book?" step; consolidate to single emoji confirmation |
+Changes:
+1. Line 14: Add "Fitness" to `SPORTS_OPTIONS`
+2. Add three new state variables: `currentPassword`, `newPassword`, `confirmPassword`, and `isChangingPassword`
+3. Add a `handleChangePassword` async function that calls `supabase.auth.updateUser({ password: newPassword })`
+4. Add a new Card component with the password form fields and its own submit button, placed after the "Booking Policies" card
+5. Import `Lock` icon from lucide-react for the section header
 
