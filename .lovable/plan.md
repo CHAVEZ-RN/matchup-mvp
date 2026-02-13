@@ -1,34 +1,26 @@
 
 
-## Fix: Change Coach Availability to 24/7
+## Make Calendar Icon a "Return to Dashboard" Button
 
-### Problem
+The calendar icon appears in the header of four pages. On every page **except Coach Settings**, clicking it will navigate to the dashboard.
 
-The previous plan defined coach working hours as 6:00 AM - 9:00 PM. However, coaches should be available 24/7 by default, with availability only restricted by their manually created blocked times and existing bookings.
+### Changes
 
-### Change
+**Files to modify:** 3 files
 
-**File:** `supabase/functions/booking-assistant/index.ts`
+1. **`src/pages/BookingDetail.tsx`** (line ~331)
+   - Wrap the calendar icon `div` in a clickable button/link that navigates to `/dashboard`
+   - Add a cursor-pointer style for visual feedback
 
-Update the `AVAILABILITY RULES` section in the system prompt to:
+2. **`src/pages/Transactions.tsx`** (line ~153)
+   - Same change: wrap the calendar icon `div` so it navigates to `/dashboard` on click
 
-- State that the coach is available **24 hours a day, 7 days a week** by default
-- Clarify that only existing bookings and manually blocked times restrict availability
-- Remove references to fixed working hours (6 AM - 9 PM)
-- Keep the instruction that a single booking only blocks its specific time range, not the whole day
+3. **`src/pages/Dashboard.tsx`** (line ~180)
+   - The coach is already on the dashboard, but for consistency, make the icon clickable (it will just scroll to top or act as a no-op refresh)
+   - Alternatively, skip this since they're already on the dashboard
 
-The updated prompt section will read something like:
+**No change to:** `src/pages/CoachProfileSetup.tsx` -- the calendar icon there remains static (non-clickable), as requested.
 
-```
-AVAILABILITY RULES:
-- The coach is available 24/7 by default. There are no fixed working hours.
-- Availability is ONLY restricted by existing bookings and blocked times listed below.
-- A booking ONLY blocks its specific time range. The rest of the day remains open.
-- Example: If there is a booking from 2:00 PM to 4:00 PM, the coach is still available before 2:00 PM and after 4:00 PM.
-- Only reject a requested time if it actually OVERLAPS with an existing booking or blocked time.
-- If the requested time overlaps, suggest alternative times on the SAME day that are still free.
-- A day is only fully unavailable if bookings and blockings cover the entire 24-hour window.
-```
+### Technical Detail
 
-The edge function will be redeployed automatically after the edit.
-
+Each calendar icon div will be wrapped with an `onClick={() => navigate("/dashboard")}` handler and given `cursor-pointer` styling. The existing back-arrow buttons on those pages remain untouched -- this is an additional quick-access shortcut via the logo/icon.
