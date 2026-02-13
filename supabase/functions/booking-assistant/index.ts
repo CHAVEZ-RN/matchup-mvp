@@ -168,10 +168,19 @@ ${isSingleSport ? `- The sport is auto-selected as "${singleSport}" — do NOT a
 - When you have ALL required information AND the client has confirmed, respond with "READY_TO_BOOK" followed by JSON: {athlete_name, athlete_phone, athlete_email: null, sport, location, session_date, session_time, duration_hours, payment_method, notes}
 - Do NOT output READY_TO_BOOK until the client has explicitly confirmed the summary
 
-EXISTING BOOKINGS TO AVOID CONFLICTS:
+AVAILABILITY RULES:
+- The coach is available 24/7 by default. There are no fixed working hours.
+- Availability is ONLY restricted by existing bookings and blocked times listed below.
+- A booking ONLY blocks its specific time range. The rest of the day remains open.
+- Example: If there is a booking from 2:00 PM to 4:00 PM, the coach is still available before 2:00 PM and after 4:00 PM.
+- Only reject a requested time if it actually OVERLAPS with an existing booking or blocked time.
+- If the requested time overlaps, suggest alternative times on the SAME day that are still free.
+- A day is only fully unavailable if bookings and blockings cover the entire 24-hour window.
+
+EXISTING BOOKINGS (only these specific time ranges are occupied):
 ${existingBookings.length > 0 ? existingBookings.map(b => `- ${b.session_date} at ${b.session_time} for ${b.duration_hours} hours (${b.status})`).join('\n') : 'No existing bookings'}
 
-BLOCKED TIMES (Coach is unavailable during these times - DO NOT allow bookings during these slots):
+BLOCKED TIMES (coach is unavailable ONLY during these specific windows):
 ${blockedTimes && blockedTimes.length > 0 ? blockedTimes.map(b => `- ${b.blocked_date} from ${b.start_time} to ${b.end_time}${b.reason ? ` (${b.reason})` : ''}`).join('\n') : 'No blocked times'}`;
     }
 
