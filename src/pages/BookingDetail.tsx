@@ -328,7 +328,7 @@ const BookingDetail = () => {
             >
               <ArrowLeft className="h-5 w-5" />
             </Button>
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary shadow-xl">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary shadow-xl cursor-pointer" onClick={() => navigate("/dashboard")}>
               <Calendar className="h-7 w-7 text-foreground" />
             </div>
             <div className="flex-1">

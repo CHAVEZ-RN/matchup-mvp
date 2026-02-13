@@ -177,7 +177,7 @@ const Dashboard = () => {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl shadow-xl bg-[#008fcc]">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl shadow-xl bg-[#008fcc] cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
                 <Calendar className="h-7 w-7 text-foreground" />
               </div>
               <div>
