@@ -1,41 +1,34 @@
 
 
-## Plan: Add Change Password and Fitness Sport Option
+## Fix: Change Coach Availability to 24/7
 
-### 1. Add "Fitness" to Sports Options
+### Problem
 
-Update the `SPORTS_OPTIONS` array in `src/pages/CoachProfileSetup.tsx` to include "Fitness":
+The previous plan defined coach working hours as 6:00 AM - 9:00 PM. However, coaches should be available 24/7 by default, with availability only restricted by their manually created blocked times and existing bookings.
+
+### Change
+
+**File:** `supabase/functions/booking-assistant/index.ts`
+
+Update the `AVAILABILITY RULES` section in the system prompt to:
+
+- State that the coach is available **24 hours a day, 7 days a week** by default
+- Clarify that only existing bookings and manually blocked times restrict availability
+- Remove references to fixed working hours (6 AM - 9 PM)
+- Keep the instruction that a single booking only blocks its specific time range, not the whole day
+
+The updated prompt section will read something like:
 
 ```
-const SPORTS_OPTIONS = ["Basketball", "Tennis", "Volleyball", "Badminton", "Football", "Swimming", "Golf", "Fitness"];
+AVAILABILITY RULES:
+- The coach is available 24/7 by default. There are no fixed working hours.
+- Availability is ONLY restricted by existing bookings and blocked times listed below.
+- A booking ONLY blocks its specific time range. The rest of the day remains open.
+- Example: If there is a booking from 2:00 PM to 4:00 PM, the coach is still available before 2:00 PM and after 4:00 PM.
+- Only reject a requested time if it actually OVERLAPS with an existing booking or blocked time.
+- If the requested time overlaps, suggest alternative times on the SAME day that are still free.
+- A day is only fully unavailable if bookings and blockings cover the entire 24-hour window.
 ```
 
-This is a one-line change with no backend impact since `sports_offered` is stored as a text array.
-
-### 2. Add Change Password Section
-
-Add a new Card section at the bottom of the Coach Profile Setup page (before the Submit button) with:
-- A "Change Password" heading
-- Current password field (for verification)
-- New password field
-- Confirm new password field
-- A dedicated "Update Password" button (separate from the profile save button)
-
-The password change will use the built-in `supabase.auth.updateUser({ password })` method, which handles updating the authentication credentials directly. No database migration is needed.
-
-Validation rules:
-- New password must be at least 6 characters
-- New password and confirm password must match
-- Show success/error toast notifications
-
-### Technical Details
-
-**File modified:** `src/pages/CoachProfileSetup.tsx`
-
-Changes:
-1. Line 14: Add "Fitness" to `SPORTS_OPTIONS`
-2. Add three new state variables: `currentPassword`, `newPassword`, `confirmPassword`, and `isChangingPassword`
-3. Add a `handleChangePassword` async function that calls `supabase.auth.updateUser({ password: newPassword })`
-4. Add a new Card component with the password form fields and its own submit button, placed after the "Booking Policies" card
-5. Import `Lock` icon from lucide-react for the section header
+The edge function will be redeployed automatically after the edit.
 
