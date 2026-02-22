@@ -79,6 +79,7 @@ serve(async (req) => {
       { data: profile },
       { data: bookings },
       { data: blockings },
+      { data: recurringBlockings },
       { data: pendingPayments },
       { data: recentChats },
     ] = await Promise.all([
@@ -86,6 +87,7 @@ serve(async (req) => {
       supabase.from('profiles').select('*').eq('id', user.id).maybeSingle(),
       supabase.from('bookings').select('*').eq('coach_id', user.id).gte('session_date', today).order('session_date', { ascending: true }),
       supabase.from('coach_blockings').select('*').eq('coach_id', user.id).gte('blocked_date', today).order('blocked_date', { ascending: true }),
+      supabase.from('coach_recurring_blockings').select('*').eq('coach_id', user.id).order('day_of_week', { ascending: true }),
       supabase.from('payments').select(`*, bookings!inner(*, coach_id)`).eq('bookings.coach_id', user.id).eq('payment_status', 'pending').not('payment_receipt_url', 'is', null),
       supabase.from('booking_chats').select('*').eq('coach_id', user.id).order('created_at', { ascending: false }).limit(10),
     ]);
@@ -101,6 +103,7 @@ YOUR PROFILE:
 - Experience: ${coachProfile.years_of_experience || 'Not set'} years
 - Bio: ${coachProfile.bio || 'Not set'}
 - Cancellation Policy: ${coachProfile.cancellation_policy || 'Not set'}
+- Coaching Hours: ${coachProfile.coaching_hours ? `${(coachProfile.coaching_hours as any).start} to ${(coachProfile.coaching_hours as any).end}` : 'Available 24/7'}
 ` : 'YOUR PROFILE: Not set up yet';
 
     // Format bookings by status
@@ -124,8 +127,12 @@ ${cancelled.length ? cancelled.map(formatBooking).join('\n') : '  None'}`;
 
     // Format blocked times
     const blockingsSection = `
-BLOCKED TIME SLOTS:
+SPECIFIC BLOCKED TIME SLOTS:
 ${blockings && blockings.length > 0 ? blockings.map((b: any) => `  - ${b.blocked_date} | ${b.start_time}-${b.end_time}${b.reason ? ` | Reason: ${b.reason}` : ''}`).join('\n') : '  No blocked times'}`;
+
+    const recurringBlockingsSection = `
+RECURRING BLOCKED TIMES:
+${recurringBlockings && recurringBlockings.length > 0 ? recurringBlockings.map((rb: any) => `  - Every ${['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][rb.day_of_week]} | ${rb.start_time}-${rb.end_time}${rb.reason ? ` | Reason: ${rb.reason}` : ''}`).join('\n') : '  No recurring blocked times'}`;
 
     // Format pending payments
     const paymentsSection = `
@@ -246,6 +253,7 @@ FEATURES THAT DO NOT EXIST (never mention these):
 ${profileSection}
 ${bookingsSection}
 ${blockingsSection}
+${recurringBlockingsSection}
 ${paymentsSection}
 ${chatsSection}
 

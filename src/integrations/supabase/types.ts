@@ -166,6 +166,7 @@ export type Database = {
           business_name: string | null
           cancellation_policy: string | null
           certifications: string[] | null
+          coaching_hours: Json | null
           created_at: string | null
           hourly_rate: number
           id: string
@@ -181,6 +182,7 @@ export type Database = {
           business_name?: string | null
           cancellation_policy?: string | null
           certifications?: string[] | null
+          coaching_hours?: Json | null
           created_at?: string | null
           hourly_rate: number
           id: string
@@ -196,6 +198,7 @@ export type Database = {
           business_name?: string | null
           cancellation_policy?: string | null
           certifications?: string[] | null
+          coaching_hours?: Json | null
           created_at?: string | null
           hourly_rate?: number
           id?: string
@@ -215,6 +218,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      coach_recurring_blockings: {
+        Row: {
+          coach_id: string
+          created_at: string
+          day_of_week: number
+          end_time: string
+          id: string
+          reason: string | null
+          start_time: string
+        }
+        Insert: {
+          coach_id: string
+          created_at?: string
+          day_of_week: number
+          end_time: string
+          id?: string
+          reason?: string | null
+          start_time: string
+        }
+        Update: {
+          coach_id?: string
+          created_at?: string
+          day_of_week?: number
+          end_time?: string
+          id?: string
+          reason?: string | null
+          start_time?: string
+        }
+        Relationships: []
       }
       payments: {
         Row: {

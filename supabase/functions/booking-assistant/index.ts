@@ -67,13 +67,19 @@ serve(async (req) => {
       throw new Error('Failed to fetch bookings');
     }
 
-    // Fetch coach's blocked times
-    const { data: blockedTimes } = await supabase
-      .from('coach_blockings')
-      .select('blocked_date, start_time, end_time, reason')
-      .eq('coach_id', coachId)
-      .gte('blocked_date', new Date().toISOString().split('T')[0])
-      .order('blocked_date', { ascending: true });
+    // Fetch coach's blocked times and recurring blockings in parallel
+    const [{ data: blockedTimes }, { data: recurringBlockings }] = await Promise.all([
+      supabase
+        .from('coach_blockings')
+        .select('blocked_date, start_time, end_time, reason')
+        .eq('coach_id', coachId)
+        .gte('blocked_date', new Date().toISOString().split('T')[0])
+        .order('blocked_date', { ascending: true }),
+      supabase
+        .from('coach_recurring_blockings')
+        .select('day_of_week, start_time, end_time, reason')
+        .eq('coach_id', coachId),
+    ]);
 
     // Find next available slot
     const tomorrow = new Date();
@@ -169,19 +175,22 @@ ${isSingleSport ? `- The sport is auto-selected as "${singleSport}" — do NOT a
 - Do NOT output READY_TO_BOOK until the client has explicitly confirmed the summary
 
 AVAILABILITY RULES:
-- The coach is available 24/7 by default. There are no fixed working hours.
-- Availability is ONLY restricted by existing bookings and blocked times listed below.
+${coachProfile.coaching_hours ? `- The coach is only available from ${(coachProfile.coaching_hours as any).start} to ${(coachProfile.coaching_hours as any).end}. Do NOT accept bookings outside these hours.` : '- The coach is available 24/7 by default. There are no fixed working hours.'}
+- Availability is ALSO restricted by existing bookings, blocked times, and recurring blocked times listed below.
 - A booking ONLY blocks its specific time range. The rest of the day remains open.
 - Example: If there is a booking from 2:00 PM to 4:00 PM, the coach is still available before 2:00 PM and after 4:00 PM.
-- Only reject a requested time if it actually OVERLAPS with an existing booking or blocked time.
+- Only reject a requested time if it actually OVERLAPS with an existing booking, blocked time, or recurring blocked time.
 - If the requested time overlaps, suggest alternative times on the SAME day that are still free.
-- A day is only fully unavailable if bookings and blockings cover the entire 24-hour window.
+- A day is only fully unavailable if bookings and blockings cover the entire available window.
 
 EXISTING BOOKINGS (only these specific time ranges are occupied):
 ${existingBookings.length > 0 ? existingBookings.map(b => `- ${b.session_date} at ${b.session_time} for ${b.duration_hours} hours (${b.status})`).join('\n') : 'No existing bookings'}
 
 BLOCKED TIMES (coach is unavailable ONLY during these specific windows):
-${blockedTimes && blockedTimes.length > 0 ? blockedTimes.map(b => `- ${b.blocked_date} from ${b.start_time} to ${b.end_time}${b.reason ? ` (${b.reason})` : ''}`).join('\n') : 'No blocked times'}`;
+${blockedTimes && blockedTimes.length > 0 ? blockedTimes.map(b => `- ${b.blocked_date} from ${b.start_time} to ${b.end_time}${b.reason ? ` (${b.reason})` : ''}`).join('\n') : 'No blocked times'}
+
+RECURRING BLOCKED TIMES (coach is unavailable every week during these windows):
+${recurringBlockings && recurringBlockings.length > 0 ? recurringBlockings.map((rb: any) => `- Every ${['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][rb.day_of_week]} from ${rb.start_time} to ${rb.end_time}${rb.reason ? ` (${rb.reason})` : ''}`).join('\n') : 'No recurring blocked times'}`;
     }
 
     // Use streaming for the AI call
