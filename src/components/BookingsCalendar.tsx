@@ -53,8 +53,6 @@ export const BookingsCalendar = ({ bookings, blockings = [], recurringBlockings 
   // Get dates that have bookings
   const bookedDates = bookings.map(booking => new Date(booking.session_date));
 
-  // Get dates that have blockings
-  const blockedDates = blockings.map(b => new Date(b.blocked_date + "T00:00:00"));
 
   // Get blockings for selected date
   const selectedDateBlockings = blockings.filter(b => {
@@ -119,18 +117,12 @@ export const BookingsCalendar = ({ bookings, blockings = [], recurringBlockings 
           className="rounded-md border-2 border-border"
           modifiers={{
             booked: bookedDates,
-            blocked: blockedDates,
           }}
           modifiersStyles={{
             booked: {
               fontWeight: "bold",
               backgroundColor: "hsl(var(--secondary) / 0.2)",
               color: "hsl(var(--secondary))",
-            },
-            blocked: {
-              fontWeight: "bold",
-              backgroundColor: "hsl(var(--destructive) / 0.2)",
-              color: "hsl(var(--destructive))",
             },
           }}
         />
@@ -139,12 +131,6 @@ export const BookingsCalendar = ({ bookings, blockings = [], recurringBlockings 
             <div className="w-4 h-4 rounded-full bg-secondary/20 border-2 border-secondary"></div>
             <span>Days with bookings</span>
           </div>
-          {blockings.length > 0 && (
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded-full bg-destructive/20 border-2 border-destructive"></div>
-              <span>Blocked times</span>
-            </div>
-          )}
         </div>
       </Card>
 
