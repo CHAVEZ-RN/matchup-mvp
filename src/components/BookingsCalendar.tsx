@@ -25,12 +25,21 @@ interface Blocking {
   reason: string | null;
 }
 
+interface RecurringBlocking {
+  id: string;
+  day_of_week: number;
+  start_time: string;
+  end_time: string;
+  reason: string | null;
+}
+
 interface BookingsCalendarProps {
   bookings: Booking[];
   blockings?: Blocking[];
+  recurringBlockings?: RecurringBlocking[];
 }
 
-export const BookingsCalendar = ({ bookings, blockings = [] }: BookingsCalendarProps) => {
+export const BookingsCalendar = ({ bookings, blockings = [], recurringBlockings = [] }: BookingsCalendarProps) => {
   const navigate = useNavigate();
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
 
@@ -53,6 +62,16 @@ export const BookingsCalendar = ({ bookings, blockings = [] }: BookingsCalendarP
     const bDate = new Date(b.blocked_date + "T00:00:00");
     return bDate.toDateString() === selectedDate.toDateString();
   });
+
+  // Get recurring blockings for selected date's day of week
+  const selectedDateRecurringBlockings = recurringBlockings.filter(rb => {
+    if (!selectedDate) return false;
+    return rb.day_of_week === selectedDate.getDay();
+  });
+
+  const getDayName = (day: number) => {
+    return ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][day];
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -142,6 +161,24 @@ export const BookingsCalendar = ({ bookings, blockings = [] }: BookingsCalendarP
             : "Select a date"}
         </h3>
 
+        {/* Recurring blocked times for selected date */}
+        {selectedDateRecurringBlockings.length > 0 && (
+          <div className="space-y-2 mb-4">
+            {selectedDateRecurringBlockings.map((rb) => (
+              <Card key={rb.id} className="p-3 border-2 border-destructive/30 bg-destructive/5">
+                <div className="flex items-center gap-2">
+                  <Ban className="h-4 w-4 text-destructive" />
+                  <span className="text-sm font-semibold text-destructive">Recurring</span>
+                  <span className="text-sm text-muted-foreground">
+                    Every {getDayName(rb.day_of_week)}, {rb.start_time.slice(0, 5)} – {rb.end_time.slice(0, 5)}
+                  </span>
+                  {rb.reason && <span className="text-xs text-muted-foreground">· {rb.reason}</span>}
+                </div>
+              </Card>
+            ))}
+          </div>
+        )}
+
         {/* Blocked times for selected date */}
         {selectedDateBlockings.length > 0 && (
           <div className="space-y-2 mb-4">
@@ -202,7 +239,7 @@ export const BookingsCalendar = ({ bookings, blockings = [] }: BookingsCalendarP
         ) : (
           <div className="text-center py-12">
             <p className="text-muted-foreground">
-              {selectedDateBlockings.length > 0 ? "No bookings for this date (blocked times shown above)" : "No bookings for this date"}
+              {(selectedDateBlockings.length > 0 || selectedDateRecurringBlockings.length > 0) ? "No bookings for this date (blocked times shown above)" : "No bookings for this date"}
             </p>
           </div>
         )}

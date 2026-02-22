@@ -49,6 +49,7 @@ const Dashboard = () => {
     reschedules: 0
   });
   const [blockings, setBlockings] = useState<any[]>([]);
+  const [recurringBlockings, setRecurringBlockings] = useState<any[]>([]);
   const [isDarkMode, setIsDarkMode] = useState(() => document.documentElement.classList.contains("dark"));
   const fetchBlockings = async (coachId: string) => {
     const {
@@ -57,6 +58,14 @@ const Dashboard = () => {
       ascending: true
     });
     setBlockings(data || []);
+  };
+  const fetchRecurringBlockings = async (coachId: string) => {
+    const { data } = await supabase
+      .from("coach_recurring_blockings")
+      .select("*")
+      .eq("coach_id", coachId)
+      .order("day_of_week", { ascending: true });
+    setRecurringBlockings(data || []);
   };
   useEffect(() => {
     checkAuth();
@@ -95,6 +104,7 @@ const Dashboard = () => {
       // Fetch coach bookings and blockings
       await fetchCoachBookings(session.user.id);
       await fetchBlockings(session.user.id);
+      await fetchRecurringBlockings(session.user.id);
     } else {
       // Fetch athlete bookings
       await fetchAthleteBookings(session.user.id);
@@ -491,7 +501,7 @@ const Dashboard = () => {
                       {isCoach ? "View your calendar and manage all bookings" : "View your calendar and all session bookings"}
                     </p>
                   </div>
-                  {isCoach && user && <BlockingsDialog coachId={user.id} onBlockingsChange={() => fetchBlockings(user.id)} />}
+                  {isCoach && user && <BlockingsDialog coachId={user.id} onBlockingsChange={() => { fetchBlockings(user.id); fetchRecurringBlockings(user.id); }} />}
                 </div>
 
                 {bookings.length === 0 ? <Card className="border-2 border-primary/30 bg-card p-12 text-center">
@@ -503,7 +513,7 @@ const Dashboard = () => {
                   </Card> : <>
                     {/* Calendar View */}
                     <div className="mb-10">
-                      <BookingsCalendar bookings={bookings} blockings={blockings} />
+                      <BookingsCalendar bookings={bookings} blockings={blockings} recurringBlockings={recurringBlockings} />
                     </div>
 
                     {/* All Bookings List */}

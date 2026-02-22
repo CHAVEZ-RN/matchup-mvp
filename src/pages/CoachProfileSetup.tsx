@@ -6,9 +6,10 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Calendar, Loader2, Plus, X, Upload, User, Lock } from "lucide-react";
+import { ArrowLeft, Calendar, Loader2, Plus, X, Upload, User, Lock, Clock } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
 import { validateAndFormatPhone } from "@/lib/phoneValidation";
 
 const SPORTS_OPTIONS = ["Basketball", "Tennis", "Volleyball", "Badminton", "Football", "Swimming", "Golf", "Fitness"];
@@ -44,6 +45,9 @@ const CoachProfileSetup = () => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [coachingHoursEnabled, setCoachingHoursEnabled] = useState(false);
+  const [coachingStart, setCoachingStart] = useState("08:00");
+  const [coachingEnd, setCoachingEnd] = useState("17:00");
 
   useEffect(() => {
     checkAuth();
@@ -106,6 +110,13 @@ const CoachProfileSetup = () => {
       setVenueDetails((coachProfile.venue_details as Record<string, string>) || {});
       setCertifications(coachProfile.certifications || [""]);
       setCancellationPolicy(coachProfile.cancellation_policy || "");
+      // Load coaching hours
+      const ch = coachProfile.coaching_hours as { start: string; end: string } | null;
+      if (ch) {
+        setCoachingHoursEnabled(true);
+        setCoachingStart(ch.start || "08:00");
+        setCoachingEnd(ch.end || "17:00");
+      }
     }
   };
 
@@ -289,7 +300,7 @@ const CoachProfileSetup = () => {
 
         if (profileError) throw profileError;
       }
-      const profileData = {
+      const profileData: any = {
         id: user.id,
         business_name: businessName,
         bio,
@@ -300,6 +311,7 @@ const CoachProfileSetup = () => {
         locations: selectedLocations,
         venue_details: venueDetails,
         cancellation_policy: cancellationPolicy,
+        coaching_hours: coachingHoursEnabled ? { start: coachingStart, end: coachingEnd } : null,
       };
 
       const { error } = existingProfile
@@ -425,6 +437,35 @@ const CoachProfileSetup = () => {
                   </p>
                 </div>
               </div>
+            </div>
+          </Card>
+
+          {/* Coaching Hours */}
+          <Card className="border-2 border-border bg-card p-6">
+            <h3 className="text-2xl font-bold text-foreground mb-4 flex items-center gap-2">
+              <Clock className="h-6 w-6" />
+              Coaching Hours
+            </h3>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label>Set specific coaching hours</Label>
+                  <p className="text-xs text-muted-foreground">Off = available 24/7</p>
+                </div>
+                <Switch checked={coachingHoursEnabled} onCheckedChange={setCoachingHoursEnabled} />
+              </div>
+              {coachingHoursEnabled && (
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label>Start Time</Label>
+                    <Input type="time" value={coachingStart} onChange={(e) => setCoachingStart(e.target.value)} className="border-2 border-border bg-background" />
+                  </div>
+                  <div>
+                    <Label>End Time</Label>
+                    <Input type="time" value={coachingEnd} onChange={(e) => setCoachingEnd(e.target.value)} className="border-2 border-border bg-background" />
+                  </div>
+                </div>
+              )}
             </div>
           </Card>
 
