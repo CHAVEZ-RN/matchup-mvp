@@ -79,7 +79,7 @@ const Auth = () => {
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!fullName.trim()) {
       toast({
         title: "Error",
@@ -93,7 +93,7 @@ const Auth = () => {
 
     try {
       const redirectUrl = `${window.location.origin}/`;
-      
+
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -156,9 +156,11 @@ const Auth = () => {
         {/* Logo Header */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-primary shadow-xl">
-              <Calendar className="h-9 w-9 text-foreground" />
-            </div>
+            <img
+              src="https://wegorxmxkazzwgoujujm.supabase.co/storage/v1/object/public/Phot/Screenshot%202026-02-23%20180732.png"
+              alt="MatchUp Logo"
+              className="h-16 w-16 rounded-xl shadow-xl object-cover"
+            />
           </div>
           <h1 className="text-4xl font-extrabold text-foreground mb-2">MatchUp</h1>
           <p className="text-muted-foreground">
