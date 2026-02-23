@@ -2,130 +2,50 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
-
 @layer base {
   :root {
-    /* Light mode - Clean whites and grays */
-    --background: 0 0% 98%;
-    --foreground: 0 0% 15%;
-
-    /* Card Background - White */
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 15%;
-
+    --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 15%;
-
-    /* Cobalt Blue - Primary */
-    --primary: 197 100% 40%;
-    --primary-foreground: 0 0% 98%;
-    --primary-dark: 197 100% 33%;
-    --primary-hover: 197 100% 47%;
-    
-    /* Rust Orange - Secondary */
-    --secondary: 18 65% 47%;
-    --secondary-foreground: 0 0% 98%;
-    --secondary-hover: 17 63% 54%;
-    
-    /* Light Gray - Accent */
-    --accent: 0 0% 93%;
-    --accent-foreground: 0 0% 15%;
-
-    /* Muted */
-    --muted: 0 0% 93%;
-    --muted-foreground: 0 0% 45%;
-
-    /* UI Feedback States */
-    --success: 122 39% 49%;
-    --success-foreground: 0 0% 98%;
-    
-    --warning: 43 100% 47%;
-    --warning-foreground: 0 0% 10%;
-
-    --destructive: 350 75% 50%;
-    --destructive-foreground: 0 0% 98%;
-
-    /* Borders */
-    --border: 0 0% 85%;
-    --input: 0 0% 80%;
-    --ring: 197 100% 40%;
-
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 84% 4.9%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 84% 4.9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
     --radius: 0.5rem;
-    
-    /* Solid Shadows */
-    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
-    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.1);
-    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
-    --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.15);
-    
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 197 100% 40%;
   }
 
   .dark {
-    /* Deep Background - #0D0D0D */
-    --background: 0 0% 5%;
-    --foreground: 0 0% 78%;
-
-    /* Card Background - Charcoal #1A1A1A */
-    --card: 0 0% 10%;
-    --card-foreground: 0 0% 78%;
-
-    --popover: 0 0% 10%;
-    --popover-foreground: 0 0% 78%;
-
-    /* Cobalt Blue - brighter in dark */
-    --primary: 197 100% 40%;
-    --primary-foreground: 0 0% 78%;
-    --primary-dark: 197 100% 33%;
-    --primary-hover: 197 100% 50%;
-
-    /* Rust Orange */
-    --secondary: 18 65% 47%;
-    --secondary-foreground: 0 0% 10%;
-    --secondary-hover: 17 63% 54%;
-    
-    /* Graphite Gray */
-    --accent: 0 0% 23%;
-    --accent-foreground: 0 0% 78%;
-
-    /* Graphite Gray for muted */
-    --muted: 0 0% 23%;
-    --muted-foreground: 0 0% 78%;
-    
-    /* UI States */
-    --success: 122 39% 49%;
-    --success-foreground: 0 0% 10%;
-    
-    --warning: 43 100% 47%;
-    --warning-foreground: 0 0% 10%;
-
-    --destructive: 350 75% 50%;
-    --destructive-foreground: 0 0% 10%;
-
-    /* Borders */
-    --border: 0 0% 16%;
-    --input: 0 0% 35%;
-    --ring: 197 100% 40%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 197 100% 40%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 197 100% 40%;
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 84% 4.9%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 94.1%;
   }
 }
 
@@ -135,24 +55,6 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground font-poppins;
+    @apply bg-background text-foreground;
   }
-  
-  /* Luxury Glow Animation - Rust Orange */
-  @keyframes luxury-glow {
-    0%, 100% {
-      box-shadow: 0 0 30px rgba(198, 93, 41, 0.3), 0 0 60px rgba(198, 93, 41, 0.1);
-    }
-    50% {
-      box-shadow: 0 0 40px rgba(198, 93, 41, 0.5), 0 0 80px rgba(198, 93, 41, 0.2);
-    }
-  }
-  
-  .luxury-glow {
-    animation: luxury-glow 3s ease-in-out infinite;
-  }
-}
-
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
 }

@@ -2,6 +2,8 @@ import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const corsHeaders = {
+  const OPENAI_API_KEY = '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 
+';
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
@@ -48,11 +50,11 @@ serve(async (req) => {
       }
     }
 
-    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+    const MATCHUP_API_KEY = Deno.env.get('MATCHUP_API_KEY');
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 
-    if (!LOVABLE_API_KEY || !SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+    if (!MATCHUP_API_KEY || !SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
       throw new Error('Missing required environment variables');
     }
 
@@ -66,7 +68,7 @@ serve(async (req) => {
 
     const token = authHeader.replace('Bearer ', '');
     const { data: { user }, error: authError } = await supabase.auth.getUser(token);
-    
+
     if (authError || !user) {
       throw new Error('Unauthorized');
     }
@@ -108,7 +110,7 @@ YOUR PROFILE:
 
     // Format bookings by status
     const formatBooking = (b: any) => `  - ${b.booking_reference || 'N/A'} | ${b.athlete_name} | ${b.sport} | ${b.session_date} ${b.session_time} | ${b.duration_hours}hr | ₱${b.total_amount} | ${b.location}`;
-    
+
     const pending = bookings?.filter((b: any) => b.status === 'pending') || [];
     const approved = bookings?.filter((b: any) => b.status === 'approved') || [];
     const completed = bookings?.filter((b: any) => b.status === 'completed') || [];
@@ -132,7 +134,7 @@ ${blockings && blockings.length > 0 ? blockings.map((b: any) => `  - ${b.blocked
 
     const recurringBlockingsSection = `
 RECURRING BLOCKED TIMES:
-${recurringBlockings && recurringBlockings.length > 0 ? recurringBlockings.map((rb: any) => `  - Every ${['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][rb.day_of_week]} | ${rb.start_time}-${rb.end_time}${rb.reason ? ` | Reason: ${rb.reason}` : ''}`).join('\n') : '  No recurring blocked times'}`;
+${recurringBlockings && recurringBlockings.length > 0 ? recurringBlockings.map((rb: any) => `  - Every ${['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][rb.day_of_week]} | ${rb.start_time}-${rb.end_time}${rb.reason ? ` | Reason: ${rb.reason}` : ''}`).join('\n') : '  No recurring blocked times'}`;
 
     // Format pending payments
     const paymentsSection = `
@@ -275,14 +277,14 @@ CRITICAL RULES:
 - Disputes are allowed within 12 hours for bank processing issues.
 - Today's date is ${today}`;
 
-    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+        'Authorization': `Bearer ${OPENAI_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'google/gemini-3-flash-preview',
+        model: 'gpt-3.5-turbo',
         messages: [
           { role: 'system', content: systemPrompt },
           ...messages
@@ -314,7 +316,7 @@ CRITICAL RULES:
     // Check for payment confirmation or dispute commands
     if (reply.includes('CONFIRM_PAYMENT:')) {
       const paymentId = reply.split('CONFIRM_PAYMENT:')[1].split('\n')[0].trim();
-      
+
       // Validate UUID format
       if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(paymentId)) {
         return new Response(
@@ -356,7 +358,7 @@ CRITICAL RULES:
       const parts = reply.split('DISPUTE_PAYMENT:')[1].split(':');
       const paymentId = parts[0].trim();
       const reason = parts.slice(1).join(':').split('\n')[0].trim();
-      
+
       // Validate UUID format
       if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(paymentId)) {
         return new Response(

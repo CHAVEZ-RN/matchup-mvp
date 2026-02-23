@@ -45,7 +45,7 @@ const AIAssistant = ({ onClose }: AIAssistantProps) => {
 
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      
+
       const { data, error } = await supabase.functions.invoke('chat-assistant', {
         body: { messages: [...messages, userMessage] },
         headers: session?.access_token ? {
@@ -115,11 +115,10 @@ const AIAssistant = ({ onClose }: AIAssistantProps) => {
               className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
             >
               <div
-                className={`max-w-[80%] min-w-0 rounded-2xl px-4 py-3 break-words overflow-hidden ${
-                  message.role === "user"
+                className={`max-w-[80%] min-w-0 rounded-2xl px-4 py-3 break-words overflow-hidden ${message.role === "user"
                     ? "bg-primary text-foreground border border-border"
                     : "bg-accent text-foreground border border-border"
-                }`}
+                  }`}
               >
                 <p className="text-sm whitespace-pre-wrap break-words" style={{ overflowWrap: 'anywhere', wordBreak: 'break-word' }}>{message.content}</p>
               </div>
@@ -161,7 +160,7 @@ const AIAssistant = ({ onClose }: AIAssistantProps) => {
             </Button>
           </div>
           <p className="mt-2 text-xs text-muted-foreground text-center">
-            Powered by Lovable AI • Available 24/7
+            Powered by MatchUp AI Assistant
           </p>
         </div>
       </Card>
